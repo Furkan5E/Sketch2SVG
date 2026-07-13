@@ -1,0 +1,42 @@
+# Night sky and house on a hill
+# sky
+rect 200 200 0 0 0 00000000 0b1020ff
+
+# moon
+circle 18 -55 55 0 00000000 e6e6ffff
+circle 16 -50 58 0 00000000 0b1020ff
+
+# stars
+star 5 3 1 -10 75 0 00000000 ffd700ff
+star 5 2 1 10 65 0 00000000 ffd700ff
+star 5 2 1 35 78 0 00000000 ffd700ff
+star 5 3 1 60 65 0 00000000 ffd700ff
+star 5 2 1 -30 80 0 00000000 ffd700ff
+star 5 2 1 -75 72 0 00000000 ffd700ff
+star 5 2 1 80 80 0 00000000 ffd700ff
+
+# shooting star arrow
+arrow 26 6 55 78 -20 0 00000000 ffd700ff
+
+# hills
+ngon 3 92 -10 -25 0 00000000 0f2a1bff
+ngon 3 86 35 -38 0 00000000 133021ff
+
+rect 200 30 0 -85 0 00000000 0a1a12ff
+
+# house base
+rect 42 28 32 -40 2 000000ff 6b4f3aff
+rect 10 16 32 -46 2 000000ff 2a1d15ff
+
+# roof
+rect 8 16 48 -15 2 000000ff 3b2a20ff
+trapezoid 30 52 16 32 -23 2 000000ff 3b2a20ff
+
+# windows
+square 8 44 -40 2 000000ff ffdc7aff
+square 8 20 -40 2 000000ff ffdc7aff
+
+# smoke
+arc 7 90 180 52 -5 1 00000066
+arc 9 90 180 62 2 1 00000066
+arc 11 90 180 74 10 1 00000066
