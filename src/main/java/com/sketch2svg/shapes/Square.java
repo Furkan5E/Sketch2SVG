@@ -8,4 +8,9 @@ public class Square extends Rect {
 	public Square(float w, float cx, float cy){
 		super(w, w, cx, cy);
 	}
+
+	public Square side(float s) {
+        size(s, s);
+        return this;
+    }
 }

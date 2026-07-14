@@ -18,4 +18,14 @@ public class Rect extends LineStrip {
 		setScale(w, h);
 		setPos(cx, cy);
 	}
+
+	public Rect size(float w, float h) {
+        setScale(w, h);
+        return this;
+    }
+
+    public Rect size(float s) {
+        setScale(s, s);
+        return this;
+    }
 }

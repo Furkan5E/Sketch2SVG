@@ -16,6 +16,17 @@ public class Circle extends Shape{
 		attribR = newAttrib("r");
 	}
 
+    public Circle(float r, float x, float y){
+		this();
+		setScale(r);
+		setPos(x,y);
+	}
+
+    public Circle radius(float r) {
+        setScale(r);
+        return this;
+    }
+
 	@Override
 	public String getTag(){
 		return "circle";
@@ -29,11 +40,5 @@ public class Circle extends Shape{
 		attribX.val = "" + c.x;
 		attribY.val = "" + c.y;
 		attribR.val = "" + getScale().x;
-	}
-
-	public Circle(float r, float x, float y){
-		this();
-		setScale(r);
-		setPos(x,y);
 	}
 }

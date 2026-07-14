@@ -8,10 +8,19 @@ public class Line extends LineStrip{
 		closed = false;
 	}
 
-	// Construct from two endpoints
-	public Line(float x1, float y1, float x2, float y2){
-		this();
-		setVertex(0, x1, y1);
-		setVertex(1, x2, y2);
-	}
+    public Line(float x1, float y1, float x2, float y2) {
+        this();
+        from(x1, y1);
+        to(x2, y2);
+    }
+
+    public Line from(float x1, float y1) {
+        setVertex(0, x1, y1);
+        return this;
+    }
+
+    public Line to(float x2, float y2) {
+        setVertex(1, x2, y2);
+        return this;
+    }
 }

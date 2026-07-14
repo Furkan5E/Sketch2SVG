@@ -65,4 +65,19 @@ public class LineStrip extends Shape {
 	public float getVertex(int i, int comp){
 		return vertices[i*2 + comp];
 	}
+
+	public LineStrip closed(boolean closed) {
+        this.closed = closed;
+        return this;
+    }
+
+    public LineStrip vertex(int i, float x, float y) {
+        setVertex(i, x, y);
+        return this;
+    }
+
+    public LineStrip vertex(int i, Vec2 p) {
+        setVertex(i, p);
+        return this;
+    }
 }

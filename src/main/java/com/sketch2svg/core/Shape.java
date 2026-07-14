@@ -32,6 +32,47 @@ public abstract class Shape extends Elem {
 		attribStyle.val = style;
 	}
 
+	// API Helpers
+
+    public Shape at(float x, float y) {
+        return setPos(x, y);
+    }
+
+    public Shape fill(int color) {
+        return setFill(color);
+    }
+
+    public Shape fill(String hexColor) {
+        String cleanHex = hexColor.startsWith("#") ? hexColor.substring(1) : hexColor;
+        this.fill = (int) Long.parseLong(cleanHex, 16);
+        return this;
+    }
+
+    public Shape stroke(int color) {
+        return setStroke(color);
+    }
+
+    public Shape stroke(String hexColor) {
+        String cleanHex = hexColor.startsWith("#") ? hexColor.substring(1) : hexColor;
+        this.stroke = (int) Long.parseLong(cleanHex, 16);
+        return this;
+    }
+
+    public Shape strokeWidth(float width) {
+        return setStrokeWidth(width);
+    }
+
+    public Shape rotate(float deg) {
+        return setRotation(deg);
+    }
+
+    public Shape scale(float s) {
+        return setScale(s);
+    }
+
+    public Shape scale(float sx, float sy) {
+        return setScale(sx, sy);
+    }
 
 	//setters and getters
 	public int getFill(){
