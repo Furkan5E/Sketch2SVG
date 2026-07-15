@@ -6,169 +6,192 @@ import com.sketch2svg.svg.SVG;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class Sketch {
-	//store all the parsed shapes
-    private ArrayList<Shape> shapes = new ArrayList<>();
-    public void render(String dir, String name) {
+    // Store all parsed or programmatically added shapes
+    private final List<Shape> shapes = new ArrayList<>();
+
+    public Sketch add(Shape shape) {
+        if (shape != null) {
+            shapes.add(shape);
+        }
+        return this;
+    }
+
+    public List<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void clear() {
         shapes.clear();
+    }
+
+    public void render(String dir, String name) {
+        clear();
         String txtFilePath = dir + name + ".txt";
         String svgFilePath = dir + name + ".svg";
-        fromFile(txtFilePath);
         
+        fromFile(txtFilePath);
+        exportSVG(svgFilePath);
+    }
+
+    public void exportSVG(String svgFilePath) {
         SVG svg = new SVG();
-        for(int i = 0; i<shapes.size(); i++){
-            Shape shape = shapes.get(i);
+        for (Shape shape : shapes) {
             svg.addContent(shape);
         }
         svg.toFile(svgFilePath);
     }
 
-   public void fromFile(String filename){
-		try (Scanner sc = new Scanner(new File(filename))) {
-			//process txt file one line at a time
-			while (sc.hasNextLine()) {
-				String line = sc.nextLine().trim();
+    public void fromFile(String filename) {
+        File file = new File(filename);
+        if (!file.exists()) {
+            System.err.println("Error: File not found: " + filename);
+            return;
+        }
 
-				// ignore blanks and comments
-				if (line.isEmpty())
-					continue;
-				if (line.startsWith("#"))
-					continue;
-				Scanner ls = new Scanner(line);
-				if (!ls.hasNext()) { 
-					ls.close();
-					continue;
-				}
-				//find the shape type
-				String type = ls.next().toLowerCase();
-				Shape shape = null;
-				
-				switch (type) {
-					case "circle": {
-						float r = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new Circle(r, cx, cy);
-					} break;
+        int lineNum = 0;
+        try (Scanner sc = new Scanner(file)) {
+            while (sc.hasNextLine()) {
+                lineNum++;
+                String line = sc.nextLine().trim();
 
-					case "arc": {
-						float radius = ls.nextFloat();
-						float angle  = ls.nextFloat();
-						float length = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new Arc(radius, angle, length, cx, cy);
-					} break;
-					case "line": {
-						float x1 = ls.nextFloat();
-						float y1 = ls.nextFloat();
-						float x2 = ls.nextFloat();
-						float y2 = ls.nextFloat();
-						shape = new Line(x1, y1, x2, y2);
-					} break;
-					case "rect": {
-						float w = ls.nextFloat();
-						float h = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new Rect(w, h, cx, cy);
-					} break;
-					case"square": {
-						float w = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new Square(w, cx, cy);
-					} break;
-					case "ngon":{
-						int sides = ls.nextInt();
-						float radius = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new RegPolygon(sides, radius, cx, cy);
-					} break;
-					
-					case "trapezoid": {
-						float topW = ls.nextFloat();
-						float botW = ls.nextFloat();
-						float h = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new Trapezoid(topW, botW, h, cx, cy);
-					} break;
-					case "star": {
-						int points = ls.nextInt();
-						float outerR = ls.nextFloat();
-						float innerR = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						shape = new Star(points, outerR, innerR, cx, cy);
-					} break;
-					case "arrow":{
-						float length = ls.nextFloat();
-						float width  = ls.nextFloat();
-						float cx = ls.nextFloat();
-						float cy = ls.nextFloat();
-						float rot = 0f;
-						if (ls.hasNextFloat()) rot = ls.nextFloat();
+                // Ignore blanks and comments
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
 
-						shape = new Arrow(length, width, cx, cy);
-						shape.setRotation(rot);
-					} break;
+                try (Scanner ls = new Scanner(line)) {
+                    if (!ls.hasNext()) {
+                        continue;
+                    }
 
-					default:
-						//unknown command ignore line
-						break;
-				}
+                    String type = ls.next().toLowerCase();
+                    Shape shape = parseShape(type, ls);
 
-				//optional style parameters strokeWidth, strokeColor, fillColor
-				if (shape != null) {
-					applyOptionalStyle(ls, shape);
-					shapes.add(shape);
-				}
-				ls.close();
-			}
+                    if (shape != null) {
+                        applyOptionalStyle(ls, shape);
+                        shapes.add(shape);
+                    } else {
+                        System.err.printf("[Warning] Line %d: Unknown shape command '%s'%n", lineNum, type);
+                    }
+				} catch (NoSuchElementException e) {		
+                    System.err.printf("[Syntax Error] Line %d: Invalid or missing parameters in '%s'%n", lineNum, line);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Could not open: " + filename);
+        }
+    }
 
-		} catch (FileNotFoundException e) {
-			System.out.println("Could not open: " + filename);
-		}
-	}
-	private static boolean isHexRGBA(String s) {
-		//8 hex digits
-		return s.matches("(?i)[0-9a-f]{8}");
-	}
-	private static void applyOptionalStyle(Scanner ls, Shape shape) {
-		Float strokeW = null;
-		ArrayList<Integer> hexes = new ArrayList<>();
+    private Shape parseShape(String type, Scanner ls) {
+        return switch (type) {
+            case "circle" -> {
+                float r = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Circle(r, cx, cy);
+            }
+            case "arc" -> {
+                float radius = ls.nextFloat();
+                float angle = ls.nextFloat();
+                float length = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Arc(radius, angle, length, cx, cy);
+            }
+            case "line" -> {
+                float x1 = ls.nextFloat();
+                float y1 = ls.nextFloat();
+                float x2 = ls.nextFloat();
+                float y2 = ls.nextFloat();
+                yield new Line(x1, y1, x2, y2);
+            }
+            case "rect" -> {
+                float w = ls.nextFloat();
+                float h = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Rect(w, h, cx, cy);
+            }
+            case "square" -> {
+                float w = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Square(w, cx, cy);
+            }
+            case "ngon" -> {
+                int sides = ls.nextInt();
+                float radius = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new RegPolygon(sides, radius, cx, cy);
+            }
+            case "trapezoid" -> {
+                float topW = ls.nextFloat();
+                float botW = ls.nextFloat();
+                float h = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Trapezoid(topW, botW, h, cx, cy);
+            }
+            case "star" -> {
+                int points = ls.nextInt();
+                float outerR = ls.nextFloat();
+                float innerR = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Star(points, outerR, innerR, cx, cy);
+            }
+            case "arrow" -> {
+                float length = ls.nextFloat();
+                float width = ls.nextFloat();
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                float rot = ls.hasNextFloat() ? ls.nextFloat() : 0f;
+                Arrow arrow = new Arrow(length, width, cx, cy);
+                arrow.setRotation(rot);
+                yield arrow;
+            }
+            default -> null;
+        };
+    }
 
-		while (ls.hasNext()) {
-			String tok = ls.next();
+    private static boolean isHexRGBA(String s) {
+        return s.matches("(?i)[0-9a-f]{8}");
+    }
 
-			if (isHexRGBA(tok)) {
-				//parse unsigned 32bit hex into int
-				int rgba = (int) Long.parseLong(tok, 16);
-				hexes.add(rgba);
-			}
-			else {
-				//treat as stroke width if it parses as float
-				try{
-					strokeW = Float.parseFloat(tok);
-				}
-				catch (NumberFormatException ignored) {
-					//ignore unrecognised
-				}
-			}
-		}
+    private static void applyOptionalStyle(Scanner ls, Shape shape) {
+        Float strokeW = null;
+        ArrayList<Integer> hexes = new ArrayList<>();
 
-		//apply parsed optional values
-		if (strokeW != null)
-			shape.setStrokeWidth(strokeW);
+        while (ls.hasNext()) {
+            String tok = ls.next();
 
-		if (hexes.size() >= 1)
-			shape.setStroke(hexes.get(0));
-		if (hexes.size() >= 2)
-			shape.setFill(hexes.get(1));
+            if (isHexRGBA(tok)) {
+                int rgba = (int) Long.parseLong(tok, 16);
+                hexes.add(rgba);
+            } else {
+                try {
+                    strokeW = Float.parseFloat(tok);
+                } catch (NumberFormatException ignored) {
+                    // Ignore unrecognized token
+                }
+            }
+        }
+
+        if (strokeW != null) {
+            shape.setStrokeWidth(strokeW);
+        }
+        if (!hexes.isEmpty()) {
+            shape.setStroke(hexes.get(0));
+        }
+        if (hexes.size() >= 2) {
+            shape.setFill(hexes.get(1));
+        }
     }
 }
