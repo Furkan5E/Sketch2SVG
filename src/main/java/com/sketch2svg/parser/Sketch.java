@@ -157,6 +157,22 @@ public class Sketch {
                 arrow.setRotation(rot);
                 yield arrow;
             }
+            case "text" -> {
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                float fontSize = ls.nextFloat();
+                
+                String content;
+                // Direct line search extracts quoted text cleanly across whitespace tokens
+                String quoted = ls.findInLine("\"([^\"]*)\"");
+                if (quoted != null) {
+                    content = quoted.substring(1, quoted.length() - 1);
+                } else {
+                    content = ls.next();
+                }
+                
+                yield new Text(content, cx, cy, fontSize);
+            }
             default -> null;
         };
     }
