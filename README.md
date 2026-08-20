@@ -1,17 +1,22 @@
 # Sketch2SVG
 
+![Java](https://img.shields.io/badge/Java-25-orange?style=flat-square&logo=openjdk)
+![Maven](https://img.shields.io/badge/Build-Maven-C71A22?style=flat-square&logo=apachemaven)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 [![Java CI with Maven](https://github.com/Furkan5E/Sketch2SVG/actions/workflows/maven.yml/badge.svg)](https://github.com/Furkan5E/Sketch2SVG/actions/workflows/maven.yml)
 
 A lightweight, zero dependency Java vector graphics engine and CLI tool that converts geometric sketch scripts (`.txt`) into standards-compliant Scalable Vector Graphics (`.svg`).
+
+[![Download Latest Release](https://img.shields.io/github/v/release/Furkan5E/Sketch2SVG?style=for-the-badge&label=Download%20.jar&color=success)](https://github.com/Furkan5E/Sketch2SVG/releases/latest)
 
 ---
 
 ## Features
 
-- **Zero External Runtime Dependencies:** Pure Java implementation utilising native SVG DOM serialization.
+- **Zero External Runtime Dependencies:** Java implementation utilising native SVG DOM serialisation.
 - **Rich Geometry Engine:** Supports `Circle`, `Rect`, `Square`, `Line`, `Arc`, `Star`, `RegPolygon`, `Trapezoid`, `Arrow`, and `Text`.
 - **Fluent API & Chaining:** Programmatic shape configuration with intuitive builders (`.at()`, `.fill()`, `.stroke()`, `.rotate()`, `.scale()`).
-- **Fault-Tolerant Parser:** Robust syntax error diagnostics with line-number reporting.
+- **Fault Tolerant Parser:** Syntax error diagnostics with line number reporting.
 - **Dynamic CLI:** Flag parsing (`-i`, `-o`, `-d`/`--batch`, `-h`) for terminal automation and batch conversions.
 - **Automated CI/CD:** JUnit 5 test suite integrated with GitHub Actions.
 
@@ -43,18 +48,19 @@ Options:
 ```
 ---
 ## Shape	Syntax
-```text
-Circle	circle <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Rectangle	rect <w> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Square	square <size> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Star	star <points> <outerR> <innerR> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Polygon	ngon <sides> <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Trapezoid	trapezoid <topW> <botW> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Arrow	arrow <length> <width> <cx> <cy> [rot] [strokeWidth] [strokeRGBA] [fillRGBA]
-Line	line <x1> <y1> <x2> <y2> [strokeWidth] [strokeRGBA]
-Arc	arc <radius> <angle> <length> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]
-Text	text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]
-```
+| Shape | Command |
+|---|---|
+| Circle | `circle <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Rectangle | `rect <w> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Square | `square <size> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Star | `star <points> <outerR> <innerR> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Polygon | `ngon <sides> <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Trapezoid | `trapezoid <topW> <botW> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Arrow | `arrow <length> <width> <cx> <cy> [rot] [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Line | `line <x1> <y1> <x2> <y2> [strokeWidth] [strokeRGBA]` |
+| Arc | `arc <radius> <angle> <length> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]` |
+
 ```text
 Colors are defined using 8-digit hexadecimal RGBA (e.g., ffdc7aff).
 ```
