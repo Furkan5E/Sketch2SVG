@@ -20,5 +20,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build and Run Tests
-      run: mvn --batch-mode --update-snapshots verify
+    - name: Compile and Build
+      run: mvn --batch-mode --update-snapshots compile test-compile
+
+    - name: Run JUnit Tests
+      run: mvn --batch-mode test
