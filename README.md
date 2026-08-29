@@ -2,6 +2,7 @@
 
 ![Java](https://img.shields.io/badge/Java-25-orange?style=flat-square&logo=openjdk)
 ![Maven](https://img.shields.io/badge/Build-Maven-C71A22?style=flat-square&logo=apachemaven)
+![JUnit](https://img.shields.io/badge/JUnit-5-25A162?style=flat-square&logo=junit5)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 [![Java CI with Maven](https://github.com/Furkan5E/Sketch2SVG/actions/workflows/maven.yml/badge.svg)](https://github.com/Furkan5E/Sketch2SVG/actions/workflows/maven.yml)
 
