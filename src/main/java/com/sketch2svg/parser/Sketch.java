@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -65,12 +66,12 @@ public class Sketch {
                     continue;
                 }
 
-                try (Scanner ls = new Scanner(line)) {
+                try (Scanner ls = new Scanner(line).useLocale(Locale.ROOT)) {
                     if (!ls.hasNext()) {
                         continue;
                     }
 
-                    String type = ls.next().toLowerCase();
+                    String type = ls.next().toLowerCase(Locale.ROOT);
                     Shape shape = parseShape(type, ls);
 
                     if (shape != null) {

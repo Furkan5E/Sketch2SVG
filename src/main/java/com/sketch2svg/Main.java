@@ -5,6 +5,7 @@ import com.sketch2svg.parser.Sketch;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 public class Main {
 
@@ -77,7 +78,7 @@ public class Main {
             return;
         }
 
-        File[] files = folder.listFiles((d, name) -> name.toLowerCase().endsWith(".txt"));
+        File[] files = folder.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".txt"));
         if (files == null || files.length == 0) {
             System.out.println("No .txt files found in directory: " + inputDir);
             return;

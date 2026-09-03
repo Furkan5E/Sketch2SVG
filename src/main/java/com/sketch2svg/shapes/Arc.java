@@ -3,6 +3,8 @@ package com.sketch2svg.shapes;
 import com.sketch2svg.core.*;
 import com.sketch2svg.math.Vec2;
 
+import java.util.Locale;
+
 // Part of a circle
 public class Arc extends Shape {
 
@@ -66,7 +68,7 @@ public class Arc extends Shape {
         int largeArcFlag = Math.abs(length) > 180.f ? 1 : 0;
         int sweepFlag = length > 0.f ? 1 : 0;
 
-        attribData.val = String.format("M %f %f A %f %f 0 %d %d %f %f",
+        attribData.val = String.format(Locale.ROOT, "M %f %f A %f %f 0 %d %d %f %f",
                 p1.x, p1.y, r, r, largeArcFlag, sweepFlag, p2.x, p2.y);
     }
 }
