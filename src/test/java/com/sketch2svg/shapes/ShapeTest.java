@@ -1,6 +1,11 @@
 package com.sketch2svg.shapes;
 
 import org.junit.jupiter.api.Test;
+import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ShapeTest {
@@ -37,5 +42,17 @@ public class ShapeTest {
         Star star = new Star(5, 20.0f, 10.0f, 0.0f, 0.0f);
         // 5 points * 2 (inner + outer alternating) = 10 vertices
         assertEquals(10, star.getNumVertices());
+    }
+
+    @Test
+    void testTextContentIsXmlEscaped() throws Exception {
+        Text text = new Text("Tom & Jerry <3 \"quoted\"", 0.0f, 0.0f, 10.0f);
+        String xml = text.toString();
+
+        assertTrue(xml.contains("Tom &amp; Jerry &lt;3 &quot;quoted&quot;"));
+        // Must parse as well-formed XML and round-trip the original text
+        var doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                .parse(new InputSource(new StringReader(xml)));
+        assertEquals("Tom & Jerry <3 \"quoted\"", doc.getDocumentElement().getTextContent().strip());
     }
 }

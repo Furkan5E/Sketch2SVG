@@ -2,6 +2,7 @@ package com.sketch2svg.shapes;
 
 import com.sketch2svg.core.Attrib;
 import com.sketch2svg.core.Shape;
+import com.sketch2svg.core.Xml;
 import com.sketch2svg.math.Vec2;
 
 public class Text extends Shape {
@@ -24,7 +25,7 @@ public class Text extends Shape {
         newAttrib("dominant-baseline", "middle");
 
         this.textContent = content;
-        this.content = content;
+        this.content = Xml.escape(content);
         this.fontSize = fontSize;
         setPos(cx, cy);
 
@@ -35,7 +36,7 @@ public class Text extends Shape {
 
     public Text content(String text) {
         this.textContent = text;
-        this.content = text;
+        this.content = Xml.escape(text);
         return this;
     }
 
@@ -60,6 +61,6 @@ public class Text extends Shape {
         attribX.val = String.valueOf(p.x);
         attribY.val = String.valueOf(p.y);
         attribFontSize.val = String.valueOf(fontSize);
-        this.content = textContent;
+        this.content = Xml.escape(textContent);
     }
 }

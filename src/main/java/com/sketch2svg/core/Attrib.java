@@ -17,6 +17,6 @@ public class Attrib{
 
 	// Convert to string in form key="val"
 	public String toString(){
-		return key + "=\"" + val + "\"";
+		return key + "=\"" + Xml.escape(val) + "\"";
 	}
 }
