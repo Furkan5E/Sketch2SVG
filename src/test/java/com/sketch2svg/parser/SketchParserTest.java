@@ -30,7 +30,7 @@ public class SketchParserTest {
     void testGracefulHandlingOfNonExistentFile() {
         Sketch sketch = new Sketch();
         // Should log an error message without throwing an uncaught crash
-        assertDoesNotThrow(() -> sketch.fromFile("non_existent_file.txt"));
+        assertFalse(assertDoesNotThrow(() -> sketch.fromFile("non_existent_file.txt")));
         assertEquals(0, sketch.getShapes().size());
     }
 

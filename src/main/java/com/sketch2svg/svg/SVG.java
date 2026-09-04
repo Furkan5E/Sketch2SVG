@@ -26,13 +26,16 @@ public class SVG extends Elem{
 		return "svg";
 	}
 
-    public void toFile(String filename){
+    // Returns false if the file could not be written
+    public boolean toFile(String filename){
 		try (FileWriter fw = new FileWriter(filename)) {
 			fw.write(toString());
 			System.out.println("wrote SVG file: " + filename);
+			return true;
 		}
 		catch (IOException error) {
-			System.out.println("could not write SVG file: " + filename);
+			System.err.println("could not write SVG file: " + filename + " (" + error.getMessage() + ")");
+			return false;
 		}
 	}
 

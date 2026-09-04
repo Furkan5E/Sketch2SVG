@@ -31,28 +31,29 @@ public class Sketch {
         shapes.clear();
     }
 
-    public void render(String dir, String name) {
+    public boolean render(String dir, String name) {
         clear();
         String txtFilePath = dir + name + ".txt";
         String svgFilePath = dir + name + ".svg";
-        
-        fromFile(txtFilePath);
-        exportSVG(svgFilePath);
+
+        return fromFile(txtFilePath) && exportSVG(svgFilePath);
     }
 
-    public void exportSVG(String svgFilePath) {
+    // Returns false if the file could not be written
+    public boolean exportSVG(String svgFilePath) {
         SVG svg = new SVG();
         for (Shape shape : shapes) {
             svg.addContent(shape);
         }
-        svg.toFile(svgFilePath);
+        return svg.toFile(svgFilePath);
     }
 
-    public void fromFile(String filename) {
+    // Returns false if the file could not be read; bad lines are reported but skipped
+    public boolean fromFile(String filename) {
         File file = new File(filename);
         if (!file.exists()) {
             System.err.println("Error: File not found: " + filename);
-            return;
+            return false;
         }
 
         int lineNum = 0;
@@ -86,7 +87,9 @@ public class Sketch {
             }
         } catch (FileNotFoundException e) {
             System.err.println("Could not open: " + filename);
+            return false;
         }
+        return true;
     }
 
     private Shape parseShape(String type, Scanner ls) {

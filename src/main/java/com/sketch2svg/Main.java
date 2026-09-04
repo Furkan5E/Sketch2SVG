@@ -10,6 +10,14 @@ import java.util.Locale;
 public class Main {
 
     public static void main(String[] args) {
+        int exitCode = run(args);
+        if (exitCode != 0) {
+            System.exit(exitCode);
+        }
+    }
+
+    // Returns the process exit code: 0 on success, 1 on any failure
+    static int run(String[] args) {
         String inputPath = null;
         String outputPath = null;
         String dirPath = null;
@@ -27,7 +35,7 @@ public class Main {
                 }
                 case "-h", "--help" -> {
                     printHelp();
-                    return;
+                    return 0;
                 }
                 default -> {
                     if (inputPath == null && !args[i].startsWith("-")) {
@@ -37,7 +45,7 @@ public class Main {
                     } else {
                         System.err.println("Unknown argument: " + args[i]);
                         printHelp();
-                        return;
+                        return 1;
                     }
                 }
             }
@@ -45,8 +53,7 @@ public class Main {
 
         //batch directory conversion
         if (dirPath != null) {
-            convertBatch(dirPath, outputPath);
-            return;
+            return convertBatch(dirPath, outputPath) ? 0 : 1;
         }
 
         //single file conversion fallback
@@ -60,40 +67,52 @@ public class Main {
             }
         }
 
-        convertSingleFile(inputPath, outputPath);
+        return convertSingleFile(inputPath, outputPath) ? 0 : 1;
     }
 
-    private static void convertSingleFile(String inputPath, String outputPath) {
+    private static boolean convertSingleFile(String inputPath, String outputPath) {
         System.out.println("Processing: " + inputPath);
         Sketch sketch = new Sketch();
-        sketch.fromFile(inputPath);
-        sketch.exportSVG(outputPath);
+        if (!sketch.fromFile(inputPath) || !sketch.exportSVG(outputPath)) {
+            System.err.println("Failed to convert: " + inputPath);
+            return false;
+        }
         System.out.println("Successfully generated: " + outputPath);
+        return true;
     }
 
-    private static void convertBatch(String inputDir, String outputDir) {
+    private static boolean convertBatch(String inputDir, String outputDir) {
         File folder = new File(inputDir);
         if (!folder.isDirectory()) {
             System.err.println("Error: Provided path is not a directory: " + inputDir);
-            return;
+            return false;
         }
 
         File[] files = folder.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".txt"));
         if (files == null || files.length == 0) {
             System.out.println("No .txt files found in directory: " + inputDir);
-            return;
+            return true;
         }
 
         String targetDir = outputDir != null ? outputDir : inputDir;
         new File(targetDir).mkdirs();
 
         System.out.printf("Batch converting %d file(s)...%n", files.length);
+        int failed = 0;
         for (File file : files) {
             String outName = file.getName().replaceAll("(?i)\\.txt$", "") + ".svg";
             Path outPath = Paths.get(targetDir, outName);
-            convertSingleFile(file.getPath(), outPath.toString());
+            if (!convertSingleFile(file.getPath(), outPath.toString())) {
+                failed++;
+            }
+        }
+
+        if (failed > 0) {
+            System.err.printf("Batch conversion finished with %d failure(s).%n", failed);
+            return false;
         }
         System.out.println("Batch conversion complete.");
+        return true;
     }
 
     private static void printHelp() {
