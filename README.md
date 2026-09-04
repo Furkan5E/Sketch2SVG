@@ -33,6 +33,8 @@ mvn clean package
 ### Basic Conversion
 ```bash
 java -cp target/classes com.sketch2svg.Main -i src/main/resources/sketch.txt -o output.svg
+# or, using the packaged jar
+java -jar target/Sketch2SVG.jar -i src/main/resources/sketch.txt -o output.svg
 ```
 
 ### Batch Directory Conversion
