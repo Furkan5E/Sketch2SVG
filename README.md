@@ -67,3 +67,10 @@ Options:
 ```text
 Colors are defined using 8-digit hexadecimal RGBA (e.g., ffdc7aff).
 ```
+
+### Rotation
+Any shape accepts an optional `rot=<degrees>` token (counter-clockwise, around the shape's centre) anywhere among its optional arguments:
+```text
+rect 40 20 0 0 rot=30 2 000000ff ffdc7aff
+text 0 -90 14 "Hello World" rot=-15
+```

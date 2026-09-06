@@ -13,6 +13,7 @@ public abstract class Shape extends Elem {
 
 	private Vec2 scale = new Vec2(1.f);
 	private Vec2 rotation = new Vec2(1.f, 0.f); // in complex form
+	private float rotationDeg = 0.f; // counter-clockwise, kept for shapes that emit an SVG transform
 	private Vec2 pos = new Vec2(0.f);
 
 	public Shape(){
@@ -115,7 +116,11 @@ public abstract class Shape extends Elem {
 		return this;
 	}
 	
+	public float getRotation(){
+		return rotationDeg;
+	}
 	public Shape setRotation(float deg){
+		rotationDeg = deg;
 		final float d2r = (float)(Math.PI / 180.);
 		rotation.x = (float)Math.cos(deg*d2r);
 		rotation.y = (float)Math.sin(deg*d2r);

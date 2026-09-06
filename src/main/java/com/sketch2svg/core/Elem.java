@@ -60,6 +60,8 @@ public abstract class Elem{
 		String tag = getTag();
 		String attribStr = "";
 		for(var a : attribs){
+			if(a.val == null) // null means "omit this attribute"
+				continue;
 			attribStr += " " + a.toString();
 		}
 

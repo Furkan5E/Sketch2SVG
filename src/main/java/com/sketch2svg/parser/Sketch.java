@@ -7,6 +7,7 @@ import com.sketch2svg.svg.SVG;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -73,7 +74,8 @@ public class Sketch {
                     }
 
                     String type = ls.next().toLowerCase(Locale.ROOT);
-                    Shape shape = parseShape(type, ls);
+                    boolean namedRotation = line.toLowerCase(Locale.ROOT).contains(" " + ROTATION_KEY);
+                    Shape shape = parseShape(type, ls, namedRotation);
 
                     if (shape != null) {
                         applyOptionalStyle(ls, shape);
@@ -92,7 +94,7 @@ public class Sketch {
         return true;
     }
 
-    private Shape parseShape(String type, Scanner ls) {
+    private Shape parseShape(String type, Scanner ls, boolean namedRotation) {
         return switch (type) {
             case "circle" -> {
                 float r = ls.nextFloat();
@@ -156,7 +158,8 @@ public class Sketch {
                 float width = ls.nextFloat();
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
-                float rot = ls.hasNextFloat() ? ls.nextFloat() : 0f;
+                // Legacy positional [rot]; skipped when rot= is used so the next number is the stroke width
+                float rot = !namedRotation && ls.hasNextFloat() ? ls.nextFloat() : 0f;
                 Arrow arrow = new Arrow(length, width, cx, cy);
                 arrow.setRotation(rot);
                 yield arrow;
@@ -181,6 +184,9 @@ public class Sketch {
         };
     }
 
+    // Optional "rot=<degrees>" token accepted by every shape (counter-clockwise)
+    private static final String ROTATION_KEY = "rot=";
+
     private static boolean isHexRGBA(String s) {
         return s.matches("(?i)[0-9a-f]{8}");
     }
@@ -192,7 +198,14 @@ public class Sketch {
         while (ls.hasNext()) {
             String tok = ls.next();
 
-            if (isHexRGBA(tok)) {
+            if (tok.toLowerCase(Locale.ROOT).startsWith(ROTATION_KEY)) {
+                // Named so it can sit anywhere among the optional style tokens
+                try {
+                    shape.setRotation(Float.parseFloat(tok.substring(ROTATION_KEY.length())));
+                } catch (NumberFormatException e) {
+                    throw new InputMismatchException("Invalid rotation: " + tok);
+                }
+            } else if (isHexRGBA(tok)) {
                 int rgba = (int) Long.parseLong(tok, 16);
                 hexes.add(rgba);
             } else {

@@ -10,6 +10,7 @@ public class Text extends Shape {
     private final Attrib attribX;
     private final Attrib attribY;
     private final Attrib attribFontSize;
+    private final Attrib attribTransform;
     private String textContent = "";
     private float fontSize = 16.0f;
 
@@ -23,6 +24,7 @@ public class Text extends Shape {
         attribFontSize = newAttrib("font-size");
         newAttrib("text-anchor", "middle");
         newAttrib("dominant-baseline", "middle");
+        attribTransform = newAttrib("transform");
 
         this.textContent = content;
         this.content = Xml.escape(content);
@@ -61,6 +63,9 @@ public class Text extends Shape {
         attribX.val = String.valueOf(p.x);
         attribY.val = String.valueOf(p.y);
         attribFontSize.val = String.valueOf(fontSize);
+        // Glyphs can't be rotated via vertices, so rotate around the anchor; SVG angles are clockwise
+        attribTransform.val = getRotation() == 0.f ? null
+                : "rotate(" + (-getRotation()) + " " + p.x + " " + p.y + ")";
         this.content = Xml.escape(textContent);
     }
 }
