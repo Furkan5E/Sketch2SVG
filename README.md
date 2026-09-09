@@ -65,7 +65,7 @@ Options:
 | Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]` |
 
 ```text
-Colors are defined using 8-digit hexadecimal RGBA (e.g., ffdc7aff).
+Colors are hexadecimal RGBA (e.g., ffdc7aff) or RGB (e.g., ffdc7a, fully opaque), optionally prefixed with '#'.
 ```
 
 ### Rotation

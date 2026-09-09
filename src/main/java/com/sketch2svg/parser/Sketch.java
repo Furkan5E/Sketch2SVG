@@ -2,6 +2,7 @@ package com.sketch2svg.parser;
 
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.shapes.*;
+import com.sketch2svg.svg.ColorInt;
 import com.sketch2svg.svg.SVG;
 
 import java.io.File;
@@ -187,10 +188,6 @@ public class Sketch {
     // Optional "rot=<degrees>" token accepted by every shape (counter-clockwise)
     private static final String ROTATION_KEY = "rot=";
 
-    private static boolean isHexRGBA(String s) {
-        return s.matches("(?i)[0-9a-f]{8}");
-    }
-
     private static void applyOptionalStyle(Scanner ls, Shape shape) {
         Float strokeW = null;
         ArrayList<Integer> hexes = new ArrayList<>();
@@ -205,9 +202,8 @@ public class Sketch {
                 } catch (NumberFormatException e) {
                     throw new InputMismatchException("Invalid rotation: " + tok);
                 }
-            } else if (isHexRGBA(tok)) {
-                int rgba = (int) Long.parseLong(tok, 16);
-                hexes.add(rgba);
+            } else if (ColorInt.isHex(tok)) {
+                hexes.add(ColorInt.parseHex(tok));
             } else {
                 try {
                     strokeW = Float.parseFloat(tok);

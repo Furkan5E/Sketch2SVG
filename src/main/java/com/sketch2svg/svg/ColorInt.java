@@ -52,6 +52,21 @@ public class ColorInt{
 		return (rgba & maskAlpha) == 0;
 	}
 
+	// Whether s is a hex color: RRGGBB or RRGGBBAA, optionally prefixed with '#'
+	public static boolean isHex(String s){
+		return s.matches("#?([0-9a-fA-F]{6}|[0-9a-fA-F]{8})");
+	}
+
+	// Parse RRGGBB (opaque) or RRGGBBAA, optionally prefixed with '#'
+	public static int parseHex(String s){
+		if(!isHex(s))
+			throw new IllegalArgumentException("Invalid hex color (expected RRGGBB or RRGGBBAA): " + s);
+		String hex = s.startsWith("#") ? s.substring(1) : s;
+		if(hex.length() == 6)
+			hex += "FF";
+		return (int) Long.parseLong(hex, 16);
+	}
+
 	public static String hexString(int rgba){
 		return "%08X".formatted(rgba);
 	}

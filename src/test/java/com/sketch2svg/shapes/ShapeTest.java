@@ -40,6 +40,18 @@ public class ShapeTest {
     }
 
     @Test
+    void testSixDigitHexIsOpaque() {
+        Circle circle = new Circle();
+        circle.fill("#FF0000");
+        circle.stroke("00ff00");
+
+        assertEquals((int) 0xFF0000FFL, circle.getFill());
+        assertEquals((int) 0x00FF00FFL, circle.getStroke());
+        assertThrows(IllegalArgumentException.class, () -> circle.fill("F00"));
+        assertThrows(IllegalArgumentException.class, () -> circle.fill("GG0000"));
+    }
+
+    @Test
     void testStarVertexCount() {
         Star star = new Star(5, 20.0f, 10.0f, 0.0f, 0.0f);
         // 5 points * 2 (inner + outer alternating) = 10 vertices

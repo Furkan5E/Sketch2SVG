@@ -104,6 +104,19 @@ public class SketchParserTest {
         assertEquals("circle", sketch.getShapes().get(0).getTag());
     }
 
+    @Test
+    void testScriptColorForms() throws IOException {
+        Sketch sketch = parse("""
+                circle 5 0 0 2 ff0000 #00ff0080
+                circle 5 0 0 2 #0000FF ffdc7aff
+                """);
+
+        assertEquals((int) 0xFF0000FFL, sketch.getShapes().get(0).getStroke());
+        assertEquals((int) 0x00FF0080L, sketch.getShapes().get(0).getFill());
+        assertEquals((int) 0x0000FFFFL, sketch.getShapes().get(1).getStroke());
+        assertEquals((int) 0xFFDC7AFFL, sketch.getShapes().get(1).getFill());
+    }
+
     private Sketch parse(String source) throws IOException {
         Path input = tempDir.resolve("sketch.txt");
         Files.writeString(input, source);
