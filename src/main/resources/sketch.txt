@@ -16,7 +16,7 @@ star 5 2 1 -75 72 0 00000000 ffd700ff
 star 5 2 1 80 80 0 00000000 ffd700ff
 
 # shooting star arrow
-arrow 26 6 55 78 -20 0 00000000 ffd700ff
+arrow 26 6 55 78 0 00000000 ffd700ff rot=-20
 
 # hills
 ngon 3 92 -10 -25 0 00000000 0f2a1bff

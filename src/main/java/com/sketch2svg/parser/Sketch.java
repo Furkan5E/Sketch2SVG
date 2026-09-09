@@ -75,11 +75,10 @@ public class Sketch {
                     }
 
                     String type = ls.next().toLowerCase(Locale.ROOT);
-                    boolean namedRotation = line.toLowerCase(Locale.ROOT).contains(" " + ROTATION_KEY);
-                    Shape shape = parseShape(type, ls, namedRotation);
+                    Shape shape = parseShape(type, ls);
 
                     if (shape != null) {
-                        applyOptionalStyle(ls, shape);
+                        applyOptionalStyle(ls, shape, lineNum);
                         shapes.add(shape);
                     } else {
                         System.err.printf("[Warning] Line %d: Unknown shape command '%s'%n", lineNum, type);
@@ -95,7 +94,7 @@ public class Sketch {
         return true;
     }
 
-    private Shape parseShape(String type, Scanner ls, boolean namedRotation) {
+    private Shape parseShape(String type, Scanner ls) {
         return switch (type) {
             case "circle" -> {
                 float r = ls.nextFloat();
@@ -159,11 +158,7 @@ public class Sketch {
                 float width = ls.nextFloat();
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
-                // Legacy positional [rot]; skipped when rot= is used so the next number is the stroke width
-                float rot = !namedRotation && ls.hasNextFloat() ? ls.nextFloat() : 0f;
-                Arrow arrow = new Arrow(length, width, cx, cy);
-                arrow.setRotation(rot);
-                yield arrow;
+                yield new Arrow(length, width, cx, cy);
             }
             case "text" -> {
                 float cx = ls.nextFloat();
@@ -188,9 +183,10 @@ public class Sketch {
     // Optional "rot=<degrees>" token accepted by every shape (counter-clockwise)
     private static final String ROTATION_KEY = "rot=";
 
-    private static void applyOptionalStyle(Scanner ls, Shape shape) {
-        Float strokeW = null;
+    private static void applyOptionalStyle(Scanner ls, Shape shape, int lineNum) {
+        ArrayList<Float> numbers = new ArrayList<>();
         ArrayList<Integer> hexes = new ArrayList<>();
+        boolean namedRotation = false;
 
         while (ls.hasNext()) {
             String tok = ls.next();
@@ -199,6 +195,7 @@ public class Sketch {
                 // Named so it can sit anywhere among the optional style tokens
                 try {
                     shape.setRotation(Float.parseFloat(tok.substring(ROTATION_KEY.length())));
+                    namedRotation = true;
                 } catch (NumberFormatException e) {
                     throw new InputMismatchException("Invalid rotation: " + tok);
                 }
@@ -206,15 +203,22 @@ public class Sketch {
                 hexes.add(ColorInt.parseHex(tok));
             } else {
                 try {
-                    strokeW = Float.parseFloat(tok);
+                    numbers.add(Float.parseFloat(tok));
                 } catch (NumberFormatException ignored) {
                     // Ignore unrecognized token
                 }
             }
         }
 
-        if (strokeW != null) {
-            shape.setStrokeWidth(strokeW);
+        // Legacy arrow form "arrow ... <rot> <strokeWidth>": a lone number is the stroke width like every other shape
+        if (shape instanceof Arrow && !namedRotation && numbers.size() >= 2) {
+            System.err.printf("[Warning] Line %d: Positional arrow rotation is deprecated, use rot=%s%n",
+                    lineNum, numbers.get(0));
+            shape.setRotation(numbers.remove(0));
+        }
+
+        if (!numbers.isEmpty()) {
+            shape.setStrokeWidth(numbers.get(numbers.size() - 1));
         }
         if (!hexes.isEmpty()) {
             shape.setStroke(hexes.get(0));

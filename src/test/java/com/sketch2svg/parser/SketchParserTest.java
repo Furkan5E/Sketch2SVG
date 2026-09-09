@@ -64,11 +64,12 @@ public class SketchParserTest {
         Sketch sketch = parse("""
                 rect 10 20 0 0 rot=90 2 ff0000ff
                 line 0 0 10 0 rot=90
-                arrow 20 6 0 0 45
+                arrow 20 6 0 0 45 3
                 arrow 20 6 0 0 2 ff0000ff rot=30
+                arrow 20 6 0 0 2 ff0000ff
                 """);
 
-        assertEquals(4, sketch.getShapes().size());
+        assertEquals(5, sketch.getShapes().size());
 
         // 10x20 rect rotated 90deg becomes 20 wide, 10 tall; style tokens still apply around it
         Shape rect = sketch.getShapes().get(0);
@@ -79,10 +80,14 @@ public class SketchParserTest {
         // Line pivots around its midpoint (5,0), not the origin
         assertBounds(svgPoints(sketch.getShapes().get(1)), 5, -5, 5, 5);
 
-        // Arrow's positional rotation still works, and rot= keeps the stroke width unambiguous
+        // Legacy "<rot> <strokeWidth>" arrow form still works
         assertEquals(45f, sketch.getShapes().get(2).getRotation());
+        assertEquals(3f, sketch.getShapes().get(2).getStrokeWidth());
         assertEquals(30f, sketch.getShapes().get(3).getRotation());
         assertEquals(2f, sketch.getShapes().get(3).getStrokeWidth());
+        // A lone number is the stroke width, not a rotation
+        assertEquals(0f, sketch.getShapes().get(4).getRotation());
+        assertEquals(2f, sketch.getShapes().get(4).getStrokeWidth());
     }
 
     @Test

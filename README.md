@@ -59,7 +59,7 @@ Options:
 | Star | `star <points> <outerR> <innerR> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polygon | `ngon <sides> <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Trapezoid | `trapezoid <topW> <botW> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
-| Arrow | `arrow <length> <width> <cx> <cy> [rot] [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Arrow | `arrow <length> <width> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Line | `line <x1> <y1> <x2> <y2> [strokeWidth] [strokeRGBA]` |
 | Arc | `arc <radius> <angle> <length> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]` |
