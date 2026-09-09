@@ -5,7 +5,10 @@ import com.sketch2svg.shapes.Circle;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -120,6 +123,36 @@ public class SketchParserTest {
         assertEquals((int) 0x00FF0080L, sketch.getShapes().get(0).getFill());
         assertEquals((int) 0x0000FFFFL, sketch.getShapes().get(1).getStroke());
         assertEquals((int) 0xFFDC7AFFL, sketch.getShapes().get(1).getFill());
+    }
+
+    @Test
+    void testUnusedStyleArgumentsAreWarned() throws IOException {
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        Sketch sketch;
+        try {
+            System.setErr(new PrintStream(err, true, StandardCharsets.UTF_8));
+            sketch = parse("""
+                    circle 5 0 0 2 ff00 000000ff
+                    circle 5 0 0 2 3 NaN
+                    circle 5 0 0 000000ff ff0000ff 00ff00ff
+                    circle 5 0 0 4 000000ff # the moon
+                    """);
+        } finally {
+            System.setErr(originalErr);
+        }
+        String log = err.toString(StandardCharsets.UTF_8);
+
+        assertTrue(log.contains("Line 1: Ignored unrecognized argument 'ff00'"), log);
+        assertTrue(log.contains("Line 2: Ignored unrecognized argument 'NaN'"), log);
+        assertTrue(log.contains("Line 2: Ignored extra numbers [3.0]"), log);
+        assertTrue(log.contains("Line 3: Ignored 1 extra color(s)"), log);
+        assertFalse(log.contains("Line 4"), log);
+
+        // Shapes are still drawn; the first stroke width wins
+        assertEquals(4, sketch.getShapes().size());
+        assertEquals(2f, sketch.getShapes().get(1).getStrokeWidth());
+        assertEquals(4f, sketch.getShapes().get(3).getStrokeWidth());
     }
 
     private Sketch parse(String source) throws IOException {
