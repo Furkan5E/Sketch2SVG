@@ -11,6 +11,7 @@ public class Arc extends Shape {
     private Attrib attribData;
     private float angle = 0.f;
     private float length = 180.f;
+    private float radius = 1.f;
 
     public Arc() {
         this(1.f, 0.f, 180.f, 0.f, 0.f);
@@ -24,7 +25,7 @@ public class Arc extends Shape {
     }
 
     public Arc radius(float r) {
-        setScale(r);
+        this.radius = r;
         return this;
     }
 
@@ -57,15 +58,15 @@ public class Arc extends Shape {
         var angle2 = angle + length * 0.5f;
         var a1 = angle1 * (float) Math.PI / 180;
         var a2 = angle2 * (float) Math.PI / 180;
-        var p1 = new Vec2((float) Math.cos(a1), (float) Math.sin(a1));
-        var p2 = new Vec2((float) Math.cos(a2), (float) Math.sin(a2));
+        var p1 = new Vec2((float) Math.cos(a1), (float) Math.sin(a1)).mul(radius);
+        var p2 = new Vec2((float) Math.cos(a2), (float) Math.sin(a2)).mul(radius);
 
         transform(p1);
         transform(p2);
         p1.negY();
         p2.negY();
 
-        float r = getScale().x;
+        float r = radius * getScale().x;
         int largeArcFlag = Math.abs(length) > 180.f ? 1 : 0;
         // After the y flip, counter-clockwise is SVG's negative-angle direction (sweep 0)
         int sweepFlag = length > 0.f ? 0 : 1;

@@ -1,31 +1,41 @@
 package com.sketch2svg.shapes;
 
 public class Rect extends LineStrip {
+
+	private float w = 1.f;
+	private float h = 1.f;
+
 	public Rect(){
 		super();
 		closed = true;
 		setNumVertices(4);
-
-		// Unit rectangle centered at origin
-		setVertex(0, -0.5f, -0.5f);
-		setVertex(1,  0.5f, -0.5f);
-		setVertex(2,  0.5f,  0.5f);
-		setVertex(3, -0.5f,  0.5f);
+		rebuildVertices(); // Unit rectangle centered at origin
 	}
 
 	public Rect(float w, float h, float cx, float cy){
 		this();
-		setScale(w, h);
+		size(w, h);
 		setPos(cx, cy);
 	}
 
 	public Rect size(float w, float h) {
-        setScale(w, h);
+        this.w = w;
+        this.h = h;
+        rebuildVertices();
         return this;
     }
 
     public Rect size(float s) {
-        setScale(s, s);
-        return this;
+        return size(s, s);
+    }
+
+    // Size is baked into the vertices so scale() multiplies it instead of replacing it
+    private void rebuildVertices() {
+        float hw = w * 0.5f;
+        float hh = h * 0.5f;
+        setVertex(0, -hw, -hh);
+        setVertex(1,  hw, -hh);
+        setVertex(2,  hw,  hh);
+        setVertex(3, -hw,  hh);
     }
 }

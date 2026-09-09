@@ -3,6 +3,7 @@ package com.sketch2svg.shapes;
 public class RegPolygon extends LineStrip {
 
     private int sides = 3;
+    private float radius = 1.f;
 
     public RegPolygon() {
         this(3, 1.f, 0.f, 0.f);
@@ -12,8 +13,8 @@ public class RegPolygon extends LineStrip {
         super();
         closed = true;
         this.sides = Math.max(3, sides);
+        this.radius = radius;
         rebuildVertices();
-        setScale(radius);
         setPos(cx, cy);
     }
 
@@ -24,9 +25,12 @@ public class RegPolygon extends LineStrip {
     }
 
     public RegPolygon radius(float r) {
-        setScale(r);
+        this.radius = r;
+        rebuildVertices();
         return this;
     }
+
+    // Radius is baked into the vertices so scale() multiplies it instead of replacing it
 
     private void rebuildVertices() {
         setNumVertices(sides);
@@ -35,7 +39,7 @@ public class RegPolygon extends LineStrip {
 
         for (int i = 0; i < sides; i++) {
             double t = twoPi * i / sides + phase;
-            setVertex(i, (float) Math.cos(t), (float) Math.sin(t));
+            setVertex(i, (float) Math.cos(t) * radius, (float) Math.sin(t) * radius);
         }
     }
 }

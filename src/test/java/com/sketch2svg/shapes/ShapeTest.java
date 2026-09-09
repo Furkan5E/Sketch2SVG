@@ -74,6 +74,37 @@ public class ShapeTest {
         }
     }
 
+    @Test
+    void testScaleMultipliesSize() {
+        assertTrue(new Circle(10.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("r=\"20.0\""));
+
+        // Rect 100x50 scaled by 2 spans x in [-100, 100] and y in [-50, 50]
+        float[] rect = pointExtents(new Rect(100.0f, 50.0f, 0.0f, 0.0f).scale(2.0f).toString());
+        assertArrayEquals(new float[]{100.0f, 50.0f}, rect, 1e-4f);
+
+        float[] square = pointExtents(new Square(10.0f, 0.0f, 0.0f).scale(3.0f).toString());
+        assertArrayEquals(new float[]{15.0f, 15.0f}, square, 1e-4f);
+
+        // Vertex-up triangle: top vertex at radius * scale
+        float[] tri = pointExtents(new RegPolygon(3, 10.0f, 0.0f, 0.0f).scale(2.0f).toString());
+        assertEquals(20.0f, tri[1], 1e-4f);
+
+        assertTrue(new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("A 20.000000 20.000000"));
+    }
+
+    // Largest |x| and |y| among a polygon's points
+    private static float[] pointExtents(String svg) {
+        Matcher m = Pattern.compile("points=\"([^\"]*)\"").matcher(svg);
+        assertTrue(m.find(), svg);
+        float mx = 0, my = 0;
+        for (String pair : m.group(1).trim().split(" ")) {
+            String[] xy = pair.split(",");
+            mx = Math.max(mx, Math.abs(Float.parseFloat(xy[0])));
+            my = Math.max(my, Math.abs(Float.parseFloat(xy[1])));
+        }
+        return new float[]{mx, my};
+    }
+
     // Decodes "M x1 y1 A r r 0 large sweep x2 y2" using the SVG spec's centre parameterisation
     // (SVG 1.1 F.6.5) and returns the arc's midpoint in +y-up coordinates
     private static double[] arcMidpoint(String svg) {

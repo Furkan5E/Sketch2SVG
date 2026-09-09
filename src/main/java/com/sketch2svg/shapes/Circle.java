@@ -8,6 +8,7 @@ public class Circle extends Shape{
 	private Attrib attribX;
 	private Attrib attribY;
 	private Attrib attribR;
+	private float radius = 1.f;
 
 	public Circle(){
 		// Create attributes via Shape.newAttrib() and assign to members above. For example, here is the first one:
@@ -18,13 +19,17 @@ public class Circle extends Shape{
 
     public Circle(float r, float x, float y){
 		this();
-		setScale(r);
+		radius(r);
 		setPos(x,y);
 	}
 
     public Circle radius(float r) {
-        setScale(r);
+        this.radius = r;
         return this;
+    }
+
+    public float getRadius() {
+        return radius;
     }
 
 	@Override
@@ -39,6 +44,6 @@ public class Circle extends Shape{
 		c.negY(); //flip y for svg
 		attribX.val = "" + c.x;
 		attribY.val = "" + c.y;
-		attribR.val = "" + getScale().x;
+		attribR.val = "" + radius * getScale().x;
 	}
 }

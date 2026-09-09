@@ -52,7 +52,7 @@ public class SketchParserTest {
 
             assertEquals(2, sketch.getShapes().size());
             Circle circle = (Circle) sketch.getShapes().get(0);
-            assertEquals(2.5f, circle.getScale().x);
+            assertEquals(2.5f, circle.getRadius());
             assertFalse(sketch.getShapes().get(1).toString().contains(","));
         } finally {
             Locale.setDefault(original);
