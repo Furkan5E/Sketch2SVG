@@ -52,8 +52,9 @@ public class Arc extends Shape {
     @Override
     protected void updateAttribs() {
         super.updateAttribs();
-        var angle1 = -(angle - length * 0.5f);
-        var angle2 = -(angle + length * 0.5f);
+        // Angles are counter-clockwise (+y up) like the rest of the engine; the arc runs from angle1 to angle2
+        var angle1 = angle - length * 0.5f;
+        var angle2 = angle + length * 0.5f;
         var a1 = angle1 * (float) Math.PI / 180;
         var a2 = angle2 * (float) Math.PI / 180;
         var p1 = new Vec2((float) Math.cos(a1), (float) Math.sin(a1));
@@ -66,7 +67,8 @@ public class Arc extends Shape {
 
         float r = getScale().x;
         int largeArcFlag = Math.abs(length) > 180.f ? 1 : 0;
-        int sweepFlag = length > 0.f ? 1 : 0;
+        // After the y flip, counter-clockwise is SVG's negative-angle direction (sweep 0)
+        int sweepFlag = length > 0.f ? 0 : 1;
 
         attribData.val = String.format(Locale.ROOT, "M %f %f A %f %f 0 %d %d %f %f",
                 p1.x, p1.y, r, r, largeArcFlag, sweepFlag, p2.x, p2.y);
