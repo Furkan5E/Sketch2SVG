@@ -70,9 +70,19 @@ Options:
 Colors are hexadecimal RGBA (e.g., ffdc7aff) or RGB (e.g., ffdc7a, fully opaque), optionally prefixed with '#'.
 ```
 
-### Rotation
-Any shape accepts an optional `rot=<degrees>` token (counter-clockwise, around the shape's centre) anywhere among its optional arguments:
+### Named arguments
+Any shape also accepts named arguments, in any order, after its required parameters. They override the positional `[strokeWidth] [strokeRGBA] [fillRGBA]`.
+
+| Argument | Meaning |
+|---|---|
+| `rot=<deg>` | Rotate counter-clockwise around the shape's centre |
+| `stroke=<color>` / `stroke=<width>` | Stroke colour, or stroke width when given a number |
+| `stroke-width=<n>` / `sw=<n>` | Stroke width |
+| `fill=<color>` | Fill colour |
+| `at=<x,y>` | Move the shape's centre |
+| `scale=<s>` / `scale=<sx,sy>` | Multiply the shape's size |
+
 ```text
-rect 40 20 0 0 rot=30 2 000000ff ffdc7aff
+rect 40 20 0 0 rot=30 stroke=2 fill=ffdc7a
 text 0 -90 14 "Hello World" rot=-15
 ```

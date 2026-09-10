@@ -3,7 +3,6 @@ package com.sketch2svg.parser;
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.math.Vec2;
 import com.sketch2svg.shapes.*;
-import com.sketch2svg.svg.ColorInt;
 import com.sketch2svg.svg.SVG;
 
 import java.io.File;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class Sketch {
     // Store all parsed or programmatically added shapes
@@ -80,7 +78,7 @@ public class Sketch {
                     Shape shape = parseShape(type, ls);
 
                     if (shape != null) {
-                        applyOptionalStyle(ls, shape, lineNum);
+                        StyleArgs.parse(ls, shape instanceof Arrow, "Line " + lineNum).applyTo(shape);
                         shapes.add(shape);
                     } else {
                         System.err.printf("[Warning] Line %d: Unknown shape command '%s'%n", lineNum, type);
@@ -166,7 +164,7 @@ public class Sketch {
             case "polygon", "polyline" -> {
                 boolean closed = type.equals("polygon");
                 List<Vec2> points = new ArrayList<>();
-                while (ls.hasNext(POINT)) {
+                while (ls.hasNext(StyleArgs.POINT)) {
                     String[] xy = ls.next().split(",");
                     points.add(new Vec2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
                 }
@@ -193,68 +191,5 @@ public class Sketch {
             }
             default -> null;
         };
-    }
-
-    // Optional "rot=<degrees>" token accepted by every shape (counter-clockwise)
-    private static final String ROTATION_KEY = "rot=";
-
-    // Plain decimal numbers only (Float.parseFloat alone would also accept "NaN", "Infinity", "1f", hex floats)
-    private static final Pattern NUMBER = Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?");
-
-    // "x,y" point used by polygon/polyline
-    private static final Pattern POINT = Pattern.compile(NUMBER.pattern() + "," + NUMBER.pattern());
-
-    private static void applyOptionalStyle(Scanner ls, Shape shape, int lineNum) {
-        ArrayList<Float> numbers = new ArrayList<>();
-        ArrayList<Integer> hexes = new ArrayList<>();
-        boolean namedRotation = false;
-
-        while (ls.hasNext()) {
-            String tok = ls.next();
-
-            if (tok.toLowerCase(Locale.ROOT).startsWith(ROTATION_KEY)) {
-                // Named so it can sit anywhere among the optional style tokens
-                try {
-                    shape.setRotation(Float.parseFloat(tok.substring(ROTATION_KEY.length())));
-                    namedRotation = true;
-                } catch (NumberFormatException e) {
-                    throw new InputMismatchException("Invalid rotation: " + tok);
-                }
-            } else if (ColorInt.isHex(tok)) {
-                hexes.add(ColorInt.parseHex(tok));
-            } else if (NUMBER.matcher(tok).matches()) {
-                numbers.add(Float.parseFloat(tok));
-            } else if (tok.startsWith("#")) {
-                break; // trailing comment
-            } else {
-                System.err.printf("[Warning] Line %d: Ignored unrecognized argument '%s'%n", lineNum, tok);
-            }
-        }
-
-        // Legacy arrow form "arrow ... <rot> <strokeWidth>": a lone number is the stroke width like every other shape
-        if (shape instanceof Arrow && !namedRotation && numbers.size() >= 2) {
-            System.err.printf("[Warning] Line %d: Positional arrow rotation is deprecated, use rot=%s%n",
-                    lineNum, numbers.get(0));
-            shape.setRotation(numbers.remove(0));
-        }
-
-        if (numbers.size() > 1) {
-            System.err.printf("[Warning] Line %d: Ignored extra numbers %s (only one stroke width is allowed)%n",
-                    lineNum, numbers.subList(1, numbers.size()));
-        }
-        if (hexes.size() > 2) {
-            System.err.printf("[Warning] Line %d: Ignored %d extra color(s) (expected stroke then fill)%n",
-                    lineNum, hexes.size() - 2);
-        }
-
-        if (!numbers.isEmpty()) {
-            shape.setStrokeWidth(numbers.get(0));
-        }
-        if (!hexes.isEmpty()) {
-            shape.setStroke(hexes.get(0));
-        }
-        if (hexes.size() >= 2) {
-            shape.setFill(hexes.get(1));
-        }
     }
 }

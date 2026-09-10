@@ -177,6 +177,33 @@ public class SketchParserTest {
         assertBounds(svgPoints(open), 0, -5, 0, 5);
     }
 
+    @Test
+    void testNamedStyleArguments() throws IOException {
+        Sketch sketch = parse("""
+                circle 5 0 0 fill=ffdc7a stroke=000000ff stroke=3
+                rect 10 20 0 0 1 ff0000ff 00ff00ff sw=4 fill=0000ffff
+                square 10 0 0 at=5,-5 scale=2,1
+                circle 5 0 0 fill=nope
+                circle 5 0 0 colour=ff0000ff
+                """);
+
+        assertEquals(4, sketch.getShapes().size());
+
+        Shape circle = sketch.getShapes().get(0);
+        assertEquals((int) 0xFFDC7AFFL, circle.getFill());
+        assertEquals((int) 0x000000FFL, circle.getStroke());
+        assertEquals(3f, circle.getStrokeWidth());
+
+        // Named arguments override positional ones
+        Shape rect = sketch.getShapes().get(1);
+        assertEquals(4f, rect.getStrokeWidth());
+        assertEquals((int) 0xFF0000FFL, rect.getStroke());
+        assertEquals((int) 0x0000FFFFL, rect.getFill());
+
+        // at= moves the centre, scale= multiplies the size: 20x10 around (5,-5)
+        assertBounds(svgPoints(sketch.getShapes().get(2)), -5, -10, 15, 0);
+    }
+
     private Sketch parse(String source) throws IOException {
         Path input = tempDir.resolve("sketch.txt");
         Files.writeString(input, source);
