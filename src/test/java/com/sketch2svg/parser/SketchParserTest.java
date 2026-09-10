@@ -155,6 +155,28 @@ public class SketchParserTest {
         assertEquals(4f, sketch.getShapes().get(3).getStrokeWidth());
     }
 
+    @Test
+    void testPolygonAndPolylineCommands() throws IOException {
+        Sketch sketch = parse("""
+                polygon 0,0 10,0 10,20 2 ff0000ff 00ff00ff
+                polyline -5,0 5,0 rot=90
+                polygon 0,0 10,0
+                """);
+
+        assertEquals(2, sketch.getShapes().size());
+
+        Shape tri = sketch.getShapes().get(0);
+        assertEquals("polygon", tri.getTag());
+        assertEquals(2f, tri.getStrokeWidth());
+        assertEquals((int) 0x00FF00FFL, tri.getFill());
+        assertBounds(svgPoints(tri), 0, 0, 10, 20);
+
+        // Open polyline rotates around its own centre
+        Shape open = sketch.getShapes().get(1);
+        assertEquals("polyline", open.getTag());
+        assertBounds(svgPoints(open), 0, -5, 0, 5);
+    }
+
     private Sketch parse(String source) throws IOException {
         Path input = tempDir.resolve("sketch.txt");
         Files.writeString(input, source);

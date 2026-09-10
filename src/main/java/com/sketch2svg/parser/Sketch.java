@@ -1,6 +1,7 @@
 package com.sketch2svg.parser;
 
 import com.sketch2svg.core.Shape;
+import com.sketch2svg.math.Vec2;
 import com.sketch2svg.shapes.*;
 import com.sketch2svg.svg.ColorInt;
 import com.sketch2svg.svg.SVG;
@@ -84,8 +85,9 @@ public class Sketch {
                     } else {
                         System.err.printf("[Warning] Line %d: Unknown shape command '%s'%n", lineNum, type);
                     }
-				} catch (NoSuchElementException e) {		
-                    System.err.printf("[Syntax Error] Line %d: Invalid or missing parameters in '%s'%n", lineNum, line);
+                } catch (NoSuchElementException e) {
+                    String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
+                    System.err.printf("[Syntax Error] Line %d: Invalid or missing parameters in '%s'%s%n", lineNum, line, reason);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -161,6 +163,18 @@ public class Sketch {
                 float cy = ls.nextFloat();
                 yield new Arrow(length, width, cx, cy);
             }
+            case "polygon", "polyline" -> {
+                boolean closed = type.equals("polygon");
+                List<Vec2> points = new ArrayList<>();
+                while (ls.hasNext(POINT)) {
+                    String[] xy = ls.next().split(",");
+                    points.add(new Vec2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
+                }
+                if (points.size() < (closed ? 3 : 2)) {
+                    throw new InputMismatchException(type + " needs at least " + (closed ? 3 : 2) + " x,y points");
+                }
+                yield new Polygon(points, closed);
+            }
             case "text" -> {
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
@@ -186,6 +200,9 @@ public class Sketch {
 
     // Plain decimal numbers only (Float.parseFloat alone would also accept "NaN", "Infinity", "1f", hex floats)
     private static final Pattern NUMBER = Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?");
+
+    // "x,y" point used by polygon/polyline
+    private static final Pattern POINT = Pattern.compile(NUMBER.pattern() + "," + NUMBER.pattern());
 
     private static void applyOptionalStyle(Scanner ls, Shape shape, int lineNum) {
         ArrayList<Float> numbers = new ArrayList<>();

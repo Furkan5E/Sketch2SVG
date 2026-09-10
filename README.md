@@ -63,6 +63,8 @@ Options:
 | Line | `line <x1> <y1> <x2> <y2> [strokeWidth] [strokeRGBA]` |
 | Arc | `arc <radius> <angle> <length> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Polygon (free) | `polygon <x,y> <x,y> <x,y> ... [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeRGBA]` |
 
 ```text
 Colors are hexadecimal RGBA (e.g., ffdc7aff) or RGB (e.g., ffdc7a, fully opaque), optionally prefixed with '#'.
