@@ -2,7 +2,9 @@ package com.sketch2svg.parser;
 
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.math.Vec2;
+import com.sketch2svg.math.ViewBox;
 import com.sketch2svg.shapes.*;
+import com.sketch2svg.svg.ColorInt;
 import com.sketch2svg.svg.SVG;
 
 import java.io.File;
@@ -17,6 +19,7 @@ import java.util.Scanner;
 public class Sketch {
     // Store all parsed or programmatically added shapes
     private final List<Shape> shapes = new ArrayList<>();
+    private Integer background; // RGBA fill for the whole canvas, or null for none
 
     public Sketch add(Shape shape) {
         if (shape != null) {
@@ -31,6 +34,16 @@ public class Sketch {
 
     public void clear() {
         shapes.clear();
+        background = null;
+    }
+
+    public Integer getBackground() {
+        return background;
+    }
+
+    public Sketch setBackground(Integer rgba) {
+        this.background = rgba;
+        return this;
     }
 
     public boolean render(String dir, String name) {
@@ -44,6 +57,12 @@ public class Sketch {
     // Returns false if the file could not be written
     public boolean exportSVG(String svgFilePath) {
         SVG svg = new SVG();
+        if (background != null) {
+            // Cover the whole viewBox; convert its SVG-space centre back to +y-up sketch space
+            ViewBox vb = svg.getViewBox();
+            svg.addContent(new Rect(vb.w, vb.h, vb.x + vb.w * 0.5f, -(vb.y + vb.h * 0.5f))
+                    .setFill(background).setStrokeWidth(0.f));
+        }
         for (Shape shape : shapes) {
             svg.addContent(shape);
         }
@@ -75,6 +94,14 @@ public class Sketch {
                     }
 
                     String type = ls.next().toLowerCase(Locale.ROOT);
+                    if (type.equals("background")) {
+                        String color = ls.next();
+                        if (!ColorInt.isColor(color)) {
+                            throw new InputMismatchException("Invalid color: " + color);
+                        }
+                        background = ColorInt.parseColor(color);
+                        continue;
+                    }
                     Shape shape = parseShape(type, ls);
 
                     if (shape != null) {

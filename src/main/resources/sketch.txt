@@ -1,6 +1,6 @@
 # Night sky and house on a hill
 # sky
-rect 200 200 0 0 0 00000000 0b1020ff
+background 0b1020ff
 
 # moon
 circle 18 -55 55 0 00000000 e6e6ffff

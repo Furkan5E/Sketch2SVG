@@ -65,6 +65,7 @@ Options:
 | Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polygon (free) | `polygon <x,y> <x,y> <x,y> ... [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeRGBA]` |
+| Background | `background <color>` (fills the whole canvas, always drawn first) |
 
 ```text
 Colors can be:

@@ -224,6 +224,25 @@ public class SketchParserTest {
         assertEquals(100f, sketch.getShapes().get(3).getStrokeWidth());
     }
 
+    @Test
+    void testBackgroundCoversCanvasBehindShapes() throws IOException {
+        Sketch sketch = parse("""
+                circle 5 0 0
+                background #0b1020
+                """);
+        assertEquals((int) 0x0B1020FFL, sketch.getBackground());
+        assertEquals(1, sketch.getShapes().size());
+
+        Path output = tempDir.resolve("out.svg");
+        assertTrue(sketch.exportSVG(output.toString()));
+        String svg = Files.readString(output);
+
+        // Drawn first, covering the default -100..100 viewBox, even though it came after the circle
+        int bg = svg.indexOf("fill:#0B1020FF");
+        assertTrue(bg > 0 && bg < svg.indexOf("<circle"), svg);
+        assertTrue(svg.contains("points=\"-100.0,100.0 100.0,100.0 100.0,-100.0 -100.0,-100.0 \""), svg);
+    }
+
     private Sketch parse(String source) throws IOException {
         Path input = tempDir.resolve("sketch.txt");
         Files.writeString(input, source);

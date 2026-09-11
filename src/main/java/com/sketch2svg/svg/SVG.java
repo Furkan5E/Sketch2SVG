@@ -26,6 +26,10 @@ public class SVG extends Elem{
 		return "svg";
 	}
 
+    public ViewBox getViewBox(){
+		return viewBox;
+	}
+
     // Returns false if the file could not be written
     public boolean toFile(String filename){
 		try (FileWriter fw = new FileWriter(filename)) {
