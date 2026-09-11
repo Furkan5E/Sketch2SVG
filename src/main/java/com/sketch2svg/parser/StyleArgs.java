@@ -42,8 +42,8 @@ final class StyleArgs {
 
             if (eq > 0) {
                 args.applyNamed(tok.substring(0, eq).toLowerCase(Locale.ROOT), tok.substring(eq + 1), tok, where);
-            } else if (ColorInt.isHex(tok)) {
-                colors.add(ColorInt.parseHex(tok));
+            } else if (ColorInt.isColor(tok)) {
+                colors.add(ColorInt.parseColor(tok));
             } else if (NUMBER.matcher(tok).matches()) {
                 numbers.add(Float.parseFloat(tok));
             } else if (tok.startsWith("#")) {
@@ -77,7 +77,7 @@ final class StyleArgs {
             case "fill" -> fill = color(value, tok);
             case "stroke" -> {
                 // stroke=<color> sets the colour, stroke=<number> the width
-                if (ColorInt.isHex(value)) stroke = ColorInt.parseHex(value);
+                if (ColorInt.isColor(value)) stroke = ColorInt.parseColor(value);
                 else strokeWidth = number(value, tok);
             }
             case "stroke-width", "sw" -> strokeWidth = number(value, tok);
@@ -115,9 +115,9 @@ final class StyleArgs {
     }
 
     private static int color(String value, String tok) {
-        if (!ColorInt.isHex(value))
+        if (!ColorInt.isColor(value))
             throw new InputMismatchException("Invalid color in " + tok);
-        return ColorInt.parseHex(value);
+        return ColorInt.parseColor(value);
     }
 
     private static float[] pair(String value, String tok) {

@@ -44,7 +44,7 @@ public abstract class Shape extends Elem {
     }
 
     public Shape fill(String hexColor) {
-        return setFill(ColorInt.parseHex(hexColor));
+        return setFill(ColorInt.parseColor(hexColor));
     }
 
     public Shape stroke(int color) {
@@ -52,7 +52,7 @@ public abstract class Shape extends Elem {
     }
 
     public Shape stroke(String hexColor) {
-        return setStroke(ColorInt.parseHex(hexColor));
+        return setStroke(ColorInt.parseColor(hexColor));
     }
 
     public Shape strokeWidth(float width) {

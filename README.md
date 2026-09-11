@@ -67,7 +67,12 @@ Options:
 | Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeRGBA]` |
 
 ```text
-Colors are hexadecimal RGBA (e.g., ffdc7aff) or RGB (e.g., ffdc7a, fully opaque), optionally prefixed with '#'.
+Colors can be:
+  RRGGBBAA / RRGGBB    hex, optionally prefixed with '#' (e.g. ffdc7aff, #ffdc7a)
+  #RGB / #RGBA         shorthand, '#' required (e.g. #fd7, #fd78)
+  a name               black, white, gray, silver, red, maroon, orange, gold, yellow, olive,
+                       lime, green, teal, cyan, blue, navy, purple, magenta, pink, brown
+  none / transparent   no paint
 ```
 
 ### Named arguments

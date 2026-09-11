@@ -204,6 +204,26 @@ public class SketchParserTest {
         assertBounds(svgPoints(sketch.getShapes().get(2)), -5, -10, 15, 0);
     }
 
+    @Test
+    void testShorthandAndNamedColors() throws IOException {
+        Sketch sketch = parse("""
+                circle 5 0 0 1 #f00 #0f08
+                circle 5 0 0 fill=Gold stroke=none
+                rect 10 10 0 0 2 black white
+                circle 5 0 0 100 000
+                """);
+
+        assertEquals((int) 0xFF0000FFL, sketch.getShapes().get(0).getStroke());
+        assertEquals((int) 0x00FF0088L, sketch.getShapes().get(0).getFill());
+        assertEquals((int) 0xFFD700FFL, sketch.getShapes().get(1).getFill());
+        assertEquals(0, sketch.getShapes().get(1).getStroke());
+        assertFalse(sketch.getShapes().get(1).toString().contains("stroke:"));
+        assertEquals((int) 0x000000FFL, sketch.getShapes().get(2).getStroke());
+        assertEquals((int) 0xFFFFFFFFL, sketch.getShapes().get(2).getFill());
+        // Without '#', short digit runs stay numbers
+        assertEquals(100f, sketch.getShapes().get(3).getStrokeWidth());
+    }
+
     private Sketch parse(String source) throws IOException {
         Path input = tempDir.resolve("sketch.txt");
         Files.writeString(input, source);
