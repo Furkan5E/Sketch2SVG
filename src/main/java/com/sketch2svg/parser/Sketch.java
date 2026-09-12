@@ -7,9 +7,12 @@ import com.sketch2svg.shapes.*;
 import com.sketch2svg.svg.ColorInt;
 import com.sketch2svg.svg.SVG;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
@@ -71,55 +74,113 @@ public class Sketch {
 
     // Returns false if the file could not be read; bad lines are reported but skipped
     public boolean fromFile(String filename) {
-        File file = new File(filename);
-        if (!file.exists()) {
+        Path path = Path.of(filename);
+        if (!Files.isRegularFile(path)) {
             System.err.println("Error: File not found: " + filename);
             return false;
         }
 
-        int lineNum = 0;
-        try (Scanner sc = new Scanner(file)) {
-            while (sc.hasNextLine()) {
-                lineNum++;
-                String line = sc.nextLine().trim();
-
-                // Ignore blanks and comments
-                if (line.isEmpty() || line.startsWith("#")) {
-                    continue;
-                }
-
-                try (Scanner ls = new Scanner(line).useLocale(Locale.ROOT)) {
-                    if (!ls.hasNext()) {
-                        continue;
-                    }
-
-                    String type = ls.next().toLowerCase(Locale.ROOT);
-                    if (type.equals("background")) {
-                        String color = ls.next();
-                        if (!ColorInt.isColor(color)) {
-                            throw new InputMismatchException("Invalid color: " + color);
-                        }
-                        background = ColorInt.parseColor(color);
-                        continue;
-                    }
-                    Shape shape = parseShape(type, ls);
-
-                    if (shape != null) {
-                        StyleArgs.parse(ls, shape instanceof Arrow, "Line " + lineNum).applyTo(shape);
-                        shapes.add(shape);
-                    } else {
-                        System.err.printf("[Warning] Line %d: Unknown shape command '%s'%n", lineNum, type);
-                    }
-                } catch (NoSuchElementException e) {
-                    String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
-                    System.err.printf("[Syntax Error] Line %d: Invalid or missing parameters in '%s'%s%n", lineNum, line, reason);
-                }
-            }
-        } catch (FileNotFoundException e) {
+        List<SourceLine> lines = new ArrayList<>();
+        try {
+            load(path, null, new ArrayDeque<>(), lines);
+        } catch (IOException e) {
             System.err.println("Could not open: " + filename);
             return false;
         }
+
+        for (SourceLine line : lines) {
+            executeLine(line);
+        }
         return true;
+    }
+
+    // Reads a script into its meaningful lines, inlining "include <path>" (relative to the including file)
+    private static void load(Path path, String label, Deque<Path> including, List<SourceLine> out) throws IOException {
+        List<String> raw = Files.readAllLines(path);
+        including.push(path.toRealPath());
+
+        for (int i = 0; i < raw.size(); i++) {
+            String text = raw.get(i).trim();
+            if (text.isEmpty() || text.startsWith("#")) {
+                continue; // blanks and comments
+            }
+            SourceLine line = new SourceLine(label, i + 1, text);
+
+            String[] parts = text.split("\\s+", 2);
+            if (!parts[0].equalsIgnoreCase("include")) {
+                out.add(line);
+                continue;
+            }
+
+            String target = parts.length > 1 ? includeTarget(parts[1], line) : null;
+            if (target == null) {
+                error(line, "include needs a file path");
+                continue;
+            }
+            Path included = path.toAbsolutePath().getParent().resolve(target);
+            if (!Files.isRegularFile(included)) {
+                error(line, "Included file not found: " + target);
+            } else if (including.contains(included.toRealPath())) {
+                error(line, "Circular include of " + target);
+            } else {
+                try {
+                    load(included, target, including, out);
+                } catch (IOException e) {
+                    error(line, "Could not read included file: " + target);
+                }
+            }
+        }
+        including.pop();
+    }
+
+    // First argument of an include line, optionally "quoted" to allow spaces; returns null if missing
+    private static String includeTarget(String args, SourceLine line) {
+        String target, rest;
+        if (args.startsWith("\"")) {
+            int close = args.indexOf('"', 1);
+            if (close < 0) {
+                return null;
+            }
+            target = args.substring(1, close);
+            rest = args.substring(close + 1).trim();
+        } else {
+            String[] split = args.split("\\s+", 2);
+            target = split[0];
+            rest = split.length > 1 ? split[1] : "";
+        }
+        if (!rest.isEmpty() && !rest.startsWith("#")) {
+            System.err.printf("[Warning] %s: Ignored unrecognized argument '%s'%n", line.where(), rest);
+        }
+        return target.isEmpty() ? null : target;
+    }
+
+    private void executeLine(SourceLine line) {
+        try (Scanner ls = new Scanner(line.text()).useLocale(Locale.ROOT)) {
+            String type = ls.next().toLowerCase(Locale.ROOT);
+            if (type.equals("background")) {
+                String color = ls.next();
+                if (!ColorInt.isColor(color)) {
+                    throw new InputMismatchException("Invalid color: " + color);
+                }
+                background = ColorInt.parseColor(color);
+                return;
+            }
+            Shape shape = parseShape(type, ls);
+
+            if (shape != null) {
+                StyleArgs.parse(ls, shape instanceof Arrow, line.where()).applyTo(shape);
+                shapes.add(shape);
+            } else {
+                System.err.printf("[Warning] %s: Unknown shape command '%s'%n", line.where(), type);
+            }
+        } catch (NoSuchElementException e) {
+            String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
+            System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
+        }
+    }
+
+    private static void error(SourceLine line, String message) {
+        System.err.printf("[Error] %s: %s%n", line.where(), message);
     }
 
     private Shape parseShape(String type, Scanner ls) {

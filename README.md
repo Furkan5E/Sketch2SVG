@@ -76,6 +76,13 @@ Colors can be:
   none / transparent   no paint
 ```
 
+### Include
+`include <path>` inlines another sketch file at that point. Paths are relative to the file containing the `include`; wrap them in quotes if they contain spaces. Errors inside included files report the file name, and circular includes are rejected.
+```text
+include parts/house.txt
+include "night sky.txt"
+```
+
 ### Named arguments
 Any shape also accepts named arguments, in any order, after its required parameters. They override the positional `[strokeWidth] [strokeRGBA] [fillRGBA]`.
 

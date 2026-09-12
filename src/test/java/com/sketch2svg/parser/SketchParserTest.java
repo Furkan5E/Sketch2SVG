@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -241,6 +242,48 @@ public class SketchParserTest {
         int bg = svg.indexOf("fill:#0B1020FF");
         assertTrue(bg > 0 && bg < svg.indexOf("<circle"), svg);
         assertTrue(svg.contains("points=\"-100.0,100.0 100.0,100.0 100.0,-100.0 -100.0,-100.0 \""), svg);
+    }
+
+    @Test
+    void testIncludeInlinesOtherFiles() throws IOException {
+        Files.createDirectories(tempDir.resolve("parts"));
+        // Paths resolve relative to the including file, so house.txt finds roof.txt next to it
+        Files.writeString(tempDir.resolve("parts/house.txt"), "rect 10 10 0 0\ninclude roof.txt\n");
+        Files.writeString(tempDir.resolve("parts/roof.txt"), "trapezoid 5 10 4 0 7\ncircle nope\n");
+        Files.writeString(tempDir.resolve("loop.txt"), "include loop.txt\n");
+
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                circle 5 0 0
+                include parts/house.txt   # the house
+                include "missing.txt"
+                include loop.txt
+                square 2 0 0
+                """));
+        Sketch sketch = result[0];
+
+        List<String> tags = sketch.getShapes().stream().map(Shape::getTag).toList();
+        assertEquals(List.of("circle", "polygon", "polygon", "polygon"), tags);
+        assertTrue(log.contains("Line 2 (roof.txt): Invalid or missing parameters in 'circle nope'"), log);
+        assertTrue(log.contains("[Error] Line 3: Included file not found: missing.txt"), log);
+        assertTrue(log.contains("[Error] Line 1 (loop.txt): Circular include of loop.txt"), log);
+    }
+
+    // Runs the action and returns everything it printed to stderr
+    private static String stderrOf(ThrowingRunnable action) throws IOException {
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        try {
+            System.setErr(new PrintStream(err, true, StandardCharsets.UTF_8));
+            action.run();
+        } finally {
+            System.setErr(originalErr);
+        }
+        return err.toString(StandardCharsets.UTF_8);
+    }
+
+    private interface ThrowingRunnable {
+        void run() throws IOException;
     }
 
     private Sketch parse(String source) throws IOException {
