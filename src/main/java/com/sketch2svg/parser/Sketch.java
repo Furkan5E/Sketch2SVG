@@ -23,6 +23,7 @@ public class Sketch {
     // Store all parsed or programmatically added shapes
     private final List<Shape> shapes = new ArrayList<>();
     private Integer background; // RGBA fill for the whole canvas, or null for none
+    private final Variables variables = new Variables();
 
     public Sketch add(Shape shape) {
         if (shape != null) {
@@ -88,6 +89,7 @@ public class Sketch {
             return false;
         }
 
+        variables.clear(); // each script starts with a fresh set of variables
         for (SourceLine line : lines) {
             executeLine(line);
         }
@@ -155,7 +157,37 @@ public class Sketch {
     }
 
     private void executeLine(SourceLine line) {
-        try (Scanner ls = new Scanner(line.text()).useLocale(Locale.ROOT)) {
+        try {
+            List<String> tokens = Variables.tokenize(line.text());
+            if (tokens.get(0).equalsIgnoreCase("set")) {
+                executeSet(tokens, line);
+            } else {
+                executeCommand(variables.substituteLine(line.text()), line);
+            }
+        } catch (NoSuchElementException e) {
+            String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
+            System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
+        }
+    }
+
+    // set <name> <value>: the value may be a number, {expression}, color, "text" or another variable
+    private void executeSet(List<String> tokens, SourceLine line) {
+        if (tokens.size() < 3) {
+            throw new InputMismatchException("set needs a name and a value");
+        }
+        String name = tokens.get(1);
+        if (!Variables.NAME.matcher(name).matches()) {
+            throw new InputMismatchException("Invalid variable name '" + name + "'");
+        }
+        if (tokens.size() > 3 && !tokens.get(3).startsWith("#")) {
+            System.err.printf("[Warning] %s: Ignored unrecognized argument '%s'%n", line.where(), tokens.get(3));
+        }
+        variables.set(name, variables.substitute(tokens.get(2)));
+    }
+
+    // Runs one already-substituted command line
+    private void executeCommand(String text, SourceLine line) {
+        try (Scanner ls = new Scanner(text).useLocale(Locale.ROOT)) {
             String type = ls.next().toLowerCase(Locale.ROOT);
             if (type.equals("background")) {
                 String color = ls.next();
@@ -173,9 +205,6 @@ public class Sketch {
             } else {
                 System.err.printf("[Warning] %s: Unknown shape command '%s'%n", line.where(), type);
             }
-        } catch (NoSuchElementException e) {
-            String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
-            System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
         }
     }
 

@@ -269,6 +269,43 @@ public class SketchParserTest {
         assertTrue(log.contains("[Error] Line 1 (loop.txt): Circular include of loop.txt"), log);
     }
 
+    @Test
+    void testVariablesAndExpressions() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                set gold ffd700ff
+                set r 5
+                set d {r * 2}
+                set label "Hello World"
+                star {r} 2 1 {-60 + d*3} {d} 0 none gold
+                circle r 0 0 stroke=gold rot={45/2}
+                polygon 0,0 {d},0 {d},{d}
+                text 0 0 12 label
+                circle 5 0 0 {x + 1}
+                set 9lives 1
+                """));
+        Sketch sketch = result[0];
+
+        assertEquals(4, sketch.getShapes().size());
+
+        // Integral results stay integers, so star's <points> still parses as an int
+        Shape star = sketch.getShapes().get(0);
+        assertEquals(-30f, star.getPos().x);
+        assertEquals(10f, star.getPos().y);
+        assertEquals((int) 0xFFD700FFL, star.getFill());
+
+        Circle circle = (Circle) sketch.getShapes().get(1);
+        assertEquals(5f, circle.getRadius());
+        assertEquals((int) 0xFFD700FFL, circle.getStroke());
+        assertEquals(22.5f, circle.getRotation());
+
+        assertBounds(svgPoints(sketch.getShapes().get(2)), 0, 0, 10, 10);
+        assertTrue(sketch.getShapes().get(3).toString().contains(">\nHello World\n<"));
+
+        assertTrue(log.contains("Line 9: Invalid or missing parameters in 'circle 5 0 0 {x + 1}' (Unknown variable 'x')"), log);
+        assertTrue(log.contains("Line 10: Invalid or missing parameters in 'set 9lives 1' (Invalid variable name '9lives')"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

@@ -76,6 +76,17 @@ Colors can be:
   none / transparent   no paint
 ```
 
+### Variables & expressions
+`set <name> <value>` stores a number, color, `"text"` or the result of an expression. Use a variable by writing its name as an argument (or after `key=`), and put arithmetic inside `{ }` anywhere in an argument.
+```text
+set gold ffd700ff
+set r 5
+set d {r * 2}
+star 5 {r} 2 -60 {d*3} 0 none gold
+polygon 0,0 {d},0 {d},{d} fill=gold
+```
+Expressions support `+ - * / % ^`, parentheses, `pi`, and `sin cos tan` (degrees), `sqrt abs floor ceil round min max`. Quoted text is never substituted.
+
 ### Include
 `include <path>` inlines another sketch file at that point. Paths are relative to the file containing the `include`; wrap them in quotes if they contain spaces. Errors inside included files report the file name, and circular includes are rejected.
 ```text
