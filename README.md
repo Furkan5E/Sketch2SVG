@@ -87,6 +87,15 @@ polygon 0,0 {d},0 {d},{d} fill=gold
 ```
 Expressions support `+ - * / % ^`, parentheses, `pi`, and `sin cos tan` (degrees), `sqrt abs floor ceil round min max`. Quoted text is never substituted.
 
+### Loops
+`repeat <count> [index]` … `end` runs the lines in between `count` times. The optional index variable counts from 0 and is restored afterwards. Loops can be nested.
+```text
+# 12 dots around a circle
+repeat 12 i
+  circle 3 {40*cos(i*30)} {40*sin(i*30)} 0 none gold
+end
+```
+
 ### Include
 `include <path>` inlines another sketch file at that point. Paths are relative to the file containing the `include`; wrap them in quotes if they contain spaces. Errors inside included files report the file name, and circular includes are rejected.
 ```text

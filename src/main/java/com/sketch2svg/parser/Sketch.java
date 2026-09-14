@@ -90,9 +90,7 @@ public class Sketch {
         }
 
         variables.clear(); // each script starts with a fresh set of variables
-        for (SourceLine line : lines) {
-            executeLine(line);
-        }
+        executeBlock(lines, 0, lines.size());
         return true;
     }
 
@@ -156,6 +154,95 @@ public class Sketch {
         return target.isEmpty() ? null : target;
     }
 
+    // Runs lines[start, end), expanding "repeat ... end" blocks
+    private void executeBlock(List<SourceLine> lines, int start, int end) {
+        int i = start;
+        while (i < end) {
+            SourceLine line = lines.get(i);
+            String command = firstWord(line);
+
+            if (isBlockStart(command)) {
+                int close = findEnd(lines, i, end);
+                if (close < 0) {
+                    error(line, command + " without matching end (block runs to the end of the file)");
+                    close = end;
+                }
+                executeRepeat(line, lines, i + 1, close);
+                i = close + 1;
+            } else if (command.equals("end")) {
+                error(line, "end without matching repeat");
+                i++;
+            } else {
+                executeLine(line);
+                i++;
+            }
+        }
+    }
+
+    private static final int MAX_ITERATIONS = 100_000;
+
+    // repeat <count> [index]: runs the body count times with index = 0, 1, ..., count-1
+    private void executeRepeat(SourceLine line, List<SourceLine> lines, int bodyStart, int bodyEnd) {
+        int count;
+        String index;
+        try {
+            List<String> tokens = Variables.tokenize(line.text());
+            if (tokens.size() < 2) {
+                throw new InputMismatchException("repeat needs a count");
+            }
+            String countText = variables.substitute(tokens.get(1));
+            if (!StyleArgs.NUMBER.matcher(countText).matches()) {
+                throw new InputMismatchException("Invalid repeat count '" + countText + "'");
+            }
+            double value = Double.parseDouble(countText);
+            if (value < 0 || value != Math.floor(value) || value > MAX_ITERATIONS) {
+                throw new InputMismatchException("repeat count must be a whole number from 0 to " + MAX_ITERATIONS);
+            }
+            count = (int) value;
+
+            index = tokens.size() > 2 && !tokens.get(2).startsWith("#") ? tokens.get(2) : null;
+            if (index != null && !Variables.NAME.matcher(index).matches()) {
+                throw new InputMismatchException("Invalid variable name '" + index + "'");
+            }
+        } catch (NoSuchElementException e) {
+            reportSyntaxError(line, e);
+            return;
+        }
+
+        String previous = index != null ? variables.get(index) : null;
+        for (int k = 0; k < count; k++) {
+            if (index != null) {
+                variables.set(index, Integer.toString(k));
+            }
+            executeBlock(lines, bodyStart, bodyEnd);
+        }
+        if (index != null) {
+            variables.restore(index, previous);
+        }
+    }
+
+    // Index of the "end" closing the block opened at lines[open], or -1 if there is none before limit
+    private static int findEnd(List<SourceLine> lines, int open, int limit) {
+        int depth = 0;
+        for (int i = open; i < limit; i++) {
+            String command = firstWord(lines.get(i));
+            if (isBlockStart(command)) {
+                depth++;
+            } else if (command.equals("end") && --depth == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static boolean isBlockStart(String command) {
+        return command.equals("repeat");
+    }
+
+    private static String firstWord(SourceLine line) {
+        return line.text().split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
+    }
+
     private void executeLine(SourceLine line) {
         try {
             List<String> tokens = Variables.tokenize(line.text());
@@ -165,9 +252,13 @@ public class Sketch {
                 executeCommand(variables.substituteLine(line.text()), line);
             }
         } catch (NoSuchElementException e) {
-            String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
-            System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
+            reportSyntaxError(line, e);
         }
+    }
+
+    private static void reportSyntaxError(SourceLine line, NoSuchElementException e) {
+        String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
+        System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
     }
 
     // set <name> <value>: the value may be a number, {expression}, color, "text" or another variable

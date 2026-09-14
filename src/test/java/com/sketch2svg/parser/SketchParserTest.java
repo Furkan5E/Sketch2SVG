@@ -306,6 +306,55 @@ public class SketchParserTest {
         assertTrue(log.contains("Line 10: Invalid or missing parameters in 'set 9lives 1' (Invalid variable name '9lives')"), log);
     }
 
+    @Test
+    void testRepeatLoops() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                set i outer
+                set n 3
+                repeat n i
+                  repeat 2 j
+                    circle 1 {i*10} {j*10}
+                  end
+                end
+                circle 1 0 0 fill=i
+                repeat 2
+                  square 1 0 0
+                end
+                repeat 0 k
+                  square 99 0 0
+                end
+                repeat -1
+                  square 99 0 0
+                end
+                end
+                """));
+        Sketch sketch = result[0];
+
+        // 3x2 grid of circles, then the index is restored to its old value
+        List<String> positions = sketch.getShapes().subList(0, 6).stream()
+                .map(s -> s.getPos().x + "," + s.getPos().y).toList();
+        assertEquals(List.of("0.0,0.0", "0.0,10.0", "10.0,0.0", "10.0,10.0", "20.0,0.0", "20.0,10.0"), positions);
+        assertTrue(log.contains("Line 8: Invalid or missing parameters in 'circle 1 0 0 fill=i' (Invalid color in fill=outer)"), log);
+
+        // 6 circles + 2 squares: repeat 0 and the invalid count draw nothing
+        assertEquals(8, sketch.getShapes().size());
+        assertTrue(log.contains("Line 15: Invalid or missing parameters in 'repeat -1' (repeat count must be a whole number"), log);
+        assertTrue(log.contains("[Error] Line 18: end without matching repeat"), log);
+        assertFalse(log.contains("square 99"), log);
+    }
+
+    @Test
+    void testRepeatWithoutEndRunsToEndOfFile() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                repeat 3
+                  circle 1 0 0
+                """));
+        assertEquals(3, result[0].getShapes().size());
+        assertTrue(log.contains("[Error] Line 1: repeat without matching end"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;
