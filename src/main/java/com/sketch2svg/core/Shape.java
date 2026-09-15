@@ -30,7 +30,12 @@ public abstract class Shape extends Elem {
 			style += ";stroke-width:" + strokeWidth;
 			style += ";stroke:#" + ColorInt.hexString(stroke);
 		}
-		attribStyle.val = style;
+		attribStyle.val = hasStyle() ? style : null;
+	}
+
+	// Whether this element writes a style attribute (containers like groups don't)
+	protected boolean hasStyle(){
+		return true;
 	}
 
 	// API Helpers

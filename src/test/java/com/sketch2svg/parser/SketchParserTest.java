@@ -2,6 +2,7 @@ package com.sketch2svg.parser;
 
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.shapes.Circle;
+import com.sketch2svg.shapes.Group;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -353,6 +354,70 @@ public class SketchParserTest {
                 """));
         assertEquals(3, result[0].getShapes().size());
         assertTrue(log.contains("[Error] Line 1: repeat without matching end"), log);
+    }
+
+    @Test
+    void testGroupsNestAndShareStyle() throws IOException {
+        Sketch sketch = parse("""
+                group at=30,-40 rot=10 stroke=2 fill=gold
+                  rect 42 28 0 0
+                  square 8 12 0 fill=red
+                  group scale=2 stroke=blue
+                    repeat 2
+                      circle 1 0 0
+                    end
+                  end
+                end
+                circle 1 0 0
+                """);
+
+        assertEquals(2, sketch.getShapes().size());
+        Group outer = (Group) sketch.getShapes().get(0);
+        String svg = outer.toString();
+        assertTrue(svg.startsWith("<g transform=\"translate(30.0 40.0) rotate(-10.0)\">"), svg);
+        assertFalse(svg.startsWith("<g style"), svg);
+        assertEquals(3, outer.getChildren().size());
+
+        // Group paint is a default; the shape's own arguments win
+        Shape rect = outer.getChildren().get(0);
+        assertEquals(2f, rect.getStrokeWidth());
+        assertEquals((int) 0xFFD700FFL, rect.getFill());
+        assertEquals((int) 0xFF0000FFL, outer.getChildren().get(1).getFill());
+
+        // Nested group: inner stroke colour, outer fill and width
+        Group inner = (Group) outer.getChildren().get(2);
+        assertTrue(inner.toString().startsWith("<g transform=\"scale(2.0 2.0)\">"));
+        assertEquals(2, inner.getChildren().size());
+        Shape dot = inner.getChildren().get(0);
+        assertEquals((int) 0x0000FFFFL, dot.getStroke());
+        assertEquals((int) 0xFFD700FFL, dot.getFill());
+        assertEquals(2f, dot.getStrokeWidth());
+
+        // Shapes after the group are back at the top level with default paint
+        assertEquals(0, sketch.getShapes().get(1).getFill());
+    }
+
+    @Test
+    void testGroupTransformMatchesDirectTransform() throws IOException {
+        // Child at (5,0) in a group moved to (30,-40) and turned 90deg lands at (30,-35), turned 90deg
+        Sketch sketch = parse("""
+                group at=30,-40 rot=90
+                  rect 10 20 5 0
+                end
+                rect 10 20 30 -35 rot=90
+                """);
+        Group group = (Group) sketch.getShapes().get(0);
+        assertTrue(group.toString().contains("transform=\"translate(30.0 40.0) rotate(-90.0)\""));
+
+        // Apply the group's SVG transform by hand: rotate(-90) maps (x,y) -> (y,-x), then translate(30,40)
+        float[][] child = svgPoints(group.getChildren().get(0));
+        float[][] expected = svgPoints(sketch.getShapes().get(1));
+        for (int i = 0; i < child.length; i++) {
+            float sx = child[i][0], sy = -child[i][1]; // back to raw SVG coordinates
+            float gx = sy + 30, gy = -sx + 40;
+            assertEquals(expected[i][0], gx, 1e-4f);
+            assertEquals(expected[i][1], -gy, 1e-4f);
+        }
     }
 
     // Runs the action and returns everything it printed to stderr

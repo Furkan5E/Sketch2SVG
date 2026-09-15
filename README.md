@@ -96,6 +96,15 @@ repeat 12 i
 end
 ```
 
+### Groups
+`group [options]` … `end` wraps shapes in an SVG `<g>`. `at=`, `rot=` and `scale=` move, turn and resize the whole group; stroke and fill options become defaults for the shapes inside (a shape's own arguments still win). Groups can be nested and combined with loops.
+```text
+group at=30,-40 rot=10 stroke=2 fill=brown
+  rect 42 28 0 0
+  square 8 12 0 fill=gold
+end
+```
+
 ### Include
 `include <path>` inlines another sketch file at that point. Paths are relative to the file containing the `include`; wrap them in quotes if they contain spaces. Errors inside included files report the file name, and circular includes are rejected.
 ```text

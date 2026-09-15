@@ -25,6 +25,10 @@ public class Sketch {
     private Integer background; // RGBA fill for the whole canvas, or null for none
     private final Variables variables = new Variables();
 
+    // While running a "group ... end" block: where new shapes go, and the enclosing groups' paint (outermost first)
+    private Group currentGroup;
+    private final List<StyleArgs> groupPaint = new ArrayList<>();
+
     public Sketch add(Shape shape) {
         if (shape != null) {
             shapes.add(shape);
@@ -167,10 +171,14 @@ public class Sketch {
                     error(line, command + " without matching end (block runs to the end of the file)");
                     close = end;
                 }
-                executeRepeat(line, lines, i + 1, close);
+                if (command.equals("group")) {
+                    executeGroup(line, lines, i + 1, close);
+                } else {
+                    executeRepeat(line, lines, i + 1, close);
+                }
                 i = close + 1;
             } else if (command.equals("end")) {
-                error(line, "end without matching repeat");
+                error(line, "end without matching repeat or group");
                 i++;
             } else {
                 executeLine(line);
@@ -221,6 +229,32 @@ public class Sketch {
         }
     }
 
+    // group [options]: at=/rot=/scale= transform the group as a whole (SVG <g>);
+    // stroke/fill options become defaults for the shapes inside, which can still override them
+    private void executeGroup(SourceLine line, List<SourceLine> lines, int bodyStart, int bodyEnd) {
+        Group group = new Group();
+        StyleArgs args;
+        try (Scanner ls = new Scanner(variables.substituteLine(line.text())).useLocale(Locale.ROOT)) {
+            ls.next(); // "group"
+            args = StyleArgs.parse(ls, false, line.where());
+        } catch (NoSuchElementException e) {
+            reportSyntaxError(line, e);
+            return;
+        }
+        args.applyTransform(group);
+        addShape(group);
+
+        Group outer = currentGroup;
+        currentGroup = group;
+        groupPaint.add(args);
+        try {
+            executeBlock(lines, bodyStart, bodyEnd);
+        } finally {
+            groupPaint.remove(groupPaint.size() - 1);
+            currentGroup = outer;
+        }
+    }
+
     // Index of the "end" closing the block opened at lines[open], or -1 if there is none before limit
     private static int findEnd(List<SourceLine> lines, int open, int limit) {
         int depth = 0;
@@ -236,7 +270,7 @@ public class Sketch {
     }
 
     private static boolean isBlockStart(String command) {
-        return command.equals("repeat");
+        return command.equals("repeat") || command.equals("group");
     }
 
     private static String firstWord(SourceLine line) {
@@ -291,11 +325,24 @@ public class Sketch {
             Shape shape = parseShape(type, ls);
 
             if (shape != null) {
-                StyleArgs.parse(ls, shape instanceof Arrow, line.where()).applyTo(shape);
-                shapes.add(shape);
+                StyleArgs own = StyleArgs.parse(ls, shape instanceof Arrow, line.where());
+                for (StyleArgs inherited : groupPaint) {
+                    inherited.applyPaint(shape); // outer groups first, so inner ones win
+                }
+                own.applyTo(shape);
+                addShape(shape);
             } else {
                 System.err.printf("[Warning] %s: Unknown shape command '%s'%n", line.where(), type);
             }
+        }
+    }
+
+    // Adds to the group being built, or to the sketch at the top level
+    private void addShape(Shape shape) {
+        if (currentGroup != null) {
+            currentGroup.add(shape);
+        } else {
+            shapes.add(shape);
         }
     }
 
