@@ -445,6 +445,15 @@ public class SketchParserTest {
         assertTrue(sketch.getShapes().get(0).toString().contains("r=\"10.0\""));
     }
 
+    @Test
+    void testRenderJoinsDirectoryAndName() throws IOException {
+        Files.writeString(tempDir.resolve("drawing.txt"), "circle 5 0 0\n");
+
+        // No trailing separator on the directory
+        assertTrue(new Sketch().render(tempDir.toString(), "drawing"));
+        assertTrue(Files.exists(tempDir.resolve("drawing.svg")));
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

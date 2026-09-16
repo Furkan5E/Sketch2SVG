@@ -54,12 +54,12 @@ public class Sketch {
         return this;
     }
 
+    // Converts <dir>/<name>.txt to <dir>/<name>.svg
     public boolean render(String dir, String name) {
         clear();
-        String txtFilePath = dir + name + ".txt";
-        String svgFilePath = dir + name + ".svg";
-
-        return fromFile(txtFilePath) && exportSVG(svgFilePath);
+        Path folder = Path.of(dir);
+        return fromFile(folder.resolve(name + ".txt").toString())
+                && exportSVG(folder.resolve(name + ".svg").toString());
     }
 
     // Returns false if the file could not be written
