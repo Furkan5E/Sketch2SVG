@@ -420,6 +420,31 @@ public class SketchParserTest {
         }
     }
 
+    @Test
+    void testNegativeSizesAreRejected() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                circle -5 0 0
+                rect 10 -2 0 0
+                text 0 0 -12 "hi"
+                star 5 10 -1 0 0
+                circle 5 0 0 -1
+                circle 5 0 0 scale=-2
+                rect -0 0 0 0
+                """));
+        Sketch sketch = result[0];
+
+        assertTrue(log.contains("Line 1: Invalid or missing parameters in 'circle -5 0 0' (radius must not be negative)"), log);
+        assertTrue(log.contains("Line 2: Invalid or missing parameters in 'rect 10 -2 0 0' (height must not be negative)"), log);
+        assertTrue(log.contains("(font size must not be negative)"), log);
+        assertTrue(log.contains("(inner radius must not be negative)"), log);
+        assertTrue(log.contains("Line 5: Invalid or missing parameters in 'circle 5 0 0 -1' (stroke width must not be negative)"), log);
+
+        // A negative scale mirrors the shape; the circle's radius stays valid
+        assertEquals(2, sketch.getShapes().size());
+        assertTrue(sketch.getShapes().get(0).toString().contains("r=\"10.0\""));
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

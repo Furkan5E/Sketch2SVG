@@ -68,6 +68,10 @@ final class StyleArgs {
         if (args.strokeWidth == null && !numbers.isEmpty()) args.strokeWidth = numbers.get(0);
         if (args.stroke == null && !colors.isEmpty()) args.stroke = colors.get(0);
         if (args.fill == null && colors.size() >= 2) args.fill = colors.get(1);
+
+        if (args.strokeWidth != null && args.strokeWidth < 0) {
+            throw new InputMismatchException("stroke width must not be negative");
+        }
         return args;
     }
 

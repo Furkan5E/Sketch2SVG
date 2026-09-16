@@ -353,13 +353,13 @@ public class Sketch {
     private Shape parseShape(String type, Scanner ls) {
         return switch (type) {
             case "circle" -> {
-                float r = ls.nextFloat();
+                float r = size(ls, "radius");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new Circle(r, cx, cy);
             }
             case "arc" -> {
-                float radius = ls.nextFloat();
+                float radius = size(ls, "radius");
                 float angle = ls.nextFloat();
                 float length = ls.nextFloat();
                 float cx = ls.nextFloat();
@@ -374,44 +374,44 @@ public class Sketch {
                 yield new Line(x1, y1, x2, y2);
             }
             case "rect" -> {
-                float w = ls.nextFloat();
-                float h = ls.nextFloat();
+                float w = size(ls, "width");
+                float h = size(ls, "height");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new Rect(w, h, cx, cy);
             }
             case "square" -> {
-                float w = ls.nextFloat();
+                float w = size(ls, "size");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new Square(w, cx, cy);
             }
             case "ngon" -> {
                 int sides = ls.nextInt();
-                float radius = ls.nextFloat();
+                float radius = size(ls, "radius");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new RegPolygon(sides, radius, cx, cy);
             }
             case "trapezoid" -> {
-                float topW = ls.nextFloat();
-                float botW = ls.nextFloat();
-                float h = ls.nextFloat();
+                float topW = size(ls, "top width");
+                float botW = size(ls, "bottom width");
+                float h = size(ls, "height");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new Trapezoid(topW, botW, h, cx, cy);
             }
             case "star" -> {
                 int points = ls.nextInt();
-                float outerR = ls.nextFloat();
-                float innerR = ls.nextFloat();
+                float outerR = size(ls, "outer radius");
+                float innerR = size(ls, "inner radius");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new Star(points, outerR, innerR, cx, cy);
             }
             case "arrow" -> {
-                float length = ls.nextFloat();
-                float width = ls.nextFloat();
+                float length = size(ls, "length");
+                float width = size(ls, "width");
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
                 yield new Arrow(length, width, cx, cy);
@@ -431,7 +431,7 @@ public class Sketch {
             case "text" -> {
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
-                float fontSize = ls.nextFloat();
+                float fontSize = size(ls, "font size");
                 
                 String content;
                 // Direct line search extracts quoted text cleanly across whitespace tokens
@@ -446,5 +446,14 @@ public class Sketch {
             }
             default -> null;
         };
+    }
+
+    // Reads a size parameter; negative sizes would produce invalid or mirrored SVG
+    private static float size(Scanner ls, String name) {
+        float value = ls.nextFloat();
+        if (value < 0) {
+            throw new InputMismatchException(name + " must not be negative");
+        }
+        return value;
     }
 }

@@ -44,6 +44,6 @@ public class Circle extends Shape{
 		c.negY(); //flip y for svg
 		attribX.val = "" + c.x;
 		attribY.val = "" + c.y;
-		attribR.val = "" + radius * getScale().x;
+		attribR.val = "" + Math.abs(radius * getScale().x); // a negative scale mirrors, which a circle ignores
 	}
 }
