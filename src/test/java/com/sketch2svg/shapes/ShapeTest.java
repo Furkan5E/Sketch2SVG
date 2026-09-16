@@ -52,6 +52,15 @@ public class ShapeTest {
     }
 
     @Test
+    void testStarRadiiMatchConstructorOrder() {
+        Star viaConstructor = new Star(5, 20.0f, 10.0f, 0.0f, 0.0f);
+        Star viaSetter = new Star().radii(20.0f, 10.0f);
+        assertEquals(viaConstructor.toString(), viaSetter.toString());
+        // Tips are at the outer radius: the first vertex points straight up
+        assertEquals(20.0f, viaSetter.getVertex(0, 1), 1e-5f);
+    }
+
+    @Test
     void testStarVertexCount() {
         Star star = new Star(5, 20.0f, 10.0f, 0.0f, 0.0f);
         // 5 points * 2 (inner + outer alternating) = 10 vertices

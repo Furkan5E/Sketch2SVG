@@ -26,9 +26,10 @@ public class Star extends LineStrip {
         return this;
     }
 
-    public Star radii(float inner, float outer) {
-        this.innerR = inner;
+    // Same order as the constructor: outer (tips) first, then inner (notches)
+    public Star radii(float outer, float inner) {
         this.outerR = outer;
+        this.innerR = inner;
         rebuildVertices();
         return this;
     }
