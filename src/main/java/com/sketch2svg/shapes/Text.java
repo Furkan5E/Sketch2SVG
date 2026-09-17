@@ -63,9 +63,18 @@ public class Text extends Shape {
         attribX.val = String.valueOf(p.x);
         attribY.val = String.valueOf(p.y);
         attribFontSize.val = String.valueOf(fontSize);
-        // Glyphs can't be rotated via vertices, so rotate around the anchor; SVG angles are clockwise
-        attribTransform.val = getRotation() == 0.f ? null
-                : "rotate(" + (-getRotation()) + " " + p.x + " " + p.y + ")";
+        // Glyphs can't be transformed via vertices, so rotate and scale around the anchor.
+        // SVG applies the list right to left: scale first, then rotate; SVG angles are clockwise.
+        String transform = "";
+        if (getRotation() != 0.f) {
+            transform += "rotate(" + (-getRotation()) + " " + p.x + " " + p.y + ")";
+        }
+        Vec2 scale = getScale();
+        if (scale.x != 1.f || scale.y != 1.f) {
+            transform += " translate(" + p.x + " " + p.y + ") scale(" + scale.x + " " + scale.y + ")"
+                    + " translate(" + (-p.x) + " " + (-p.y) + ")";
+        }
+        attribTransform.val = transform.isEmpty() ? null : transform.trim();
         this.content = Xml.escape(textContent);
     }
 }

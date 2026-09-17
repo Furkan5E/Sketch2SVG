@@ -66,12 +66,19 @@ public class Arc extends Shape {
         p1.negY();
         p2.negY();
 
-        float r = radius * getScale().x;
-        int largeArcFlag = Math.abs(length) > 180.f ? 1 : 0;
-        // After the y flip, counter-clockwise is SVG's negative-angle direction (sweep 0)
-        int sweepFlag = length > 0.f ? 0 : 1;
+        // Uneven scale makes an elliptical arc whose x-axis follows the rotation (clockwise in SVG)
+        float rx = Math.abs(radius * getScale().x);
+        float ry = Math.abs(radius * getScale().y);
+        String axisRotation = rx == ry || getRotation() == 0.f ? "0"
+                : String.format(Locale.ROOT, "%f", -getRotation());
 
-        attribData.val = String.format(Locale.ROOT, "M %f %f A %f %f 0 %d %d %f %f",
-                p1.x, p1.y, r, r, largeArcFlag, sweepFlag, p2.x, p2.y);
+        int largeArcFlag = Math.abs(length) > 180.f ? 1 : 0;
+        // After the y flip, counter-clockwise is SVG's negative-angle direction (sweep 0);
+        // a mirroring scale (one negative factor) reverses the direction
+        boolean mirrored = getScale().x * getScale().y < 0.f;
+        int sweepFlag = (length > 0.f) != mirrored ? 0 : 1;
+
+        attribData.val = String.format(Locale.ROOT, "M %f %f A %f %f %s %d %d %f %f",
+                p1.x, p1.y, rx, ry, axisRotation, largeArcFlag, sweepFlag, p2.x, p2.y);
     }
 }

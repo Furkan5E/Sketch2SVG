@@ -113,6 +113,49 @@ public class ShapeTest {
         assertTrue(new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("A 20.000000 20.000000"));
     }
 
+    @Test
+    void testUnevenScaleMakesEllipse() {
+        Circle even = new Circle(5.0f, 0.0f, 0.0f);
+        even.scale(-2.0f, 2.0f);
+        assertEquals("circle", even.getTag());
+        assertTrue(even.toString().contains("r=\"10.0\""));
+        assertFalse(even.toString().contains("rx="));
+
+        Circle ellipse = new Circle(5.0f, 1.0f, 2.0f);
+        ellipse.scale(2.0f, 1.0f).rotate(30.0f);
+        String svg = ellipse.toString();
+        assertTrue(svg.startsWith("<ellipse"), svg);
+        assertTrue(svg.contains("rx=\"10.0\" ry=\"5.0\""), svg);
+        assertTrue(svg.contains("transform=\"rotate(-30.0 1.0 -2.0)\""), svg);
+        assertFalse(svg.contains(" r="), svg);
+    }
+
+    @Test
+    void testArcFollowsUnevenAndMirroredScale() {
+        Arc stretched = new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f);
+        stretched.scale(2.0f, 1.0f);
+        assertTrue(stretched.toString().contains("A 20.000000 10.000000 0 0 0"), stretched.toString());
+
+        Arc rotated = new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f);
+        rotated.scale(2.0f, 1.0f).rotate(30.0f);
+        assertTrue(rotated.toString().contains("A 20.000000 10.000000 -30.000000"), rotated.toString());
+
+        // Mirroring across the y axis moves the 45deg arc's midpoint to 135deg
+        Arc mirrored = new Arc(10.0f, 45.0f, 90.0f, 0.0f, 0.0f);
+        mirrored.scale(-1.0f, 1.0f);
+        double[] mid = arcMidpoint(mirrored.toString());
+        assertEquals(10 * Math.cos(Math.toRadians(135)), mid[0], 1e-3);
+        assertEquals(10 * Math.sin(Math.toRadians(135)), mid[1], 1e-3);
+    }
+
+    @Test
+    void testTextScalesAroundAnchor() {
+        Text text = new Text("hi", 5.0f, 10.0f, 12.0f);
+        text.scale(2.0f, 1.0f);
+        assertTrue(text.toString().contains(
+                "transform=\"translate(5.0 -10.0) scale(2.0 1.0) translate(-5.0 10.0)\""), text.toString());
+    }
+
     // Largest |x| and |y| among a polygon's points
     private static float[] pointExtents(String svg) {
         Matcher m = Pattern.compile("points=\"([^\"]*)\"").matcher(svg);
