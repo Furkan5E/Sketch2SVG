@@ -24,6 +24,10 @@ public class ViewBox {
      * Fits the viewBox around min/max coordinate extents with optional border padding.
      */
     public void fit(float minX, float minY, float maxX, float maxY, float padding) {
+        if (!Float.isFinite(minX) || !Float.isFinite(minY) || !Float.isFinite(maxX) || !Float.isFinite(maxY)
+                || !Float.isFinite(padding)) {
+            throw new IllegalArgumentException("ViewBox bounds must be finite");
+        }
         int left = (int) Math.floor(minX - padding);
         int top = (int) Math.floor(minY - padding);
         int width = (int) Math.ceil((maxX - minX) + padding * 2);

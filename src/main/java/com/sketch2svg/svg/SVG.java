@@ -42,20 +42,4 @@ public class SVG extends Elem{
 			return false;
 		}
 	}
-
-	public void autoFit(float padding) {
-        // Collects bounds from all shapes and adjusts viewBox
-        float minX = Float.POSITIVE_INFINITY;
-        float minY = Float.POSITIVE_INFINITY;
-        float maxX = Float.NEGATIVE_INFINITY;
-        float maxY = Float.NEGATIVE_INFINITY;
-
-        // Uses default bounds if no content exists
-        if (content.isEmpty()) {
-            return;
-        }
-
-        // Apply fitted bounds
-        viewBox.fit(minX, minY, maxX, maxY, padding);
-    }
 }
