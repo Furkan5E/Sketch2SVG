@@ -47,6 +47,22 @@ public class MainTest {
     }
 
     @Test
+    void testOptionWithoutValueFails() throws IOException {
+        Path input = tempDir.resolve("in.txt");
+        Files.writeString(input, "circle 10 0 0\n");
+
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "-o"}));
+        assertEquals(1, Main.run(new String[]{"-i", "-o", tempDir.resolve("out.svg").toString()}));
+        assertFalse(Files.exists(tempDir.resolve("out.svg")));
+    }
+
+    @Test
+    void testNoInputFails() {
+        assertEquals(1, Main.run(new String[]{}));
+        assertEquals(1, Main.run(new String[]{"-o", tempDir.resolve("out.svg").toString()}));
+    }
+
+    @Test
     void testInvalidBatchDirectoryFails() {
         assertEquals(1, Main.run(new String[]{"-d", tempDir.resolve("missing").toString()}));
     }

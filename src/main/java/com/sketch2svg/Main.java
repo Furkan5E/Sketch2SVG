@@ -24,14 +24,20 @@ public class Main {
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
-                case "-i", "--input" -> {
-                    if (i + 1 < args.length) inputPath = args[++i];
-                }
-                case "-o", "--output" -> {
-                    if (i + 1 < args.length) outputPath = args[++i];
-                }
-                case "-d", "--dir", "--batch" -> {
-                    if (i + 1 < args.length) dirPath = args[++i];
+                case "-i", "--input", "-o", "--output", "-d", "--dir", "--batch" -> {
+                    String option = args[i];
+                    String value = optionValue(args, i);
+                    if (value == null) {
+                        System.err.println("Option " + option + " needs a value");
+                        printHelp();
+                        return 1;
+                    }
+                    i++;
+                    switch (option) {
+                        case "-i", "--input" -> inputPath = value;
+                        case "-o", "--output" -> outputPath = value;
+                        default -> dirPath = value;
+                    }
                 }
                 case "-h", "--help" -> {
                     printHelp();
@@ -56,9 +62,11 @@ public class Main {
             return convertBatch(dirPath, outputPath) ? 0 : 1;
         }
 
-        //single file conversion fallback
+        //single file conversion
         if (inputPath == null) {
-            inputPath = "src/main/resources/sketch.txt";
+            System.err.println("No input given: use -i <file> or -d <dir>");
+            printHelp();
+            return 1;
         }
         if (outputPath == null) {
             outputPath = inputPath.replaceAll("(?i)\\.txt$", "") + ".svg";
@@ -68,6 +76,15 @@ public class Main {
         }
 
         return convertSingleFile(inputPath, outputPath) ? 0 : 1;
+    }
+
+    // The argument after an option, or null if it is missing or is another option ("-" alone is a value)
+    private static String optionValue(String[] args, int i) {
+        if (i + 1 >= args.length) {
+            return null;
+        }
+        String next = args[i + 1];
+        return next.equals("-") || !next.startsWith("-") ? next : null;
     }
 
     private static boolean convertSingleFile(String inputPath, String outputPath) {
