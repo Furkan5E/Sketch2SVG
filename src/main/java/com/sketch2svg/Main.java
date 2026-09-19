@@ -21,6 +21,7 @@ public class Main {
         String inputPath = null;
         String outputPath = null;
         String dirPath = null;
+        boolean check = false;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -43,6 +44,7 @@ public class Main {
                     printHelp();
                     return 0;
                 }
+                case "-c", "--check" -> check = true;
                 case "-v", "--version" -> {
                     System.out.println("Sketch2SVG " + version());
                     return 0;
@@ -63,7 +65,7 @@ public class Main {
 
         //batch directory conversion
         if (dirPath != null) {
-            return convertBatch(dirPath, outputPath) ? 0 : 1;
+            return convertBatch(dirPath, outputPath, check) ? 0 : 1;
         }
 
         //single file conversion
@@ -71,6 +73,9 @@ public class Main {
             System.err.println("No input given: use -i <file> or -d <dir>");
             printHelp();
             return 1;
+        }
+        if (check) {
+            return checkFile(inputPath) ? 0 : 1;
         }
         if (outputPath == null) {
             outputPath = inputPath.replaceAll("(?i)\\.txt$", "") + ".svg";
@@ -108,7 +113,18 @@ public class Main {
         return true;
     }
 
-    private static boolean convertBatch(String inputDir, String outputDir) {
+    // Parses without writing anything; fails if the script has errors (warnings are reported but allowed)
+    private static boolean checkFile(String inputPath) {
+        Sketch sketch = new Sketch();
+        if (!sketch.fromFile(inputPath)) {
+            return false;
+        }
+        System.out.printf("%s: %d error(s), %d warning(s)%n",
+                inputPath, sketch.getErrorCount(), sketch.getWarningCount());
+        return sketch.getErrorCount() == 0;
+    }
+
+    private static boolean convertBatch(String inputDir, String outputDir, boolean check) {
         File folder = new File(inputDir);
         if (!folder.isDirectory()) {
             System.err.println("Error: Provided path is not a directory: " + inputDir);
@@ -122,23 +138,26 @@ public class Main {
         }
 
         String targetDir = outputDir != null ? outputDir : inputDir;
-        new File(targetDir).mkdirs();
+        if (!check) {
+            new File(targetDir).mkdirs();
+        }
 
-        System.out.printf("Batch converting %d file(s)...%n", files.length);
+        System.out.printf("Batch %s %d file(s)...%n", check ? "checking" : "converting", files.length);
         int failed = 0;
         for (File file : files) {
             String outName = file.getName().replaceAll("(?i)\\.txt$", "") + ".svg";
             Path outPath = Paths.get(targetDir, outName);
-            if (!convertSingleFile(file.getPath(), outPath.toString())) {
+            boolean ok = check ? checkFile(file.getPath()) : convertSingleFile(file.getPath(), outPath.toString());
+            if (!ok) {
                 failed++;
             }
         }
 
         if (failed > 0) {
-            System.err.printf("Batch conversion finished with %d failure(s).%n", failed);
+            System.err.printf("Batch %s finished with %d failure(s).%n", check ? "check" : "conversion", failed);
             return false;
         }
-        System.out.println("Batch conversion complete.");
+        System.out.printf("Batch %s complete.%n", check ? "check" : "conversion");
         return true;
     }
 
@@ -154,6 +173,8 @@ public class Main {
               -i, --input <file>       Path to source sketch .txt file
               -o, --output <file/dir>  Path for output .svg file or destination folder
               -d, --batch <dir>        Batch convert all .txt files inside directory
+              -c, --check              Only report errors and warnings; write nothing
+                                       (exit code 1 if any script has errors)
               -h, --help               Display this help message
               -v, --version            Display the version
             """);

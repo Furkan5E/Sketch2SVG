@@ -24,6 +24,7 @@ public class Sketch {
     private final List<Shape> shapes = new ArrayList<>();
     private Integer background; // RGBA fill for the whole canvas, or null for none
     private final Variables variables = new Variables();
+    private final Diagnostics diagnostics = new Diagnostics();
 
     // While running a "group ... end" block: where new shapes go, and the enclosing groups' paint (outermost first)
     private Group currentGroup;
@@ -54,6 +55,15 @@ public class Sketch {
         return this;
     }
 
+    // Problems reported by the last fromFile(): errors skip a line or block, warnings only ignore part of one
+    public int getErrorCount() {
+        return diagnostics.errors();
+    }
+
+    public int getWarningCount() {
+        return diagnostics.warnings();
+    }
+
     // Converts <dir>/<name>.txt to <dir>/<name>.svg
     public boolean render(String dir, String name) {
         clear();
@@ -79,6 +89,7 @@ public class Sketch {
 
     // Returns false if the file could not be read; bad lines are reported but skipped
     public boolean fromFile(String filename) {
+        diagnostics.reset();
         Path path = Path.of(filename);
         if (!Files.isRegularFile(path)) {
             System.err.println("Error: File not found: " + filename);
@@ -99,7 +110,7 @@ public class Sketch {
     }
 
     // Reads a script into its meaningful lines, inlining "include <path>" (relative to the including file)
-    private static void load(Path path, String label, Deque<Path> including, List<SourceLine> out) throws IOException {
+    private void load(Path path, String label, Deque<Path> including, List<SourceLine> out) throws IOException {
         List<String> raw = Files.readAllLines(path);
         including.push(path.toRealPath());
 
@@ -138,7 +149,7 @@ public class Sketch {
     }
 
     // First argument of an include line, optionally "quoted" to allow spaces; returns null if missing
-    private static String includeTarget(String args, SourceLine line) {
+    private String includeTarget(String args, SourceLine line) {
         String target, rest;
         if (args.startsWith("\"")) {
             int close = args.indexOf('"', 1);
@@ -153,7 +164,7 @@ public class Sketch {
             rest = split.length > 1 ? split[1] : "";
         }
         if (!rest.isEmpty() && !rest.startsWith("#")) {
-            System.err.printf("[Warning] %s: Ignored unrecognized argument '%s'%n", line.where(), rest);
+            diagnostics.warning(line.where(), "Ignored unrecognized argument '" + rest + "'");
         }
         return target.isEmpty() ? null : target;
     }
@@ -213,7 +224,7 @@ public class Sketch {
                 throw new InputMismatchException("Invalid variable name '" + index + "'");
             }
         } catch (NoSuchElementException e) {
-            reportSyntaxError(line, e);
+            diagnostics.syntaxError(line, e);
             return;
         }
 
@@ -236,9 +247,9 @@ public class Sketch {
         StyleArgs args;
         try (Scanner ls = new Scanner(variables.substituteLine(line.text())).useLocale(Locale.ROOT)) {
             ls.next(); // "group"
-            args = StyleArgs.parse(ls, false, line.where());
+            args = StyleArgs.parse(ls, false, line.where(), diagnostics);
         } catch (NoSuchElementException e) {
-            reportSyntaxError(line, e);
+            diagnostics.syntaxError(line, e);
             return;
         }
         args.applyTransform(group);
@@ -286,13 +297,8 @@ public class Sketch {
                 executeCommand(variables.substituteLine(line.text()), line);
             }
         } catch (NoSuchElementException e) {
-            reportSyntaxError(line, e);
+            diagnostics.syntaxError(line, e);
         }
-    }
-
-    private static void reportSyntaxError(SourceLine line, NoSuchElementException e) {
-        String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
-        System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
     }
 
     // set <name> <value>: the value may be a number, {expression}, color, "text" or another variable
@@ -305,7 +311,7 @@ public class Sketch {
             throw new InputMismatchException("Invalid variable name '" + name + "'");
         }
         if (tokens.size() > 3 && !tokens.get(3).startsWith("#")) {
-            System.err.printf("[Warning] %s: Ignored unrecognized argument '%s'%n", line.where(), tokens.get(3));
+            diagnostics.warning(line.where(), "Ignored unrecognized argument '" + tokens.get(3) + "'");
         }
         variables.set(name, variables.substitute(tokens.get(2)));
     }
@@ -325,14 +331,14 @@ public class Sketch {
             Shape shape = parseShape(type, ls);
 
             if (shape != null) {
-                StyleArgs own = StyleArgs.parse(ls, shape instanceof Arrow, line.where());
+                StyleArgs own = StyleArgs.parse(ls, shape instanceof Arrow, line.where(), diagnostics);
                 for (StyleArgs inherited : groupPaint) {
                     inherited.applyPaint(shape); // outer groups first, so inner ones win
                 }
                 own.applyTo(shape);
                 addShape(shape);
             } else {
-                System.err.printf("[Warning] %s: Unknown shape command '%s'%n", line.where(), type);
+                diagnostics.error(line.where(), "Unknown shape command '" + type + "'");
             }
         }
     }
@@ -346,8 +352,8 @@ public class Sketch {
         }
     }
 
-    private static void error(SourceLine line, String message) {
-        System.err.printf("[Error] %s: %s%n", line.where(), message);
+    private void error(SourceLine line, String message) {
+        diagnostics.error(line.where(), message);
     }
 
     private Shape parseShape(String type, Scanner ls) {

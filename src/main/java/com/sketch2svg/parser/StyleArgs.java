@@ -31,7 +31,7 @@ final class StyleArgs {
 
     // Reads the remaining tokens of a line. `where` prefixes warnings, e.g. "Line 5".
     // legacyArrowRotation enables the deprecated "arrow ... <rot> <strokeWidth>" form.
-    static StyleArgs parse(Scanner ls, boolean legacyArrowRotation, String where) {
+    static StyleArgs parse(Scanner ls, boolean legacyArrowRotation, String where, Diagnostics diagnostics) {
         StyleArgs args = new StyleArgs();
         List<Float> numbers = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
@@ -41,7 +41,7 @@ final class StyleArgs {
             int eq = tok.indexOf('=');
 
             if (eq > 0) {
-                args.applyNamed(tok.substring(0, eq).toLowerCase(Locale.ROOT), tok.substring(eq + 1), tok, where);
+                args.applyNamed(tok.substring(0, eq).toLowerCase(Locale.ROOT), tok.substring(eq + 1), tok, where, diagnostics);
             } else if (ColorInt.isColor(tok)) {
                 colors.add(ColorInt.parseColor(tok));
             } else if (NUMBER.matcher(tok).matches()) {
@@ -49,19 +49,19 @@ final class StyleArgs {
             } else if (tok.startsWith("#")) {
                 break; // trailing comment
             } else {
-                warn(where, "Ignored unrecognized argument '" + tok + "'");
+                diagnostics.warning(where, "Ignored unrecognized argument '" + tok + "'");
             }
         }
 
         if (legacyArrowRotation && args.rotation == null && numbers.size() >= 2) {
-            warn(where, "Positional arrow rotation is deprecated, use rot=" + numbers.get(0));
+            diagnostics.warning(where, "Positional arrow rotation is deprecated, use rot=" + numbers.get(0));
             args.rotation = numbers.remove(0);
         }
         if (numbers.size() > 1) {
-            warn(where, "Ignored extra numbers " + numbers.subList(1, numbers.size()) + " (only one stroke width is allowed)");
+            diagnostics.warning(where, "Ignored extra numbers " + numbers.subList(1, numbers.size()) + " (only one stroke width is allowed)");
         }
         if (colors.size() > 2) {
-            warn(where, "Ignored " + (colors.size() - 2) + " extra color(s) (expected stroke then fill)");
+            diagnostics.warning(where, "Ignored " + (colors.size() - 2) + " extra color(s) (expected stroke then fill)");
         }
 
         // Named values win over positional ones
@@ -75,7 +75,7 @@ final class StyleArgs {
         return args;
     }
 
-    private void applyNamed(String key, String value, String tok, String where) {
+    private void applyNamed(String key, String value, String tok, String where, Diagnostics diagnostics) {
         switch (key) {
             case "rot" -> rotation = number(value, tok);
             case "fill" -> fill = color(value, tok);
@@ -89,7 +89,7 @@ final class StyleArgs {
             case "scale" -> scale = NUMBER.matcher(value).matches()
                     ? new float[]{number(value, tok), number(value, tok)}
                     : pair(value, tok);
-            default -> warn(where, "Ignored unrecognized argument '" + tok + "'");
+            default -> diagnostics.warning(where, "Ignored unrecognized argument '" + tok + "'");
         }
     }
 
@@ -129,9 +129,5 @@ final class StyleArgs {
             throw new InputMismatchException("Expected x,y in " + tok);
         String[] xy = value.split(",");
         return new float[]{Float.parseFloat(xy[0]), Float.parseFloat(xy[1])};
-    }
-
-    private static void warn(String where, String message) {
-        System.err.printf("[Warning] %s: %s%n", where, message);
     }
 }

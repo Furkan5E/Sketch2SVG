@@ -47,6 +47,8 @@ Options:
   -i, --input <file>       Path to source sketch .txt file
   -o, --output <file/dir>  Path for output .svg file or destination folder
   -d, --batch <dir>        Batch convert all .txt files inside directory
+  -c, --check              Only report errors and warnings; write nothing
+                           (exit code 1 if any script has errors)
   -h, --help               Display this help message
   -v, --version            Display the version
 ```

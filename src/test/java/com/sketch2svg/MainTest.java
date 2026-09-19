@@ -66,6 +66,25 @@ public class MainTest {
     }
 
     @Test
+    void testCheckModeWritesNothingAndFailsOnErrors() throws IOException {
+        Path clean = tempDir.resolve("clean.txt");
+        Path warned = tempDir.resolve("warned.txt");
+        Path broken = tempDir.resolve("broken.txt");
+        Files.writeString(clean, "circle 10 0 0\n");
+        Files.writeString(warned, "circle 10 0 0 colour=red\n");
+        Files.writeString(broken, "circle 10 0 0\nsquircle 5 0 0\n");
+
+        assertEquals(0, Main.run(new String[]{"--check", "-i", clean.toString()}));
+        assertEquals(0, Main.run(new String[]{"-c", "-i", warned.toString()})); // warnings don't fail
+        assertEquals(1, Main.run(new String[]{"-c", "-i", broken.toString()}));
+        assertEquals(1, Main.run(new String[]{"-c", "-d", tempDir.toString()}));
+
+        try (var files = Files.list(tempDir)) {
+            assertTrue(files.noneMatch(p -> p.toString().endsWith(".svg")));
+        }
+    }
+
+    @Test
     void testVersionFlag() {
         PrintStream originalOut = System.out;
         ByteArrayOutputStream out = new ByteArrayOutputStream();
