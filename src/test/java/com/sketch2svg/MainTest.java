@@ -3,7 +3,10 @@ package com.sketch2svg;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -60,6 +63,20 @@ public class MainTest {
     void testNoInputFails() {
         assertEquals(1, Main.run(new String[]{}));
         assertEquals(1, Main.run(new String[]{"-o", tempDir.resolve("out.svg").toString()}));
+    }
+
+    @Test
+    void testVersionFlag() {
+        PrintStream originalOut = System.out;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            System.setOut(new PrintStream(out, true, StandardCharsets.UTF_8));
+            assertEquals(0, Main.run(new String[]{"--version"}));
+        } finally {
+            System.setOut(originalOut);
+        }
+        // Tests run from compiled classes, which have no jar manifest
+        assertEquals("Sketch2SVG dev", out.toString(StandardCharsets.UTF_8).strip());
     }
 
     @Test

@@ -48,6 +48,7 @@ Options:
   -o, --output <file/dir>  Path for output .svg file or destination folder
   -d, --batch <dir>        Batch convert all .txt files inside directory
   -h, --help               Display this help message
+  -v, --version            Display the version
 ```
 ---
 ## Shape	Syntax

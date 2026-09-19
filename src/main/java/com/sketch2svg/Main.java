@@ -43,6 +43,10 @@ public class Main {
                     printHelp();
                     return 0;
                 }
+                case "-v", "--version" -> {
+                    System.out.println("Sketch2SVG " + version());
+                    return 0;
+                }
                 default -> {
                     if (inputPath == null && !args[i].startsWith("-")) {
                         inputPath = args[i];
@@ -76,6 +80,12 @@ public class Main {
         }
 
         return convertSingleFile(inputPath, outputPath) ? 0 : 1;
+    }
+
+    // Project version from the jar manifest, or "dev" when running from compiled classes
+    static String version() {
+        String version = Main.class.getPackage().getImplementationVersion();
+        return version != null ? version : "dev";
     }
 
     // The argument after an option, or null if it is missing or is another option ("-" alone is a value)
@@ -145,6 +155,7 @@ public class Main {
               -o, --output <file/dir>  Path for output .svg file or destination folder
               -d, --batch <dir>        Batch convert all .txt files inside directory
               -h, --help               Display this help message
+              -v, --version            Display the version
             """);
     }
 }
