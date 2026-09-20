@@ -74,6 +74,15 @@ public class Sketch {
 
     // Returns false if the file could not be written
     public boolean exportSVG(String svgFilePath) {
+        return buildSVG().toFile(svgFilePath);
+    }
+
+    // The complete SVG document as text
+    public String toSVGString() {
+        return buildSVG().toString();
+    }
+
+    private SVG buildSVG() {
         SVG svg = new SVG();
         if (background != null) {
             // Cover the whole viewBox; convert its SVG-space centre back to +y-up sketch space
@@ -84,7 +93,7 @@ public class Sketch {
         for (Shape shape : shapes) {
             svg.addContent(shape);
         }
-        return svg.toFile(svgFilePath);
+        return svg;
     }
 
     // Returns false if the file could not be read; bad lines are reported but skipped
@@ -103,17 +112,32 @@ public class Sketch {
             System.err.println("Could not open: " + filename);
             return false;
         }
-
-        variables.clear(); // each script starts with a fresh set of variables
-        executeBlock(lines, 0, lines.size());
+        run(lines);
         return true;
     }
 
-    // Reads a script into its meaningful lines, inlining "include <path>" (relative to the including file)
+    // Parses a script held in memory (e.g. read from stdin); includes resolve against baseDir
+    public void fromString(String source, Path baseDir) {
+        diagnostics.reset();
+        List<SourceLine> lines = new ArrayList<>();
+        load(source.lines().toList(), baseDir.toAbsolutePath(), null, new ArrayDeque<>(), lines);
+        run(lines);
+    }
+
+    private void run(List<SourceLine> lines) {
+        variables.clear(); // each script starts with a fresh set of variables
+        executeBlock(lines, 0, lines.size());
+    }
+
+    // Reads a script file into its meaningful lines, inlining "include <path>" (relative to the including file)
     private void load(Path path, String label, Deque<Path> including, List<SourceLine> out) throws IOException {
         List<String> raw = Files.readAllLines(path);
         including.push(path.toRealPath());
+        load(raw, path.toAbsolutePath().getParent(), label, including, out);
+        including.pop();
+    }
 
+    private void load(List<String> raw, Path baseDir, String label, Deque<Path> including, List<SourceLine> out) {
         for (int i = 0; i < raw.size(); i++) {
             String text = raw.get(i).trim();
             if (text.isEmpty() || text.startsWith("#")) {
@@ -132,20 +156,21 @@ public class Sketch {
                 error(line, "include needs a file path");
                 continue;
             }
-            Path included = path.toAbsolutePath().getParent().resolve(target);
+            Path included = baseDir.resolve(target);
             if (!Files.isRegularFile(included)) {
                 error(line, "Included file not found: " + target);
-            } else if (including.contains(included.toRealPath())) {
-                error(line, "Circular include of " + target);
-            } else {
-                try {
+                continue;
+            }
+            try {
+                if (including.contains(included.toRealPath())) {
+                    error(line, "Circular include of " + target);
+                } else {
                     load(included, target, including, out);
-                } catch (IOException e) {
-                    error(line, "Could not read included file: " + target);
                 }
+            } catch (IOException e) {
+                error(line, "Could not read included file: " + target);
             }
         }
-        including.pop();
     }
 
     // First argument of an include line, optionally "quoted" to allow spaces; returns null if missing

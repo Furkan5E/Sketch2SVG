@@ -3,6 +3,9 @@ package com.sketch2svg;
 import com.sketch2svg.parser.Sketch;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
@@ -50,9 +53,10 @@ public class Main {
                     return 0;
                 }
                 default -> {
-                    if (inputPath == null && !args[i].startsWith("-")) {
+                    boolean isValue = args[i].equals(STDIO) || !args[i].startsWith("-");
+                    if (inputPath == null && isValue) {
                         inputPath = args[i];
-                    } else if (outputPath == null && !args[i].startsWith("-")) {
+                    } else if (outputPath == null && isValue) {
                         outputPath = args[i];
                     } else {
                         System.err.println("Unknown argument: " + args[i]);
@@ -65,6 +69,11 @@ public class Main {
 
         //batch directory conversion
         if (dirPath != null) {
+            if (STDIO.equals(outputPath)) {
+                System.err.println("Batch mode writes one file per sketch; -o - (stdout) is not supported with -d");
+                return 1;
+            }
+            log = System.out;
             return convertBatch(dirPath, outputPath, check) ? 0 : 1;
         }
 
@@ -74,17 +83,49 @@ public class Main {
             printHelp();
             return 1;
         }
+        if (outputPath == null) {
+            if (inputPath.equals(STDIO)) {
+                outputPath = STDIO; // stdin in, stdout out, for pipelines
+            } else {
+                outputPath = inputPath.replaceAll("(?i)\\.txt$", "") + ".svg";
+                if (outputPath.equals(inputPath)) {
+                    outputPath = inputPath + ".svg";
+                }
+            }
+        }
+        // When the SVG goes to stdout, status messages must not mix with it
+        log = outputPath.equals(STDIO) && !check ? System.err : System.out;
+
         if (check) {
             return checkFile(inputPath) ? 0 : 1;
         }
-        if (outputPath == null) {
-            outputPath = inputPath.replaceAll("(?i)\\.txt$", "") + ".svg";
-            if (outputPath.equals(inputPath)) {
-                outputPath = inputPath + ".svg";
-            }
-        }
-
         return convertSingleFile(inputPath, outputPath) ? 0 : 1;
+    }
+
+    // "-" as an input or output path means stdin / stdout
+    private static final String STDIO = "-";
+
+    // Where progress messages go (stderr while the SVG itself is written to stdout)
+    private static PrintStream log = System.out;
+
+    // Parses a sketch from a file, or from stdin for "-" (includes then resolve against the working directory).
+    // Returns null if the input could not be read.
+    private static Sketch load(String inputPath) {
+        Sketch sketch = new Sketch();
+        if (!inputPath.equals(STDIO)) {
+            return sketch.fromFile(inputPath) ? sketch : null;
+        }
+        try {
+            sketch.fromString(new String(System.in.readAllBytes(), StandardCharsets.UTF_8), Path.of(""));
+            return sketch;
+        } catch (IOException e) {
+            System.err.println("Could not read stdin: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private static String displayName(String path) {
+        return path.equals(STDIO) ? "<stdin>" : path;
     }
 
     // Project version from the jar manifest, or "dev" when running from compiled classes
@@ -103,24 +144,33 @@ public class Main {
     }
 
     private static boolean convertSingleFile(String inputPath, String outputPath) {
-        System.out.println("Processing: " + inputPath);
-        Sketch sketch = new Sketch();
-        if (!sketch.fromFile(inputPath) || !sketch.exportSVG(outputPath)) {
-            System.err.println("Failed to convert: " + inputPath);
+        log.println("Processing: " + displayName(inputPath));
+        Sketch sketch = load(inputPath);
+        if (sketch == null) {
+            System.err.println("Failed to convert: " + displayName(inputPath));
             return false;
         }
-        System.out.println("Successfully generated: " + outputPath);
+        if (outputPath.equals(STDIO)) {
+            System.out.println(sketch.toSVGString());
+            System.out.flush();
+            return true;
+        }
+        if (!sketch.exportSVG(outputPath)) {
+            System.err.println("Failed to convert: " + displayName(inputPath));
+            return false;
+        }
+        log.println("Successfully generated: " + outputPath);
         return true;
     }
 
     // Parses without writing anything; fails if the script has errors (warnings are reported but allowed)
     private static boolean checkFile(String inputPath) {
-        Sketch sketch = new Sketch();
-        if (!sketch.fromFile(inputPath)) {
+        Sketch sketch = load(inputPath);
+        if (sketch == null) {
             return false;
         }
-        System.out.printf("%s: %d error(s), %d warning(s)%n",
-                inputPath, sketch.getErrorCount(), sketch.getWarningCount());
+        log.printf("%s: %d error(s), %d warning(s)%n",
+                displayName(inputPath), sketch.getErrorCount(), sketch.getWarningCount());
         return sketch.getErrorCount() == 0;
     }
 
@@ -170,8 +220,9 @@ public class Main {
               java -jar Sketch2SVG.jar [options]
             
             Options:
-              -i, --input <file>       Path to source sketch .txt file
+              -i, --input <file>       Path to source sketch .txt file ("-" reads stdin)
               -o, --output <file/dir>  Path for output .svg file or destination folder
+                                       ("-" writes stdout; the default when reading stdin)
               -d, --batch <dir>        Batch convert all .txt files inside directory
               -c, --check              Only report errors and warnings; write nothing
                                        (exit code 1 if any script has errors)

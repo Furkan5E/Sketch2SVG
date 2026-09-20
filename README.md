@@ -37,6 +37,12 @@ java -cp target/classes com.sketch2svg.Main -i src/main/resources/sketch.txt -o 
 java -jar target/Sketch2SVG.jar -i src/main/resources/sketch.txt -o output.svg
 ```
 
+### Pipelines
+```bash
+cat sketch.txt | java -jar target/Sketch2SVG.jar -i - > output.svg
+```
+When writing to stdout, progress messages go to stderr so the output is pure SVG.
+
 ### Batch Directory Conversion
 ```bash
 java -cp target/classes com.sketch2svg.Main -d ./sketches -o ./dist
@@ -44,8 +50,9 @@ java -cp target/classes com.sketch2svg.Main -d ./sketches -o ./dist
 ### Options
 ```bash
 Options:
-  -i, --input <file>       Path to source sketch .txt file
+  -i, --input <file>       Path to source sketch .txt file ("-" reads stdin)
   -o, --output <file/dir>  Path for output .svg file or destination folder
+                           ("-" writes stdout; the default when reading stdin)
   -d, --batch <dir>        Batch convert all .txt files inside directory
   -c, --check              Only report errors and warnings; write nothing
                            (exit code 1 if any script has errors)
