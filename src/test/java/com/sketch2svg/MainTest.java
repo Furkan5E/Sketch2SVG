@@ -135,6 +135,25 @@ public class MainTest {
     }
 
     @Test
+    void testRecursiveBatchMirrorsFolders() throws IOException {
+        Path in = tempDir.resolve("in");
+        Files.createDirectories(in.resolve("scenes/night"));
+        Files.writeString(in.resolve("top.txt"), "circle 1 0 0\n");
+        Files.writeString(in.resolve("scenes/night/moon.TXT"), "circle 5 0 0\n");
+        Files.writeString(in.resolve("scenes/notes.md"), "not a sketch\n");
+        Path out = tempDir.resolve("out");
+
+        // Without -r only the top level is converted
+        assertEquals(0, Main.run(new String[]{"-d", in.toString(), "-o", out.toString()}));
+        assertTrue(Files.exists(out.resolve("top.svg")));
+        assertFalse(Files.exists(out.resolve("scenes")));
+
+        assertEquals(0, Main.run(new String[]{"-d", in.toString(), "-r", "-o", out.toString()}));
+        assertTrue(Files.exists(out.resolve("scenes/night/moon.svg")));
+        assertFalse(Files.exists(out.resolve("scenes/notes.svg")));
+    }
+
+    @Test
     void testBatchRejectsStdout() {
         assertEquals(1, Main.run(new String[]{"-d", tempDir.toString(), "-o", "-"}));
     }

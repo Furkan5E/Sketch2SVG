@@ -2,13 +2,14 @@ package com.sketch2svg;
 
 import com.sketch2svg.parser.Sketch;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -25,6 +26,7 @@ public class Main {
         String outputPath = null;
         String dirPath = null;
         boolean check = false;
+        boolean recursive = false;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -48,6 +50,7 @@ public class Main {
                     return 0;
                 }
                 case "-c", "--check" -> check = true;
+                case "-r", "--recursive" -> recursive = true;
                 case "-v", "--version" -> {
                     System.out.println("Sketch2SVG " + version());
                     return 0;
@@ -74,7 +77,7 @@ public class Main {
                 return 1;
             }
             log = System.out;
-            return convertBatch(dirPath, outputPath, check) ? 0 : 1;
+            return convertBatch(dirPath, outputPath, check, recursive) ? 0 : 1;
         }
 
         //single file conversion
@@ -174,30 +177,44 @@ public class Main {
         return sketch.getErrorCount() == 0;
     }
 
-    private static boolean convertBatch(String inputDir, String outputDir, boolean check) {
-        File folder = new File(inputDir);
-        if (!folder.isDirectory()) {
+    private static boolean convertBatch(String inputDir, String outputDir, boolean check, boolean recursive) {
+        Path folder = Path.of(inputDir);
+        if (!Files.isDirectory(folder)) {
             System.err.println("Error: Provided path is not a directory: " + inputDir);
             return false;
         }
 
-        File[] files = folder.listFiles((d, name) -> name.toLowerCase(Locale.ROOT).endsWith(".txt"));
-        if (files == null || files.length == 0) {
+        // Sorted so runs are repeatable; recursive mode descends into subfolders
+        List<Path> files;
+        try (Stream<Path> found = recursive ? Files.walk(folder) : Files.list(folder)) {
+            files = found.filter(Files::isRegularFile)
+                    .filter(p -> p.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".txt"))
+                    .sorted()
+                    .toList();
+        } catch (IOException e) {
+            System.err.println("Error: Could not read directory: " + inputDir + " (" + e.getMessage() + ")");
+            return false;
+        }
+        if (files.isEmpty()) {
             System.out.println("No .txt files found in directory: " + inputDir);
             return true;
         }
 
-        String targetDir = outputDir != null ? outputDir : inputDir;
-        if (!check) {
-            new File(targetDir).mkdirs();
-        }
+        Path targetDir = Path.of(outputDir != null ? outputDir : inputDir);
 
-        System.out.printf("Batch %s %d file(s)...%n", check ? "checking" : "converting", files.length);
+        System.out.printf("Batch %s %d file(s)...%n", check ? "checking" : "converting", files.size());
         int failed = 0;
-        for (File file : files) {
-            String outName = file.getName().replaceAll("(?i)\\.txt$", "") + ".svg";
-            Path outPath = Paths.get(targetDir, outName);
-            boolean ok = check ? checkFile(file.getPath()) : convertSingleFile(file.getPath(), outPath.toString());
+        for (Path file : files) {
+            boolean ok;
+            if (check) {
+                ok = checkFile(file.toString());
+            } else {
+                // Mirror the input's folder structure under the target directory
+                Path relative = folder.relativize(file);
+                String outName = relative.getFileName().toString().replaceAll("(?i)\\.txt$", "") + ".svg";
+                Path outPath = targetDir.resolve(relative).resolveSibling(outName);
+                ok = createParent(outPath) && convertSingleFile(file.toString(), outPath.toString());
+            }
             if (!ok) {
                 failed++;
             }
@@ -209,6 +226,19 @@ public class Main {
         }
         System.out.printf("Batch %s complete.%n", check ? "check" : "conversion");
         return true;
+    }
+
+    private static boolean createParent(Path file) {
+        try {
+            Path parent = file.toAbsolutePath().getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            return true;
+        } catch (IOException e) {
+            System.err.println("Error: Could not create folder for " + file + " (" + e.getMessage() + ")");
+            return false;
+        }
     }
 
     private static void printHelp() {
@@ -224,6 +254,7 @@ public class Main {
               -o, --output <file/dir>  Path for output .svg file or destination folder
                                        ("-" writes stdout; the default when reading stdin)
               -d, --batch <dir>        Batch convert all .txt files inside directory
+              -r, --recursive          With -d, also convert subfolders (mirrored under -o)
               -c, --check              Only report errors and warnings; write nothing
                                        (exit code 1 if any script has errors)
               -h, --help               Display this help message

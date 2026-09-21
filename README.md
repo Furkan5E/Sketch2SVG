@@ -54,6 +54,7 @@ Options:
   -o, --output <file/dir>  Path for output .svg file or destination folder
                            ("-" writes stdout; the default when reading stdin)
   -d, --batch <dir>        Batch convert all .txt files inside directory
+  -r, --recursive          With -d, also convert subfolders (mirrored under -o)
   -c, --check              Only report errors and warnings; write nothing
                            (exit code 1 if any script has errors)
   -h, --help               Display this help message
