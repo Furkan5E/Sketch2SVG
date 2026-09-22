@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -151,6 +153,65 @@ public class MainTest {
         assertEquals(0, Main.run(new String[]{"-d", in.toString(), "-r", "-o", out.toString()}));
         assertTrue(Files.exists(out.resolve("scenes/night/moon.svg")));
         assertFalse(Files.exists(out.resolve("scenes/notes.svg")));
+    }
+
+    // Polls until the condition holds or the deadline passes (keeps the timing-based test from being flaky)
+    private static boolean eventually(BooleanSupplier condition) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + 10_000;
+        while (System.currentTimeMillis() < deadline) {
+            if (condition.getAsBoolean()) return true;
+            Thread.sleep(50);
+        }
+        return false;
+    }
+
+    private static String readOrEmpty(Path file) {
+        try {
+            return Files.readString(file);
+        } catch (IOException e) {
+            return "";
+        }
+    }
+
+    @Test
+    void testWatchRebuildsOnChangesUntilInterrupted() throws Exception {
+        Path input = tempDir.resolve("in.txt");
+        Path part = tempDir.resolve("part.txt");
+        Path output = tempDir.resolve("out.svg");
+        Files.writeString(input, "circle 1 0 0\ninclude part.txt\n");
+        Files.writeString(part, "square 2 0 0\n");
+
+        int[] exit = {-1};
+        Thread watcher = new Thread(() -> exit[0] = Main.run(new String[]{"-w", "-i", input.toString(), "-o", output.toString()}));
+        watcher.start();
+        try {
+            assertTrue(eventually(() -> readOrEmpty(output).contains("<circle")), "first build");
+
+            // Editing the main file and an included file both trigger a rebuild
+            Files.writeString(input, "rect 3 3 0 0 fill=gold\ninclude part.txt\n");
+            Files.setLastModifiedTime(input, FileTime.fromMillis(System.currentTimeMillis() + 5_000));
+            assertTrue(eventually(() -> readOrEmpty(output).contains("#FFD700FF")), "rebuilt after main file change");
+
+            Files.writeString(part, "circle 7 0 0\n");
+            Files.setLastModifiedTime(part, FileTime.fromMillis(System.currentTimeMillis() + 10_000));
+            assertTrue(eventually(() -> readOrEmpty(output).contains("r=\"7.0\"")), "rebuilt after include change");
+        } finally {
+            watcher.interrupt();
+            watcher.join(5_000);
+        }
+        assertFalse(watcher.isAlive());
+        assertEquals(0, exit[0]);
+    }
+
+    @Test
+    void testWatchRejectsUnwatchableInputs() throws IOException {
+        Path input = tempDir.resolve("in.txt");
+        Files.writeString(input, "circle 1 0 0\n");
+        // These return straight away instead of blocking in the watch loop
+        assertEquals(1, Main.run(new String[]{"-w", "-d", tempDir.toString()}));
+        assertEquals(1, Main.run(new String[]{"-w", "-i", "-"}));
+        assertEquals(1, Main.run(new String[]{"-w", "-i", input.toString(), "-o", "-"}));
+        assertEquals(1, Main.run(new String[]{"-w", "-c", "-i", input.toString()}));
     }
 
     @Test

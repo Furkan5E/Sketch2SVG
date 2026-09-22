@@ -37,6 +37,12 @@ java -cp target/classes com.sketch2svg.Main -i src/main/resources/sketch.txt -o 
 java -jar target/Sketch2SVG.jar -i src/main/resources/sketch.txt -o output.svg
 ```
 
+### Watch Mode
+```bash
+java -jar target/Sketch2SVG.jar -w -i sketch.txt -o output.svg
+```
+Rebuilds `output.svg` every time `sketch.txt` or any file it includes is saved. Stop with Ctrl+C.
+
 ### Pipelines
 ```bash
 cat sketch.txt | java -jar target/Sketch2SVG.jar -i - > output.svg
@@ -55,6 +61,7 @@ Options:
                            ("-" writes stdout; the default when reading stdin)
   -d, --batch <dir>        Batch convert all .txt files inside directory
   -r, --recursive          With -d, also convert subfolders (mirrored under -o)
+  -w, --watch              Re-convert whenever the input (or an included file) changes
   -c, --check              Only report errors and warnings; write nothing
                            (exit code 1 if any script has errors)
   -h, --help               Display this help message

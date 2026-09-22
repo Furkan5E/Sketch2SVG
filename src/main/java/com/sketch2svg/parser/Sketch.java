@@ -25,6 +25,7 @@ public class Sketch {
     private Integer background; // RGBA fill for the whole canvas, or null for none
     private final Variables variables = new Variables();
     private final Diagnostics diagnostics = new Diagnostics();
+    private final List<Path> sourceFiles = new ArrayList<>();
 
     // While running a "group ... end" block: where new shapes go, and the enclosing groups' paint (outermost first)
     private Group currentGroup;
@@ -64,6 +65,11 @@ public class Sketch {
         return diagnostics.warnings();
     }
 
+    // Every file the last parse read or tried to include (missing ones too, so watchers notice when they appear)
+    public List<Path> getSourceFiles() {
+        return List.copyOf(sourceFiles);
+    }
+
     // Converts <dir>/<name>.txt to <dir>/<name>.svg
     public boolean render(String dir, String name) {
         clear();
@@ -99,6 +105,7 @@ public class Sketch {
     // Returns false if the file could not be read; bad lines are reported but skipped
     public boolean fromFile(String filename) {
         diagnostics.reset();
+        sourceFiles.clear();
         Path path = Path.of(filename);
         if (!Files.isRegularFile(path)) {
             System.err.println("Error: File not found: " + filename);
@@ -119,6 +126,7 @@ public class Sketch {
     // Parses a script held in memory (e.g. read from stdin); includes resolve against baseDir
     public void fromString(String source, Path baseDir) {
         diagnostics.reset();
+        sourceFiles.clear();
         List<SourceLine> lines = new ArrayList<>();
         load(source.lines().toList(), baseDir.toAbsolutePath(), null, new ArrayDeque<>(), lines);
         run(lines);
@@ -133,6 +141,7 @@ public class Sketch {
     private void load(Path path, String label, Deque<Path> including, List<SourceLine> out) throws IOException {
         List<String> raw = Files.readAllLines(path);
         including.push(path.toRealPath());
+        sourceFiles.add(path.toRealPath());
         load(raw, path.toAbsolutePath().getParent(), label, including, out);
         including.pop();
     }
@@ -158,6 +167,7 @@ public class Sketch {
             }
             Path included = baseDir.resolve(target);
             if (!Files.isRegularFile(included)) {
+                sourceFiles.add(included.toAbsolutePath().normalize());
                 error(line, "Included file not found: " + target);
                 continue;
             }

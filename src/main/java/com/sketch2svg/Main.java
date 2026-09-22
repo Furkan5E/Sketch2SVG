@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -27,6 +28,7 @@ public class Main {
         String dirPath = null;
         boolean check = false;
         boolean recursive = false;
+        boolean watch = false;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -51,6 +53,7 @@ public class Main {
                 }
                 case "-c", "--check" -> check = true;
                 case "-r", "--recursive" -> recursive = true;
+                case "-w", "--watch" -> watch = true;
                 case "-v", "--version" -> {
                     System.out.println("Sketch2SVG " + version());
                     return 0;
@@ -72,6 +75,10 @@ public class Main {
 
         //batch directory conversion
         if (dirPath != null) {
+            if (watch) {
+                System.err.println("--watch works on a single file (-i), not with -d");
+                return 1;
+            }
             if (STDIO.equals(outputPath)) {
                 System.err.println("Batch mode writes one file per sketch; -o - (stdout) is not supported with -d");
                 return 1;
@@ -99,6 +106,14 @@ public class Main {
         // When the SVG goes to stdout, status messages must not mix with it
         log = outputPath.equals(STDIO) && !check ? System.err : System.out;
 
+        if (watch) {
+            // Watching needs a real file to poll and a real file to rewrite
+            if (inputPath.equals(STDIO) || outputPath.equals(STDIO) || check) {
+                System.err.println("--watch needs an input file and an output file (not stdin/stdout or --check)");
+                return 1;
+            }
+            return watch(inputPath, outputPath);
+        }
         if (check) {
             return checkFile(inputPath) ? 0 : 1;
         }
@@ -153,6 +168,41 @@ public class Main {
             System.err.println("Failed to convert: " + displayName(inputPath));
             return false;
         }
+        return write(sketch, inputPath, outputPath);
+    }
+
+    private static final long POLL_MILLIS = 300;
+    private static final long SETTLE_MILLIS = 100;
+
+    // Converts once, then again whenever the sketch or anything it includes changes; runs until interrupted
+    private static int watch(String inputPath, String outputPath) {
+        Path main = Path.of(inputPath).toAbsolutePath().normalize();
+        FileWatcher watcher = new FileWatcher();
+        log.println("Watching " + inputPath + " for changes (Ctrl+C to stop)");
+        while (true) {
+            log.println("Processing: " + inputPath);
+            Sketch sketch = load(inputPath);
+            List<Path> sources = new ArrayList<>(List.of(main));
+            if (sketch != null) {
+                write(sketch, inputPath, outputPath);
+                sources.addAll(sketch.getSourceFiles()); // includes can change between builds
+            }
+            watcher.track(sources);
+
+            try {
+                do {
+                    Thread.sleep(POLL_MILLIS);
+                } while (!watcher.changed());
+                Thread.sleep(SETTLE_MILLIS); // editors often save in several writes
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return 0;
+            }
+        }
+    }
+
+    // Writes an already-loaded sketch to a file, or to stdout for "-"
+    private static boolean write(Sketch sketch, String inputPath, String outputPath) {
         if (outputPath.equals(STDIO)) {
             System.out.println(sketch.toSVGString());
             System.out.flush();
@@ -255,6 +305,7 @@ public class Main {
                                        ("-" writes stdout; the default when reading stdin)
               -d, --batch <dir>        Batch convert all .txt files inside directory
               -r, --recursive          With -d, also convert subfolders (mirrored under -o)
+              -w, --watch              Re-convert whenever the input (or an included file) changes
               -c, --check              Only report errors and warnings; write nothing
                                        (exit code 1 if any script has errors)
               -h, --help               Display this help message
