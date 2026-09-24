@@ -43,7 +43,7 @@
                     <archive>
                         <manifest>
                             <mainClass>com.sketch2svg.Main</mainClass>
-                            <!-- Writes Implementation-Version (the project version) for --version -->
+                            <!-- Writes Implementation-Version (the project version), shown by the version flag -->
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
