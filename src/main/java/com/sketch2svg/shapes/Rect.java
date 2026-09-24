@@ -2,23 +2,23 @@ package com.sketch2svg.shapes;
 
 public class Rect extends LineStrip {
 
-	private float w = 1.f;
-	private float h = 1.f;
+    private float w = 1.f;
+    private float h = 1.f;
 
-	public Rect(){
-		super();
-		closed = true;
-		setNumVertices(4);
-		rebuildVertices(); // Unit rectangle centered at origin
-	}
+    public Rect(){
+        super();
+        closed = true;
+        setNumVertices(4);
+        rebuildVertices(); // Unit rectangle centered at origin
+    }
 
-	public Rect(float w, float h, float cx, float cy){
-		this();
-		size(w, h);
-		setPos(cx, cy);
-	}
+    public Rect(float w, float h, float cx, float cy){
+        this();
+        size(w, h);
+        setPos(cx, cy);
+    }
 
-	public Rect size(float w, float h) {
+    public Rect size(float w, float h) {
         this.w = w;
         this.h = h;
         rebuildVertices();
