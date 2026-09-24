@@ -2,7 +2,6 @@ package com.sketch2svg.core;
 
 // Key-value pair (placed inside tag)
 public class Attrib{
-	// Add members here
 	public String key;
 	public String val;
 

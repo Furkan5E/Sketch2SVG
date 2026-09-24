@@ -10,9 +10,7 @@ public abstract class Elem{
 	// Get this element's unadorned tag name, e.g., "svg" or "circle"
 	public abstract String getTag();
 
-	// Create new attribute to be included in tag
-	//
-	// The newly added attribute is returned and expected to be assigned to another variable. When used inside a subclass, the return value should be assigned to a member variable (pointer) for future reference.
+	// Add an attribute to the tag; subclasses keep the returned Attrib and set its value in updateAttribs()
 	protected final Attrib newAttrib(String key, String val){
 		Attrib a = new Attrib(key, val);
 		attribs.add(a);
@@ -39,7 +37,7 @@ public abstract class Elem{
 
 
 	// Update values of attributes from current object state (i.e., numerical members)
-	protected void updateAttribs(){ /* Implementation in subclasses only */ }
+	protected void updateAttribs(){ /* no attributes by default */ }
 
 
 	/* Returns a fully-formed XML element string

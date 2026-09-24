@@ -22,7 +22,6 @@ public class LineStrip extends Shape {
 			return "polyline";
 	}
 
-	// (This method is finished. No need to edit.)
 	@Override
 	protected void updateAttribs(){
 		super.updateAttribs();
