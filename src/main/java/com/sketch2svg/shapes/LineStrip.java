@@ -26,15 +26,15 @@ public class LineStrip extends Shape {
     protected void updateAttribs(){
         super.updateAttribs();
 
-        String s = "";
+        StringBuilder s = new StringBuilder();
         var p = new Vec2();
         for(int i=0; i<getNumVertices(); i++){
             p.set(getVertex(i,0), getVertex(i,1));
             transform(p);
             p.negY(); // SVG has flipped y-axis. We negate y so +y is up.
-            s += p.x + "," + p.y + " ";
+            s.append(p.x).append(",").append(p.y).append(" ");
         }
-        attribPoints.val = s;
+        attribPoints.val = s.toString();
     }
 
     public void setNumVertices(int n){

@@ -27,7 +27,6 @@ public class Text extends Shape {
         attribTransform = newAttrib("transform");
 
         this.textContent = content;
-        this.content = Xml.escape(content);
         this.fontSize = fontSize;
         setPos(cx, cy);
 
@@ -38,7 +37,6 @@ public class Text extends Shape {
 
     public Text content(String text) {
         this.textContent = text;
-        this.content = Xml.escape(text);
         return this;
     }
 
@@ -75,6 +73,6 @@ public class Text extends Shape {
                     + " translate(" + (-p.x) + " " + (-p.y) + ")";
         }
         attribTransform.val = transform.isEmpty() ? null : transform.trim();
-        this.content = Xml.escape(textContent);
+        setContent(Xml.escape(textContent));
     }
 }

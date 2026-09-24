@@ -4,7 +4,7 @@ import java.util.ArrayList;
 // XML element consisting of a tag and content
 public abstract class Elem{
     private ArrayList<Attrib> attribs = new ArrayList<Attrib>();
-    protected String content = "";
+    private final StringBuilder content = new StringBuilder(); // appended to, so adding children stays linear
 
 
     // Get this element's unadorned tag name, e.g., "svg" or "circle"
@@ -26,13 +26,19 @@ public abstract class Elem{
         if(e == null)
             return;
         if(!content.isEmpty())
-            content += "\n";
-        content += e.toString();
+            content.append('\n');
+        content.append(e.toString());
     }
 
     // Clear content
     public final void clearContent(){
-        content = "";
+        content.setLength(0);
+    }
+
+    // Replace the content with raw (already escaped) XML text
+    protected final void setContent(String xml){
+        content.setLength(0);
+        content.append(xml);
     }
 
 
@@ -56,17 +62,17 @@ public abstract class Elem{
     public final String toString(){
         updateAttribs();
         String tag = getTag();
-        String attribStr = "";
+        StringBuilder sb = new StringBuilder(content.length() + 64).append('<').append(tag);
         for(var a : attribs){
             if(a.val == null) // null means "omit this attribute"
                 continue;
-            attribStr += " " + a.toString();
+            sb.append(' ').append(a);
         }
 
         //empty element tag if no content
-        if(content == null || content.isBlank()) {
-            return "<" + tag + attribStr + "/>";
+        if(content.isEmpty() || content.toString().isBlank()) {
+            return sb.append("/>").toString();
         }
-        return "<" + tag + attribStr + ">\n" + content + "\n</" + tag + ">";
+        return sb.append(">\n").append(content).append("\n</").append(tag).append('>').toString();
     }
 }
