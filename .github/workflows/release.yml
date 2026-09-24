@@ -1,0 +1,32 @@
+name: Release
+
+# Push a tag such as v1.2.0 to build, test and publish Sketch2SVG.jar as a GitHub release
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+        cache: maven
+
+    # The tag (minus the leading "v") becomes the project version, so --version reports it
+    - name: Build and Test
+      run: mvn --batch-mode verify -Drevision="${GITHUB_REF_NAME#v}"
+
+    - name: Publish Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release create "$GITHUB_REF_NAME" target/Sketch2SVG.jar --title "$GITHUB_REF_NAME" --generate-notes
