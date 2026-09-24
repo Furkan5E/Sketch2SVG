@@ -20,8 +20,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Compile and Build
-      run: mvn --batch-mode --update-snapshots compile test-compile
-
-    - name: Run JUnit Tests
-      run: mvn --batch-mode test
+    # Compiles, runs the JUnit tests and packages the jar in one pass
+    - name: Build and Test
+      run: mvn --batch-mode --update-snapshots verify
