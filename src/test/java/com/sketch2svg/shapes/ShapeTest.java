@@ -61,6 +61,20 @@ public class ShapeTest {
     }
 
     @Test
+    void testColorsAreRgbPlusOpacity() {
+        Circle opaque = new Circle(5.0f, 0.0f, 0.0f);
+        opaque.fill("ffdc7a").stroke("000000ff");
+        assertTrue(opaque.toString().contains("style=\"fill:#FFDC7A;stroke-width:1;stroke:#000000\""), opaque.toString());
+
+        // Translucent colours keep their alpha as a separate opacity (0x80 = 128/255)
+        Circle translucent = new Circle(5.0f, 0.0f, 0.0f);
+        translucent.fill("00ff0080").stroke("00000066");
+        assertTrue(translucent.toString().contains(
+                "style=\"fill:#00FF00;fill-opacity:0.502;stroke-width:1;stroke:#000000;stroke-opacity:0.4\""),
+                translucent.toString());
+    }
+
+    @Test
     void testStarVertexCount() {
         Star star = new Star(5, 20.0f, 10.0f, 0.0f, 0.0f);
         // 5 points * 2 (inner + outer alternating) = 10 vertices

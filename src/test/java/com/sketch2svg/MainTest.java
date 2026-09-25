@@ -190,7 +190,7 @@ public class MainTest {
             // Editing the main file and an included file both trigger a rebuild
             Files.writeString(input, "rect 3 3 0 0 fill=gold\ninclude part.txt\n");
             Files.setLastModifiedTime(input, FileTime.fromMillis(System.currentTimeMillis() + 5_000));
-            assertTrue(eventually(() -> readOrEmpty(output).contains("#FFD700FF")), "rebuilt after main file change");
+            assertTrue(eventually(() -> readOrEmpty(output).contains("fill:#FFD700")), "rebuilt after main file change");
 
             Files.writeString(part, "circle 7 0 0\n");
             Files.setLastModifiedTime(part, FileTime.fromMillis(System.currentTimeMillis() + 10_000));

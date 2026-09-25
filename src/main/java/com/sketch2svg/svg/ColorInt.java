@@ -124,4 +124,14 @@ public class ColorInt{
     public static String hexString(int rgba){
         return "%08X".formatted(rgba);
     }
+
+    // RRGGBB without alpha, for SVG paint (pair with opacity() for widely supported output)
+    public static String rgbHexString(int rgba){
+        return "%06X".formatted(rgba >>> 8);
+    }
+
+    // Alpha as 0..1
+    public static double opacity(int rgba){
+        return (rgba & maskAlpha) / 255.0;
+    }
 }

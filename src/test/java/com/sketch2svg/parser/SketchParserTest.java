@@ -240,7 +240,7 @@ public class SketchParserTest {
         String svg = Files.readString(output);
 
         // Drawn first, covering the default -100..100 viewBox, even though it came after the circle
-        int bg = svg.indexOf("fill:#0B1020FF");
+        int bg = svg.indexOf("fill:#0B1020\"");
         assertTrue(bg > 0 && bg < svg.indexOf("<circle"), svg);
         assertTrue(svg.contains("points=\"-100,100 100,100 100,-100 -100,-100 \""), svg);
     }

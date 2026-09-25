@@ -25,12 +25,19 @@ public abstract class Shape extends Elem {
     // If overriding in a subclass, make sure to call this method via super.updateAttribs().
     @Override
     protected void updateAttribs(){
-        var style = "fill:" + (ColorInt.isClear(fill) ? "none" : "#"+ColorInt.hexString(fill));
+        var style = "fill:" + (ColorInt.isClear(fill) ? "none" : paint("fill", fill));
         if(strokeWidth > 0.f && !ColorInt.isClear(stroke)){
             style += ";stroke-width:" + Num.format(strokeWidth);
-            style += ";stroke:#" + ColorInt.hexString(stroke);
+            style += ";stroke:" + paint("stroke", stroke);
         }
         attribStyle.val = hasStyle() ? style : null;
+    }
+
+    // "#RRGGBB" plus a separate opacity when translucent; 8-digit hex colors aren't supported by every renderer
+    private static String paint(String property, int rgba){
+        String color = "#" + ColorInt.rgbHexString(rgba);
+        double opacity = ColorInt.opacity(rgba);
+        return opacity < 1.0 ? color + ";" + property + "-opacity:" + Num.format(opacity) : color;
     }
 
     // Whether this element writes a style attribute (containers like groups don't)
