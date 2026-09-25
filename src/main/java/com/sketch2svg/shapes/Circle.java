@@ -53,18 +53,18 @@ public class Circle extends Shape{
         var c = new Vec2(0,0);
         transform(c);
         c.negY(); //flip y for svg
-        attribX.val = "" + c.x;
-        attribY.val = "" + c.y;
+        attribX.val = Num.format(c.x);
+        attribY.val = Num.format(c.y);
 
         // Negative scales mirror, which a circle or ellipse doesn't need; unused attributes are omitted (null)
         float rx = Math.abs(radius * getScale().x);
         float ry = Math.abs(radius * getScale().y);
         boolean ellipse = isEllipse();
-        attribR.val = ellipse ? null : "" + rx;
-        attribRx.val = ellipse ? "" + rx : null;
-        attribRy.val = ellipse ? "" + ry : null;
+        attribR.val = ellipse ? null : Num.format(rx);
+        attribRx.val = ellipse ? Num.format(rx) : null;
+        attribRy.val = ellipse ? Num.format(ry) : null;
         // Only an ellipse looks different when rotated; SVG angles are clockwise
         attribTransform.val = ellipse && getRotation() != 0.f
-                ? "rotate(" + (-getRotation()) + " " + c.x + " " + c.y + ")" : null;
+                ? "rotate(" + Num.format(-getRotation()) + " " + Num.format(c.x) + " " + Num.format(c.y) + ")" : null;
     }
 }

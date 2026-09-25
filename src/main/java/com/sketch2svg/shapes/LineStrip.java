@@ -32,7 +32,7 @@ public class LineStrip extends Shape {
             p.set(getVertex(i,0), getVertex(i,1));
             transform(p);
             p.negY(); // SVG has flipped y-axis. We negate y so +y is up.
-            s.append(p.x).append(",").append(p.y).append(" ");
+            s.append(Num.format(p.x)).append(",").append(Num.format(p.y)).append(" ");
         }
         attribPoints.val = s.toString();
     }

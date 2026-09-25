@@ -194,7 +194,7 @@ public class MainTest {
 
             Files.writeString(part, "circle 7 0 0\n");
             Files.setLastModifiedTime(part, FileTime.fromMillis(System.currentTimeMillis() + 10_000));
-            assertTrue(eventually(() -> readOrEmpty(output).contains("r=\"7.0\"")), "rebuilt after include change");
+            assertTrue(eventually(() -> readOrEmpty(output).contains("r=\"7\"")), "rebuilt after include change");
         } finally {
             watcher.interrupt();
             watcher.join(5_000);

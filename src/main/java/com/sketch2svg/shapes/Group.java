@@ -1,6 +1,7 @@
 package com.sketch2svg.shapes;
 
 import com.sketch2svg.core.Attrib;
+import com.sketch2svg.core.Num;
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.math.Vec2;
 
@@ -48,14 +49,14 @@ public class Group extends Shape {
         StringBuilder t = new StringBuilder();
         Vec2 pos = getPos();
         if (pos.x != 0.f || pos.y != 0.f) {
-            t.append("translate(").append(pos.x).append(' ').append(0.f - pos.y).append(") ");
+            t.append("translate(").append(Num.format(pos.x)).append(' ').append(Num.format(-pos.y)).append(") ");
         }
         if (getRotation() != 0.f) {
-            t.append("rotate(").append(-getRotation()).append(") ");
+            t.append("rotate(").append(Num.format(-getRotation())).append(") ");
         }
         Vec2 scale = getScale();
         if (scale.x != 1.f || scale.y != 1.f) {
-            t.append("scale(").append(scale.x).append(' ').append(scale.y).append(")");
+            t.append("scale(").append(Num.format(scale.x)).append(' ').append(Num.format(scale.y)).append(")");
         }
         attribTransform.val = t.isEmpty() ? null : t.toString().trim();
 

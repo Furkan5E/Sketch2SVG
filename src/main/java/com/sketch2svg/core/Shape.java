@@ -27,7 +27,7 @@ public abstract class Shape extends Elem {
     protected void updateAttribs(){
         var style = "fill:" + (ColorInt.isClear(fill) ? "none" : "#"+ColorInt.hexString(fill));
         if(strokeWidth > 0.f && !ColorInt.isClear(stroke)){
-            style += ";stroke-width:" + strokeWidth;
+            style += ";stroke-width:" + Num.format(strokeWidth);
             style += ";stroke:#" + ColorInt.hexString(stroke);
         }
         attribStyle.val = hasStyle() ? style : null;

@@ -97,7 +97,7 @@ public class ShapeTest {
 
     @Test
     void testScaleMultipliesSize() {
-        assertTrue(new Circle(10.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("r=\"20.0\""));
+        assertTrue(new Circle(10.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("r=\"20\""));
 
         // Rect 100x50 scaled by 2 spans x in [-100, 100] and y in [-50, 50]
         float[] rect = pointExtents(new Rect(100.0f, 50.0f, 0.0f, 0.0f).scale(2.0f).toString());
@@ -110,7 +110,7 @@ public class ShapeTest {
         float[] tri = pointExtents(new RegPolygon(3, 10.0f, 0.0f, 0.0f).scale(2.0f).toString());
         assertEquals(20.0f, tri[1], 1e-4f);
 
-        assertTrue(new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("A 20.000000 20.000000"));
+        assertTrue(new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f).scale(2.0f).toString().contains("A 20 20"));
     }
 
     @Test
@@ -118,15 +118,15 @@ public class ShapeTest {
         Circle even = new Circle(5.0f, 0.0f, 0.0f);
         even.scale(-2.0f, 2.0f);
         assertEquals("circle", even.getTag());
-        assertTrue(even.toString().contains("r=\"10.0\""));
+        assertTrue(even.toString().contains("r=\"10\""));
         assertFalse(even.toString().contains("rx="));
 
         Circle ellipse = new Circle(5.0f, 1.0f, 2.0f);
         ellipse.scale(2.0f, 1.0f).rotate(30.0f);
         String svg = ellipse.toString();
         assertTrue(svg.startsWith("<ellipse"), svg);
-        assertTrue(svg.contains("rx=\"10.0\" ry=\"5.0\""), svg);
-        assertTrue(svg.contains("transform=\"rotate(-30.0 1.0 -2.0)\""), svg);
+        assertTrue(svg.contains("rx=\"10\" ry=\"5\""), svg);
+        assertTrue(svg.contains("transform=\"rotate(-30 1 -2)\""), svg);
         assertFalse(svg.contains(" r="), svg);
     }
 
@@ -134,11 +134,11 @@ public class ShapeTest {
     void testArcFollowsUnevenAndMirroredScale() {
         Arc stretched = new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f);
         stretched.scale(2.0f, 1.0f);
-        assertTrue(stretched.toString().contains("A 20.000000 10.000000 0 0 0"), stretched.toString());
+        assertTrue(stretched.toString().contains("A 20 10 0 0 0"), stretched.toString());
 
         Arc rotated = new Arc(10.0f, 90.0f, 180.0f, 0.0f, 0.0f);
         rotated.scale(2.0f, 1.0f).rotate(30.0f);
-        assertTrue(rotated.toString().contains("A 20.000000 10.000000 -30.000000"), rotated.toString());
+        assertTrue(rotated.toString().contains("A 20 10 -30"), rotated.toString());
 
         // Mirroring across the y axis moves the 45deg arc's midpoint to 135deg
         Arc mirrored = new Arc(10.0f, 45.0f, 90.0f, 0.0f, 0.0f);
@@ -153,7 +153,7 @@ public class ShapeTest {
         Text text = new Text("hi", 5.0f, 10.0f, 12.0f);
         text.scale(2.0f, 1.0f);
         assertTrue(text.toString().contains(
-                "transform=\"translate(5.0 -10.0) scale(2.0 1.0) translate(-5.0 10.0)\""), text.toString());
+                "transform=\"translate(5 -10) scale(2 1) translate(-5 10)\""), text.toString());
     }
 
     // Largest |x| and |y| among a polygon's points

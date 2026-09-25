@@ -102,7 +102,7 @@ public class SketchParserTest {
                 text 0 0 12 "flat"
                 """);
 
-        assertTrue(sketch.getShapes().get(0).toString().contains("transform=\"rotate(-45.0 5.0 -10.0)\""));
+        assertTrue(sketch.getShapes().get(0).toString().contains("transform=\"rotate(-45 5 -10)\""));
         assertFalse(sketch.getShapes().get(1).toString().contains("transform"));
     }
 
@@ -242,7 +242,7 @@ public class SketchParserTest {
         // Drawn first, covering the default -100..100 viewBox, even though it came after the circle
         int bg = svg.indexOf("fill:#0B1020FF");
         assertTrue(bg > 0 && bg < svg.indexOf("<circle"), svg);
-        assertTrue(svg.contains("points=\"-100.0,100.0 100.0,100.0 100.0,-100.0 -100.0,-100.0 \""), svg);
+        assertTrue(svg.contains("points=\"-100,100 100,100 100,-100 -100,-100 \""), svg);
     }
 
     @Test
@@ -374,7 +374,7 @@ public class SketchParserTest {
         assertEquals(2, sketch.getShapes().size());
         Group outer = (Group) sketch.getShapes().get(0);
         String svg = outer.toString();
-        assertTrue(svg.startsWith("<g transform=\"translate(30.0 40.0) rotate(-10.0)\">"), svg);
+        assertTrue(svg.startsWith("<g transform=\"translate(30 40) rotate(-10)\">"), svg);
         assertFalse(svg.startsWith("<g style"), svg);
         assertEquals(3, outer.getChildren().size());
 
@@ -386,7 +386,7 @@ public class SketchParserTest {
 
         // Nested group: inner stroke colour, outer fill and width
         Group inner = (Group) outer.getChildren().get(2);
-        assertTrue(inner.toString().startsWith("<g transform=\"scale(2.0 2.0)\">"));
+        assertTrue(inner.toString().startsWith("<g transform=\"scale(2 2)\">"));
         assertEquals(2, inner.getChildren().size());
         Shape dot = inner.getChildren().get(0);
         assertEquals((int) 0x0000FFFFL, dot.getStroke());
@@ -407,7 +407,7 @@ public class SketchParserTest {
                 rect 10 20 30 -35 rot=90
                 """);
         Group group = (Group) sketch.getShapes().get(0);
-        assertTrue(group.toString().contains("transform=\"translate(30.0 40.0) rotate(-90.0)\""));
+        assertTrue(group.toString().contains("transform=\"translate(30 40) rotate(-90)\""));
 
         // Apply the group's SVG transform by hand: rotate(-90) maps (x,y) -> (y,-x), then translate(30,40)
         float[][] child = svgPoints(group.getChildren().get(0));
@@ -442,7 +442,7 @@ public class SketchParserTest {
 
         // A negative scale mirrors the shape; the circle's radius stays valid
         assertEquals(2, sketch.getShapes().size());
-        assertTrue(sketch.getShapes().get(0).toString().contains("r=\"10.0\""));
+        assertTrue(sketch.getShapes().get(0).toString().contains("r=\"10\""));
     }
 
     @Test

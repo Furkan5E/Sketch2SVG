@@ -3,8 +3,6 @@ package com.sketch2svg.shapes;
 import com.sketch2svg.core.*;
 import com.sketch2svg.math.Vec2;
 
-import java.util.Locale;
-
 // Part of a circle
 public class Arc extends Shape {
 
@@ -69,8 +67,7 @@ public class Arc extends Shape {
         // Uneven scale makes an elliptical arc whose x-axis follows the rotation (clockwise in SVG)
         float rx = Math.abs(radius * getScale().x);
         float ry = Math.abs(radius * getScale().y);
-        String axisRotation = rx == ry || getRotation() == 0.f ? "0"
-                : String.format(Locale.ROOT, "%f", -getRotation());
+        String axisRotation = rx == ry ? "0" : Num.format(-getRotation());
 
         int largeArcFlag = Math.abs(length) > 180.f ? 1 : 0;
         // After the y flip, counter-clockwise is SVG's negative-angle direction (sweep 0);
@@ -78,7 +75,8 @@ public class Arc extends Shape {
         boolean mirrored = getScale().x * getScale().y < 0.f;
         int sweepFlag = (length > 0.f) != mirrored ? 0 : 1;
 
-        attribData.val = String.format(Locale.ROOT, "M %f %f A %f %f %s %d %d %f %f",
-                p1.x, p1.y, rx, ry, axisRotation, largeArcFlag, sweepFlag, p2.x, p2.y);
+        attribData.val = "M " + Num.format(p1.x) + " " + Num.format(p1.y)
+                + " A " + Num.format(rx) + " " + Num.format(ry) + " " + axisRotation
+                + " " + largeArcFlag + " " + sweepFlag + " " + Num.format(p2.x) + " " + Num.format(p2.y);
     }
 }
