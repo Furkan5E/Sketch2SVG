@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
+<polygon style="fill:#000080" points="-100,100 100,100 100,-100 -100,-100 "/>
+<polygon style="fill:#1D3557;stroke-width:4;stroke:#FFD166" points="-30.615,-73.91 -73.91,-30.615 -73.91,30.615 -30.615,73.91 30.615,73.91 73.91,30.615 73.91,-30.615 30.615,-73.91 "/>
+<circle style="fill:none;stroke-width:2;stroke:#FFD166" cx="0" cy="0" r="62"/>
+<polygon style="fill:#FFD166" points="-40,-40 -41.763,-35.427 -46.657,-35.163 -42.853,-32.073 -44.114,-27.337 -40,-30 -35.886,-27.337 -37.147,-32.073 -33.343,-35.163 -38.237,-35.427 "/>
+<polygon style="fill:#FFD166" points="-20,-40 -21.763,-35.427 -26.657,-35.163 -22.853,-32.073 -24.114,-27.337 -20,-30 -15.886,-27.337 -17.147,-32.073 -13.343,-35.163 -18.237,-35.427 "/>
+<polygon style="fill:#FFD166" points="0,-40 -1.763,-35.427 -6.657,-35.163 -2.853,-32.073 -4.114,-27.337 0,-30 4.114,-27.337 2.853,-32.073 6.657,-35.163 1.763,-35.427 "/>
+<polygon style="fill:#FFD166" points="20,-40 18.237,-35.427 13.343,-35.163 17.147,-32.073 15.886,-27.337 20,-30 24.114,-27.337 22.853,-32.073 26.657,-35.163 21.763,-35.427 "/>
+<polygon style="fill:#FFD166" points="40,-40 38.237,-35.427 33.343,-35.163 37.147,-32.073 35.886,-27.337 40,-30 44.114,-27.337 42.853,-32.073 46.657,-35.163 41.763,-35.427 "/>
+<path style="fill:none;stroke-width:3;stroke:#FFD166" d="M 46.765 -27 A 54 54 0 0 0 -46.765 -27"/>
+<text style="fill:#FFFFFF" x="0" y="-12" font-size="20" text-anchor="middle" dominant-baseline="middle">
+SKETCH
+</text>
+<text style="fill:#FFD166" x="0" y="10" font-size="20" text-anchor="middle" dominant-baseline="middle">
+2SVG
+</text>
+<polygon style="fill:#E63946" points="-72,40 72,40 62,62 72,84 -72,84 -62,62 "/>
+<text style="fill:#FFFFFF" x="0" y="62" font-size="11" text-anchor="middle" dominant-baseline="middle">
+MADE WITH JAVA
+</text>
+</svg>

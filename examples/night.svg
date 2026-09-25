@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
+<polygon style="fill:#0B1020" points="-100,100 100,100 100,-100 -100,-100 "/>
+<circle style="fill:#E6E6FF" cx="-55" cy="-55" r="18"/>
+<circle style="fill:#0B1020" cx="-50" cy="-58" r="16"/>
+<polygon style="fill:#FFD700" points="-10,-78 -10.588,-75.809 -12.853,-75.927 -10.951,-74.691 -11.763,-72.573 -10,-74 -8.237,-72.573 -9.049,-74.691 -7.147,-75.927 -9.412,-75.809 "/>
+<polygon style="fill:#FFD700" points="10,-67 9.412,-65.809 8.098,-65.618 9.049,-64.691 8.824,-63.382 10,-64 11.176,-63.382 10.951,-64.691 11.902,-65.618 10.588,-65.809 "/>
+<polygon style="fill:#FFD700" points="35,-80 34.412,-78.809 33.098,-78.618 34.049,-77.691 33.824,-76.382 35,-77 36.176,-76.382 35.951,-77.691 36.902,-78.618 35.588,-78.809 "/>
+<polygon style="fill:#FFD700" points="60,-68 59.412,-65.809 57.147,-65.927 59.049,-64.691 58.237,-62.573 60,-64 61.763,-62.573 60.951,-64.691 62.853,-65.927 60.588,-65.809 "/>
+<polygon style="fill:#FFD700" points="-30,-82 -30.588,-80.809 -31.902,-80.618 -30.951,-79.691 -31.176,-78.382 -30,-79 -28.824,-78.382 -29.049,-79.691 -28.098,-80.618 -29.412,-80.809 "/>
+<polygon style="fill:#FFD700" points="-75,-74 -75.588,-72.809 -76.902,-72.618 -75.951,-71.691 -76.176,-70.382 -75,-71 -73.824,-70.382 -74.049,-71.691 -73.098,-72.618 -74.412,-72.809 "/>
+<polygon style="fill:#FFD700" points="80,-82 79.412,-80.809 78.098,-80.618 79.049,-79.691 78.824,-78.382 80,-79 81.176,-78.382 80.951,-79.691 81.902,-80.618 80.588,-80.809 "/>
+<polygon style="fill:#FFD700" points="41.758,-79.627 57.639,-73.847 56.613,-71.028 67.216,-73.554 60.717,-82.304 59.691,-79.485 43.81,-85.265 "/>
+<polygon style="fill:#0F2A1B" points="-10,-67 -89.674,71 69.674,71 "/>
+<polygon style="fill:#133021" points="35,-48 -39.478,81 109.478,81 "/>
+<polygon style="fill:#0A1A12" points="-100,100 100,100 100,70 -100,70 "/>
+<polygon style="fill:#6B4F3A;stroke-width:2;stroke:#000000" points="11,54 53,54 53,26 11,26 "/>
+<polygon style="fill:#2A1D15;stroke-width:2;stroke:#000000" points="27,54 37,54 37,38 27,38 "/>
+<polygon style="fill:#3B2A20;stroke-width:2;stroke:#000000" points="44,23 52,23 52,7 44,7 "/>
+<polygon style="fill:#3B2A20;stroke-width:2;stroke:#000000" points="17,15 47,15 58,31 6,31 "/>
+<polygon style="fill:#FFDC7A;stroke-width:2;stroke:#000000" points="40,44 48,44 48,36 40,36 "/>
+<polygon style="fill:#FFDC7A;stroke-width:2;stroke:#000000" points="16,44 24,44 24,36 16,36 "/>
+<path style="fill:none;stroke-width:1;stroke:#000000;stroke-opacity:0.4" d="M 59 5 A 7 7 0 0 0 45 5"/>
+<path style="fill:none;stroke-width:1;stroke:#000000;stroke-opacity:0.4" d="M 71 -2 A 9 9 0 0 0 53 -2"/>
+<path style="fill:none;stroke-width:1;stroke:#000000;stroke-opacity:0.4" d="M 85 -10 A 11 11 0 0 0 63 -10"/>
+<text style="fill:#0F2A1B" x="0" y="90" font-size="14" text-anchor="middle" dominant-baseline="middle">
+Hello World
+</text>
+</svg>

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
+<polygon style="fill:#BDE0FE" points="-100,100 100,100 100,-100 -100,-100 "/>
+<polygon style="fill:#2D6A4F" points="-2,100 2,100 2,10 -2,10 "/>
+<ellipse style="fill:#40916C" cx="18" cy="38" rx="20" ry="8" transform="rotate(-25 18 38)"/>
+<ellipse style="fill:#40916C" cx="-18" cy="58" rx="20" ry="8" transform="rotate(25 -18 58)"/>
+<g transform="translate(0 -20)">
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="30" cy="0" rx="19.2" ry="8.4"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="27.716" cy="-11.481" rx="19.2" ry="8.4" transform="rotate(-22.5 27.716 -11.481)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="21.213" cy="-21.213" rx="19.2" ry="8.4" transform="rotate(-45 21.213 -21.213)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="11.481" cy="-27.716" rx="19.2" ry="8.4" transform="rotate(-67.5 11.481 -27.716)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="0" cy="-30" rx="19.2" ry="8.4" transform="rotate(-90 0 -30)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-11.481" cy="-27.716" rx="19.2" ry="8.4" transform="rotate(-112.5 -11.481 -27.716)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-21.213" cy="-21.213" rx="19.2" ry="8.4" transform="rotate(-135 -21.213 -21.213)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-27.716" cy="-11.481" rx="19.2" ry="8.4" transform="rotate(-157.5 -27.716 -11.481)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-30" cy="0" rx="19.2" ry="8.4" transform="rotate(-180 -30 0)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-27.716" cy="11.481" rx="19.2" ry="8.4" transform="rotate(-202.5 -27.716 11.481)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-21.213" cy="21.213" rx="19.2" ry="8.4" transform="rotate(-225 -21.213 21.213)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="-11.481" cy="27.716" rx="19.2" ry="8.4" transform="rotate(-247.5 -11.481 27.716)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="0" cy="30" rx="19.2" ry="8.4" transform="rotate(-270 0 30)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="11.481" cy="27.716" rx="19.2" ry="8.4" transform="rotate(-292.5 11.481 27.716)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="21.213" cy="21.213" rx="19.2" ry="8.4" transform="rotate(-315 21.213 21.213)"/>
+<ellipse style="fill:#FFC300;stroke-width:1;stroke:#E09F3E" cx="27.716" cy="11.481" rx="19.2" ry="8.4" transform="rotate(-337.5 27.716 11.481)"/>
+<circle style="fill:#6F4518;stroke-width:2;stroke:#3D2B1F" cx="0" cy="0" r="22"/>
+<circle style="fill:#3D2B1F" cx="5" cy="0" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="3.536" cy="-3.536" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="0" cy="-5" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-3.536" cy="-3.536" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-5" cy="0" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-3.536" cy="3.536" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="0" cy="5" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="3.536" cy="3.536" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="10" cy="0" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="9.01" cy="-4.339" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="6.235" cy="-7.818" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="2.225" cy="-9.749" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-2.225" cy="-9.749" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-6.235" cy="-7.818" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-9.01" cy="-4.339" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-10" cy="0" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-9.01" cy="4.339" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-6.235" cy="7.818" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-2.225" cy="9.749" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="2.225" cy="9.749" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="6.235" cy="7.818" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="9.01" cy="4.339" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="15" cy="0" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="14.266" cy="-4.635" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="12.135" cy="-8.817" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="8.817" cy="-12.135" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="4.635" cy="-14.266" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="0" cy="-15" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-4.635" cy="-14.266" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-8.817" cy="-12.135" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-12.135" cy="-8.817" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-14.266" cy="-4.635" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-15" cy="0" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-14.266" cy="4.635" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-12.135" cy="8.817" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-8.817" cy="12.135" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="-4.635" cy="14.266" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="0" cy="15" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="4.635" cy="14.266" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="8.817" cy="12.135" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="12.135" cy="8.817" r="1.5"/>
+<circle style="fill:#3D2B1F" cx="14.266" cy="4.635" r="1.5"/>
+</g>
+<text style="fill:#1D3557" x="0" y="-86" font-size="12" text-anchor="middle" dominant-baseline="middle">
+Sketch2SVG
+</text>
+</svg>

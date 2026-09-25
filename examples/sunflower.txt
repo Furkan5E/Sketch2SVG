@@ -1,0 +1,24 @@
+# Sunflower: variables, loops, expressions and groups
+background #bde0fe
+set petals 16
+
+# stem and leaves (stretched circles become ellipses)
+rect 4 90 0 -55 0 none #2d6a4f
+circle 10 18 -38 scale=2,0.8 rot=25 0 none #40916c
+circle 10 -18 -58 scale=2,0.8 rot=-25 0 none #40916c
+
+# petals and seeds, all positioned relative to the flower head
+group at=0,20
+  repeat petals i
+    set a {i * 360 / petals}
+    circle 12 {30*cos(a)} {30*sin(a)} scale=1.6,0.7 rot=a 1 #e09f3e #ffc300
+  end
+  circle 22 0 0 2 #3d2b1f #6f4518
+  repeat 3 ring
+    repeat {8 + ring*6} k
+      circle 1.5 {(5 + ring*5)*cos(k*360/(8 + ring*6))} {(5 + ring*5)*sin(k*360/(8 + ring*6))} 0 none #3d2b1f
+    end
+  end
+end
+
+text 0 86 12 "Sketch2SVG" fill=#1d3557

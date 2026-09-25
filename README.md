@@ -15,11 +15,33 @@ A lightweight, zero dependency Java vector graphics engine and CLI tool that con
 ## Features
 
 - **Zero External Runtime Dependencies:** Java implementation utilising native SVG DOM serialisation.
-- **Rich Geometry Engine:** Supports `Circle`, `Rect`, `Square`, `Line`, `Arc`, `Star`, `RegPolygon`, `Trapezoid`, `Arrow`, and `Text`.
+- **Rich Geometry Engine:** Supports `Circle` (and ellipses), `Rect`, `Square`, `Line`, `Arc`, `Star`, `RegPolygon`, `Trapezoid`, `Arrow`, free `Polygon`/`Polyline`, `Text` and `Group`.
+- **Scripting:** Variables, `{expressions}`, `repeat` loops, `group` blocks, `include` files, named arguments and named colors.
 - **Fluent API & Chaining:** Programmatic shape configuration with intuitive builders (`.at()`, `.fill()`, `.stroke()`, `.rotate()`, `.scale()`).
-- **Fault Tolerant Parser:** Syntax error diagnostics with line number reporting.
-- **Dynamic CLI:** Flag parsing (`-i`, `-o`, `-d`/`--batch`, `-h`) for terminal automation and batch conversions.
-- **Automated CI/CD:** JUnit 5 test suite integrated with GitHub Actions.
+- **Fault Tolerant Parser:** Error and warning diagnostics with line (and included file) reporting.
+- **Dynamic CLI:** Single file, batch (`-d`, `-r`), stdin/stdout pipelines, `--watch` and `--check` modes.
+- **Automated CI/CD:** JUnit 5 test suite and tagged releases via GitHub Actions.
+
+---
+
+## Examples
+
+| Night scene | Sunflower | Badge |
+|:---:|:---:|:---:|
+| <img src="examples/night.svg" width="240" alt="House on a hill under a night sky"> | <img src="examples/sunflower.svg" width="240" alt="Sunflower built with loops"> | <img src="examples/badge.svg" width="240" alt="Octagonal badge with stars and a ribbon"> |
+| [`sketch.txt`](src/main/resources/sketch.txt) | [`sunflower.txt`](examples/sunflower.txt) | [`badge.txt`](examples/badge.txt) |
+
+The sunflower's 16 petals and 42 seeds come from a few lines of loops and expressions:
+```text
+group at=0,20
+  repeat petals i
+    set a {i * 360 / petals}
+    circle 12 {30*cos(a)} {30*sin(a)} scale=1.6,0.7 rot=a 1 #e09f3e #ffc300
+  end
+  ...
+end
+```
+Regenerate all examples with `java -jar target/Sketch2SVG.jar -d examples`.
 
 ---
 ## Build Instructions

@@ -41,3 +41,5 @@ build/
 
 # ignore generated SVGs
 *.svg
+# ...except the rendered examples shown in the README
+!examples/*.svg

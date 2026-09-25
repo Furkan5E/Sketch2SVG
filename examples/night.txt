@@ -1,0 +1,2 @@
+# Night sky and house on a hill (the sketch bundled with the project)
+include ../src/main/resources/sketch.txt
