@@ -454,6 +454,33 @@ public class SketchParserTest {
         assertTrue(Files.exists(tempDir.resolve("drawing.svg")));
     }
 
+    @Test
+    void testPathCommand() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                path M 0,0 L 10,0 10,10 Q 5,15 0,10 Z fill=gold
+                path M -5,0 C -5,5 5,5 5,0 rot=180
+                path m 0,0 l 1,1
+                path L 1,1
+                path M 0,0 Q 1,1
+                """));
+        Sketch sketch = result[0];
+        assertEquals(2, sketch.getShapes().size());
+
+        // Points are written in SVG space (y flipped); the implicit repeat after L adds a second line
+        String first = sketch.getShapes().get(0).toString();
+        assertTrue(first.contains("d=\"M 0 0 L 10 0 L 10 -10 Q 5 -15 0 -10 Z\""), first);
+
+        // Recentred on its bounding box (x -5..5, y 0..5), so rot=180 turns the upward bulge
+        // downward inside the same box: endpoints move to y=5 and control points to y=0
+        String flipped = sketch.getShapes().get(1).toString();
+        assertTrue(flipped.contains("d=\"M 5 -5 C 5 0 -5 0 -5 -5\""), flipped);
+
+        assertTrue(log.contains("(relative path command 'm' is not supported, use M)"), log);
+        assertTrue(log.contains("(path must start with M)"), log);
+        assertTrue(log.contains("(incomplete Q segment)"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

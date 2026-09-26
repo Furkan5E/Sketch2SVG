@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Sketch {
     // Store all parsed or programmatically added shapes
@@ -469,6 +470,7 @@ public class Sketch {
                 }
                 yield new Polygon(points, closed);
             }
+            case "path" -> parsePath(ls);
             case "text" -> {
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
@@ -496,5 +498,61 @@ public class Sketch {
             throw new InputMismatchException(name + " must not be negative");
         }
         return value;
+    }
+
+    // "M x,y L x,y Q c,c x,y C c,c c,c x,y Z" with absolute (uppercase) commands; extra points repeat
+    // the previous command, and points after M continue as lines, like SVG
+    private static final Pattern PATH_TOKEN = Pattern.compile("[MLQCZmlqcz]|" + StyleArgs.POINT.pattern());
+
+    private static PathShape parsePath(Scanner ls) {
+        PathShape path = new PathShape();
+        char command = 0;
+        List<float[]> pending = new ArrayList<>();
+        while (ls.hasNext(PATH_TOKEN)) {
+            String tok = ls.next();
+            if (Character.isLetter(tok.charAt(0))) {
+                if (Character.isLowerCase(tok.charAt(0))) {
+                    throw new InputMismatchException("relative path command '" + tok + "' is not supported, use " + tok.toUpperCase(Locale.ROOT));
+                }
+                if (!pending.isEmpty()) {
+                    throw new InputMismatchException("incomplete " + command + " segment");
+                }
+                command = tok.charAt(0);
+                if (command != 'M' && path.isEmpty()) {
+                    throw new InputMismatchException("path must start with M");
+                }
+                if (command == 'Z') {
+                    path.close();
+                }
+                continue;
+            }
+            if (command == 0 || command == 'Z') {
+                throw new InputMismatchException("point " + tok + " needs a command before it");
+            }
+            String[] xy = tok.split(",");
+            pending.add(new float[]{Float.parseFloat(xy[0]), Float.parseFloat(xy[1])});
+
+            int needed = command == 'Q' ? 2 : command == 'C' ? 3 : 1;
+            if (pending.size() == needed) {
+                float[] a = pending.get(0);
+                switch (command) {
+                    case 'M' -> {
+                        path.moveTo(a[0], a[1]);
+                        command = 'L'; // further points are lines
+                    }
+                    case 'L' -> path.lineTo(a[0], a[1]);
+                    case 'Q' -> path.quadTo(a[0], a[1], pending.get(1)[0], pending.get(1)[1]);
+                    default -> path.cubicTo(a[0], a[1], pending.get(1)[0], pending.get(1)[1], pending.get(2)[0], pending.get(2)[1]);
+                }
+                pending.clear();
+            }
+        }
+        if (!pending.isEmpty()) {
+            throw new InputMismatchException("incomplete " + command + " segment");
+        }
+        if (path.isEmpty()) {
+            throw new InputMismatchException("path needs at least M x,y");
+        }
+        return path.recentre();
     }
 }

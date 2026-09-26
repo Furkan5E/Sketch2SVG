@@ -105,6 +105,7 @@ Options:
 | Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polygon (free) | `polygon <x,y> <x,y> <x,y> ... [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeRGBA]` |
+| Path | `path M <x,y> L <x,y> Q <c,c> <x,y> C <c,c> <c,c> <x,y> Z [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Background | `background <color>` (fills the whole canvas, always drawn first) |
 
 ```text
