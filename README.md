@@ -94,6 +94,7 @@ Options:
 | Shape | Command |
 |---|---|
 | Circle | `circle <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Ellipse | `ellipse <rx> <ry> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Rectangle | `rect <w> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Rounded rectangle | `roundrect <w> <h> <cornerRadius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Square | `square <size> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |

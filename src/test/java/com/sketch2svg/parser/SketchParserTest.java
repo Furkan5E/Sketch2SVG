@@ -481,6 +481,24 @@ public class SketchParserTest {
         assertTrue(log.contains("(incomplete Q segment)"), log);
     }
 
+    @Test
+    void testEllipseCommand() throws IOException {
+        Sketch sketch = parse("""
+                ellipse 20 10 5 -5 rot=30 fill=gold
+                ellipse 8 8 0 0
+                ellipse 20 10 0 0 scale=0.5,1
+                """);
+
+        String rotated = sketch.getShapes().get(0).toString();
+        assertTrue(rotated.startsWith("<ellipse"), rotated);
+        assertTrue(rotated.contains("cx=\"5\" cy=\"5\" rx=\"20\" ry=\"10\""), rotated);
+        assertTrue(rotated.contains("transform=\"rotate(-30 5 5)\""), rotated);
+
+        // Equal radii are just a circle; scaling can also even an ellipse out
+        assertTrue(sketch.getShapes().get(1).toString().startsWith("<circle"));
+        assertTrue(sketch.getShapes().get(2).toString().contains("r=\"10\""));
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

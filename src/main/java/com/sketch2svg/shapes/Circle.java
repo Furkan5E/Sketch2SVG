@@ -13,6 +13,7 @@ public class Circle extends Shape{
     private Attrib attribRy;
     private Attrib attribTransform;
     private float radius = 1.f;
+    private float radiusY = 1.f; // equal to radius for a circle; differs for an ellipse
 
     public Circle(){
         attribX = newAttrib("cx");
@@ -31,6 +32,14 @@ public class Circle extends Shape{
 
     public Circle radius(float r) {
         this.radius = r;
+        this.radiusY = r;
+        return this;
+    }
+
+    // Horizontal and vertical radius, before rotation
+    public Circle radii(float rx, float ry) {
+        this.radius = rx;
+        this.radiusY = ry;
         return this;
     }
 
@@ -38,9 +47,13 @@ public class Circle extends Shape{
         return radius;
     }
 
-    // Uneven scale (e.g. scale=2,1) turns the circle into an ellipse
+    public float getRadiusY() {
+        return radiusY;
+    }
+
+    // Different radii, or uneven scale (e.g. scale=2,1), make an ellipse
     private boolean isEllipse(){
-        return Math.abs(getScale().x) != Math.abs(getScale().y);
+        return Math.abs(radius * getScale().x) != Math.abs(radiusY * getScale().y);
     }
 
     @Override
@@ -58,7 +71,7 @@ public class Circle extends Shape{
 
         // Negative scales mirror, which a circle or ellipse doesn't need; unused attributes are omitted (null)
         float rx = Math.abs(radius * getScale().x);
-        float ry = Math.abs(radius * getScale().y);
+        float ry = Math.abs(radiusY * getScale().y);
         boolean ellipse = isEllipse();
         attribR.val = ellipse ? null : Num.format(rx);
         attribRx.val = ellipse ? Num.format(rx) : null;

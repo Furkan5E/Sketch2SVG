@@ -400,6 +400,13 @@ public class Sketch {
                 float cy = ls.nextFloat();
                 yield new Circle(r, cx, cy);
             }
+            case "ellipse" -> {
+                float rx = size(ls, "x radius");
+                float ry = size(ls, "y radius");
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new Circle(rx, cx, cy).radii(rx, ry);
+            }
             case "arc" -> {
                 float radius = size(ls, "radius");
                 float angle = ls.nextFloat();
