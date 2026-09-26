@@ -95,6 +95,7 @@ Options:
 |---|---|
 | Circle | `circle <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Rectangle | `rect <w> <h> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Rounded rectangle | `roundrect <w> <h> <cornerRadius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Square | `square <size> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Star | `star <points> <outerR> <innerR> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polygon | `ngon <sides> <radius> <cx> <cy> [strokeWidth] [strokeRGBA] [fillRGBA]` |

@@ -75,6 +75,19 @@ public class ShapeTest {
     }
 
     @Test
+    void testRoundRectCorners() {
+        // 40x20 with radius 5: straight bottom edge from x=-15 to 15, then a quarter circle up to (20,-5)
+        String svg = new RoundRect(40.0f, 20.0f, 5.0f, 0.0f, 0.0f).toString();
+        assertTrue(svg.startsWith("<path"), svg);
+        assertTrue(svg.contains("d=\"M -15 10 L 15 10 C 17.761 10 20 7.761 20 5 L 20 -5"), svg);
+        assertTrue(svg.endsWith("Z\"/>"), svg);
+
+        // The radius is capped at half the shorter side, so a huge radius makes a stadium, not a mess
+        String capped = new RoundRect(40.0f, 20.0f, 100.0f, 0.0f, 0.0f).toString();
+        assertTrue(capped.contains("d=\"M -10 10 L 10 10 C 15.523 10 20 5.523 20 0 L 20 0"), capped);
+    }
+
+    @Test
     void testStarVertexCount() {
         Star star = new Star(5, 20.0f, 10.0f, 0.0f, 0.0f);
         // 5 points * 2 (inner + outer alternating) = 10 vertices

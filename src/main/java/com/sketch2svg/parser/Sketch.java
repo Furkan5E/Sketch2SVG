@@ -471,6 +471,14 @@ public class Sketch {
                 yield new Polygon(points, closed);
             }
             case "path" -> parsePath(ls);
+            case "roundrect" -> {
+                float w = size(ls, "width");
+                float h = size(ls, "height");
+                float r = size(ls, "corner radius");
+                float cx = ls.nextFloat();
+                float cy = ls.nextFloat();
+                yield new RoundRect(w, h, r, cx, cy);
+            }
             case "text" -> {
                 float cx = ls.nextFloat();
                 float cy = ls.nextFloat();
