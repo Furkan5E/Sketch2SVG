@@ -169,6 +169,7 @@ Any shape also accepts named arguments, in any order, after its required paramet
 | `dash=<a,b,…>` / `dash=none` | Dashed stroke (alternating dash and gap lengths) |
 | `cap=butt\|round\|square` | Stroke line caps |
 | `join=miter\|round\|bevel` | Stroke line joins |
+| `arrow=end\|start\|both\|none` | Arrowheads on a `line` (drawn in its stroke colour and width) |
 
 ```text
 rect 40 20 0 0 rot=30 stroke=2 fill=ffdc7a

@@ -1,6 +1,8 @@
 package com.sketch2svg.parser;
 
 import com.sketch2svg.core.Shape;
+import com.sketch2svg.shapes.Arrow;
+import com.sketch2svg.shapes.Line;
 import com.sketch2svg.svg.ColorInt;
 
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import java.util.regex.Pattern;
 // Optional arguments that follow a command's required parameters:
 //   positional  [strokeWidth] [strokeColor] [fillColor]
 //   named       rot=<deg> stroke=<color|width> fill=<color> stroke-width=<n> (sw=) at=<x,y> scale=<s|sx,sy>
-//               dash=<a,b,...|none> cap=<butt|round|square> join=<miter|round|bevel>
+//               dash=<a,b,...|none> cap=<butt|round|square> join=<miter|round|bevel> arrow=<start|end|both|none>
 // Named arguments may appear in any order and override positional ones.
 final class StyleArgs {
 
@@ -32,10 +34,11 @@ final class StyleArgs {
     float[] dash;   // empty = explicitly solid (dash=none), so a shape can undo its group's dashes
     String cap;
     String join;
+    String arrow;   // line arrowheads: start, end, both or none
 
     // Reads the remaining tokens of a line. `where` prefixes warnings, e.g. "Line 5".
-    // legacyArrowRotation enables the deprecated "arrow ... <rot> <strokeWidth>" form.
-    static StyleArgs parse(Scanner ls, boolean legacyArrowRotation, String where, Diagnostics diagnostics) {
+    // target is the shape being styled, or null for a group (whose options are passed down to its shapes).
+    static StyleArgs parse(Scanner ls, Shape target, String where, Diagnostics diagnostics) {
         StyleArgs args = new StyleArgs();
         List<Float> numbers = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
@@ -57,7 +60,12 @@ final class StyleArgs {
             }
         }
 
-        if (legacyArrowRotation && args.rotation == null && numbers.size() >= 2) {
+        if (args.arrow != null && target != null && !(target instanceof Line)) {
+            diagnostics.warning(where, "Ignored arrow=" + args.arrow + " (only lines have arrowheads)");
+        }
+
+        // Deprecated "arrow ... <rot> <strokeWidth>" form
+        if (target instanceof Arrow && args.rotation == null && numbers.size() >= 2) {
             diagnostics.warning(where, "Positional arrow rotation is deprecated, use rot=" + numbers.get(0));
             args.rotation = numbers.remove(0);
         }
@@ -96,6 +104,7 @@ final class StyleArgs {
             case "dash" -> dash = dashes(value, tok);
             case "cap" -> cap = keyword(value, tok, "butt", "round", "square");
             case "join" -> join = keyword(value, tok, "miter", "round", "bevel");
+            case "arrow" -> arrow = keyword(value, tok, "start", "end", "both", "none");
             default -> diagnostics.warning(where, "Ignored unrecognized argument '" + tok + "'");
         }
     }
@@ -108,6 +117,7 @@ final class StyleArgs {
         if (dash != null) shape.setDash(dash);
         if (cap != null) shape.setLineCap(cap);
         if (join != null) shape.setLineJoin(join);
+        if (arrow != null && shape instanceof Line line) line.setArrows(arrow);
     }
 
     // dash=<len,len,...> (dash and gap lengths) or dash=none

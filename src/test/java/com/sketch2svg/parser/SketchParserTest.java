@@ -529,6 +529,31 @@ public class SketchParserTest {
         assertTrue(log.contains("(dash lengths must not be negative in dash=2,-1)"), log);
     }
 
+    @Test
+    void testLineArrowheads() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                line 0 0 20 0 1 red arrow=end
+                line 0 0 0 20 arrow=both
+                line 0 0 20 0 arrow=none
+                circle 5 0 0 arrow=end
+                """));
+        Sketch sketch = result[0];
+
+        // Stroke width 1 gives a 4-unit head; its wings sit 30 degrees either side of the shaft
+        String end = sketch.getShapes().get(0).toString();
+        assertTrue(end.startsWith("<path"), end);
+        assertTrue(end.contains("d=\"M 0 0 L 20 0 M 16.536 -2 L 20 0 L 16.536 2\""), end);
+        assertTrue(end.contains("stroke:#FF0000"), end);
+        assertFalse(end.contains("points="), end);
+
+        String both = sketch.getShapes().get(1).toString();
+        assertEquals(3, both.split(" M ").length, both); // shaft + two heads
+
+        assertTrue(sketch.getShapes().get(2).toString().startsWith("<polyline"));
+        assertTrue(log.contains("Line 4: Ignored arrow=end (only lines have arrowheads)"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

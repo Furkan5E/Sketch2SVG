@@ -5,7 +5,7 @@ import com.sketch2svg.math.Vec2;
 
 public class LineStrip extends Shape {
 
-    private Attrib attribPoints;
+    protected Attrib attribPoints; // subclasses may replace the points with another representation
     private float[] vertices; // 2D position data packed as [x1, y1, x2, y2, ...]
     protected boolean closed = false;
 

@@ -283,7 +283,7 @@ public class Sketch {
         StyleArgs args;
         try (Scanner ls = new Scanner(variables.substituteLine(line.text())).useLocale(Locale.ROOT)) {
             ls.next(); // "group"
-            args = StyleArgs.parse(ls, false, line.where(), diagnostics);
+            args = StyleArgs.parse(ls, null, line.where(), diagnostics);
         } catch (NoSuchElementException e) {
             diagnostics.syntaxError(line, e);
             return;
@@ -367,7 +367,7 @@ public class Sketch {
             Shape shape = parseShape(type, ls);
 
             if (shape != null) {
-                StyleArgs own = StyleArgs.parse(ls, shape instanceof Arrow, line.where(), diagnostics);
+                StyleArgs own = StyleArgs.parse(ls, shape, line.where(), diagnostics);
                 for (StyleArgs inherited : groupPaint) {
                     inherited.applyPaint(shape); // outer groups first, so inner ones win
                 }
