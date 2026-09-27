@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 // Optional arguments that follow a command's required parameters:
 //   positional  [strokeWidth] [strokeColor] [fillColor]
 //   named       rot=<deg> stroke=<color|width> fill=<color> stroke-width=<n> (sw=) at=<x,y> scale=<s|sx,sy>
+//               dash=<a,b,...|none> cap=<butt|round|square> join=<miter|round|bevel>
 // Named arguments may appear in any order and override positional ones.
 final class StyleArgs {
 
@@ -28,6 +29,9 @@ final class StyleArgs {
     Float rotation;
     float[] at;
     float[] scale;
+    float[] dash;   // empty = explicitly solid (dash=none), so a shape can undo its group's dashes
+    String cap;
+    String join;
 
     // Reads the remaining tokens of a line. `where` prefixes warnings, e.g. "Line 5".
     // legacyArrowRotation enables the deprecated "arrow ... <rot> <strokeWidth>" form.
@@ -89,15 +93,47 @@ final class StyleArgs {
             case "scale" -> scale = NUMBER.matcher(value).matches()
                     ? new float[]{number(value, tok), number(value, tok)}
                     : pair(value, tok);
+            case "dash" -> dash = dashes(value, tok);
+            case "cap" -> cap = keyword(value, tok, "butt", "round", "square");
+            case "join" -> join = keyword(value, tok, "miter", "round", "bevel");
             default -> diagnostics.warning(where, "Ignored unrecognized argument '" + tok + "'");
         }
     }
 
-    // Stroke width and colours
+    // Stroke and fill (what groups pass down to their shapes)
     void applyPaint(Shape shape) {
         if (strokeWidth != null) shape.setStrokeWidth(strokeWidth);
         if (stroke != null) shape.setStroke(stroke);
         if (fill != null) shape.setFill(fill);
+        if (dash != null) shape.setDash(dash);
+        if (cap != null) shape.setLineCap(cap);
+        if (join != null) shape.setLineJoin(join);
+    }
+
+    // dash=<len,len,...> (dash and gap lengths) or dash=none
+    private static float[] dashes(String value, String tok) {
+        if (value.equalsIgnoreCase("none")) {
+            return new float[0];
+        }
+        String[] parts = value.split(",");
+        float[] lengths = new float[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            lengths[i] = number(parts[i], tok);
+            if (lengths[i] < 0) {
+                throw new InputMismatchException("dash lengths must not be negative in " + tok);
+            }
+        }
+        return lengths;
+    }
+
+    private static String keyword(String value, String tok, String... allowed) {
+        String lower = value.toLowerCase(Locale.ROOT);
+        for (String a : allowed) {
+            if (a.equals(lower)) {
+                return a;
+            }
+        }
+        throw new InputMismatchException("Expected " + String.join("|", allowed) + " in " + tok);
     }
 
     // Position, rotation and scale

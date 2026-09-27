@@ -10,6 +10,9 @@ public abstract class Shape extends Elem {
     private int fill = ColorInt.from(0,0);
     private int stroke = ColorInt.from(0);
     private float strokeWidth = 1.f;
+    private float[] dash;      // stroke-dasharray, or null for a solid line
+    private String lineCap;    // butt | round | square, or null for the SVG default (butt)
+    private String lineJoin;   // miter | round | bevel, or null for the SVG default (miter)
 
     private Vec2 scale = new Vec2(1.f);
     private Vec2 rotation = new Vec2(1.f, 0.f); // in complex form
@@ -29,6 +32,16 @@ public abstract class Shape extends Elem {
         if(strokeWidth > 0.f && !ColorInt.isClear(stroke)){
             style += ";stroke-width:" + Num.format(strokeWidth);
             style += ";stroke:" + paint("stroke", stroke);
+            if(dash != null && dash.length > 0){
+                StringBuilder d = new StringBuilder();
+                for(float v : dash)
+                    d.append(d.isEmpty() ? "" : " ").append(Num.format(v));
+                style += ";stroke-dasharray:" + d;
+            }
+            if(lineCap != null)
+                style += ";stroke-linecap:" + lineCap;
+            if(lineJoin != null)
+                style += ";stroke-linejoin:" + lineJoin;
         }
         attribStyle.val = hasStyle() ? style : null;
     }
@@ -104,6 +117,36 @@ public abstract class Shape extends Elem {
     public Shape setStrokeWidth(float w){
         this.strokeWidth = w;
         return this;
+    }
+    public float[] getDash(){
+        return dash;
+    }
+    // Alternating dash and gap lengths; null or empty for a solid line
+    public Shape setDash(float... lengths){
+        this.dash = lengths == null || lengths.length == 0 ? null : lengths.clone();
+        return this;
+    }
+    public String getLineCap(){
+        return lineCap;
+    }
+    public Shape setLineCap(String cap){
+        this.lineCap = checkKeyword(cap, "butt", "round", "square");
+        return this;
+    }
+    public String getLineJoin(){
+        return lineJoin;
+    }
+    public Shape setLineJoin(String join){
+        this.lineJoin = checkKeyword(join, "miter", "round", "bevel");
+        return this;
+    }
+    private static String checkKeyword(String value, String... allowed){
+        if(value == null)
+            return null;
+        for(String a : allowed)
+            if(a.equals(value))
+                return value;
+        throw new IllegalArgumentException("Expected one of " + String.join(", ", allowed) + " but got " + value);
     }
     public Vec2 getPos(){
         return pos;

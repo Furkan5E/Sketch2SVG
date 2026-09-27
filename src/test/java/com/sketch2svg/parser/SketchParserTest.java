@@ -499,6 +499,36 @@ public class SketchParserTest {
         assertTrue(sketch.getShapes().get(2).toString().contains("r=\"10\""));
     }
 
+    @Test
+    void testDashCapAndJoin() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                polyline 0,0 10,0 10,10 2 black dash=4,2 cap=ROUND join=bevel
+                group dash=1,1 cap=square
+                  line 0 0 10 0
+                  line 0 5 10 5 dash=none
+                end
+                line 0 0 1 1 cap=pointy
+                line 0 0 1 1 dash=2,-1
+                circle 5 0 0 0 dash=3
+                """));
+        Sketch sketch = result[0];
+
+        assertTrue(sketch.getShapes().get(0).toString().contains(
+                "stroke:#000000;stroke-dasharray:4 2;stroke-linecap:round;stroke-linejoin:bevel\""));
+
+        // Groups pass dashes down; dash=none turns them off again
+        Group group = (Group) sketch.getShapes().get(1);
+        assertTrue(group.getChildren().get(0).toString().contains("stroke-dasharray:1 1;stroke-linecap:square"));
+        assertFalse(group.getChildren().get(1).toString().contains("dasharray"));
+
+        // Stroke styling only appears when there is a stroke to style
+        assertFalse(sketch.getShapes().get(2).toString().contains("dasharray"));
+
+        assertTrue(log.contains("(Expected butt|round|square in cap=pointy)"), log);
+        assertTrue(log.contains("(dash lengths must not be negative in dash=2,-1)"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;
