@@ -1,6 +1,7 @@
 package com.sketch2svg.parser;
 
 import com.sketch2svg.core.Shape;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 import com.sketch2svg.math.ViewBox;
 import com.sketch2svg.shapes.*;
@@ -30,6 +31,8 @@ public class Sketch {
     private Integer background; // RGBA fill for the whole canvas, or null for none
     private String backgroundGradient; // gradient name filling the canvas instead, or null
     private final Map<String, Gradient> gradients = new LinkedHashMap<>();
+    private float[] canvas;          // explicit view {width, height, centreX, centreY}, or null for -100..100
+    private Float autoFitPadding;    // non-null: size the view to the drawing plus this margin instead
     private final Variables variables = new Variables();
     private final Diagnostics diagnostics = new Diagnostics();
     private final List<Path> sourceFiles = new ArrayList<>();
@@ -73,6 +76,20 @@ public class Sketch {
         return this;
     }
 
+    // Visible area: width x height centred on (cx, cy) in sketch space
+    public Sketch setCanvas(float width, float height, float cx, float cy) {
+        this.canvas = new float[]{width, height, cx, cy};
+        this.autoFitPadding = null;
+        return this;
+    }
+
+    // Size the visible area to fit everything drawn, plus a margin
+    public Sketch setAutoFit(float padding) {
+        this.autoFitPadding = padding;
+        this.canvas = null;
+        return this;
+    }
+
     // Makes a gradient available to shapes as setFillGradient(name) / setStrokeGradient(name)
     public Sketch addGradient(String name, Gradient gradient) {
         gradients.put(name, gradient);
@@ -113,6 +130,18 @@ public class Sketch {
 
     private SVG buildSVG() {
         SVG svg = new SVG();
+        ViewBox view = svg.getViewBox();
+        if (autoFitPadding != null) {
+            Bounds drawn = new Bounds();
+            shapes.forEach(s -> s.collectBounds(drawn));
+            if (!drawn.isEmpty()) {
+                // Bounds are +y up; the viewBox is in SVG space where y points down
+                view.fit(drawn.minX, -drawn.maxY, drawn.maxX, -drawn.minY, autoFitPadding);
+            }
+        } else if (canvas != null) {
+            view.set(canvas[2] - canvas[0] * 0.5f, -(canvas[3] + canvas[1] * 0.5f), canvas[0], canvas[1]);
+        }
+
         if (!gradients.isEmpty()) {
             Defs defs = new Defs();
             gradients.values().forEach(defs::addContent);
@@ -398,6 +427,25 @@ public class Sketch {
             }
             if (type.equals("gradient")) {
                 defineGradient(ls);
+                return;
+            }
+            if (type.equals("canvas")) {
+                // canvas auto [padding] | canvas <width> <height> [cx cy]
+                if (ls.hasNext("(?i)auto")) {
+                    ls.next();
+                    setAutoFit(ls.hasNext(StyleArgs.NUMBER) ? size(ls, "padding") : 10.f);
+                } else {
+                    float w = size(ls, "width"), h = size(ls, "height");
+                    if (w == 0 || h == 0) {
+                        throw new InputMismatchException("canvas size must be greater than zero");
+                    }
+                    float cx = 0.f, cy = 0.f;
+                    if (ls.hasNext(StyleArgs.NUMBER)) { // optional centre, always given as a pair
+                        cx = ls.nextFloat();
+                        cy = ls.nextFloat();
+                    }
+                    setCanvas(w, h, cx, cy);
+                }
                 return;
             }
             Shape shape = parseShape(type, ls);

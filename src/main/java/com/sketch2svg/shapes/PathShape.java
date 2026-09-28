@@ -3,6 +3,7 @@ package com.sketch2svg.shapes;
 import com.sketch2svg.core.Attrib;
 import com.sketch2svg.core.Num;
 import com.sketch2svg.core.Shape;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 
 import java.util.ArrayList;
@@ -81,6 +82,16 @@ public class PathShape extends Shape {
     @Override
     public String getTag() {
         return "path";
+    }
+
+    // Control points included: a Bezier curve always lies inside the hull of its points
+    @Override
+    protected void addGeometry(Bounds b) {
+        for (Segment s : segments) {
+            for (int i = 0; i < s.points().length; i += 2) {
+                addLocalPoint(b, s.points()[i], s.points()[i + 1]);
+            }
+        }
     }
 
     @Override

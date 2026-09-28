@@ -4,6 +4,7 @@ import com.sketch2svg.core.Attrib;
 import com.sketch2svg.core.Num;
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.core.Xml;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 
 public class Text extends Shape {
@@ -103,6 +104,22 @@ public class Text extends Shape {
     @Override
     public String getTag() {
         return "text";
+    }
+
+    // Glyph widths depend on the renderer's font, so estimate: ~0.6 em per character, one em tall
+    @Override
+    protected void addGeometry(Bounds b) {
+        float w = 0.6f * fontSize * textContent.length();
+        float h = fontSize;
+        float left = switch (anchor) {
+            case "start" -> 0.f;
+            case "end" -> -w;
+            default -> -w * 0.5f;
+        };
+        addLocalPoint(b, left, -h * 0.5f);
+        addLocalPoint(b, left + w, -h * 0.5f);
+        addLocalPoint(b, left, h * 0.5f);
+        addLocalPoint(b, left + w, h * 0.5f);
     }
 
     @Override

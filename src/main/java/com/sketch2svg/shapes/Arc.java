@@ -1,6 +1,7 @@
 package com.sketch2svg.shapes;
 
 import com.sketch2svg.core.*;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 
 // Part of a circle
@@ -46,6 +47,16 @@ public class Arc extends Shape {
     @Override
     public String getTag() {
         return "path";
+    }
+
+    // Sampled along the drawn part of the circle only
+    @Override
+    protected void addGeometry(Bounds b) {
+        final int samples = 48;
+        for (int i = 0; i <= samples; i++) {
+            double a = Math.toRadians(angle - length * 0.5 + length * i / samples);
+            addLocalPoint(b, (float) (radius * Math.cos(a)), (float) (radius * Math.sin(a)));
+        }
     }
 
     @Override

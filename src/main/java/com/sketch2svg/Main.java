@@ -29,6 +29,7 @@ public class Main {
         boolean check = false;
         boolean recursive = false;
         boolean watch = false;
+        fit = false;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -54,6 +55,7 @@ public class Main {
                 case "-c", "--check" -> check = true;
                 case "-r", "--recursive" -> recursive = true;
                 case "-w", "--watch" -> watch = true;
+                case "-f", "--fit" -> fit = true;
                 case "-v", "--version" -> {
                     System.out.println("Sketch2SVG " + version());
                     return 0;
@@ -201,8 +203,20 @@ public class Main {
         }
     }
 
+    // Output options from the command line; they override what the script itself sets
+    private static boolean fit;
+
+    private static final float FIT_PADDING = 10.f;
+
+    private static void applyOutputOptions(Sketch sketch) {
+        if (fit) {
+            sketch.setAutoFit(FIT_PADDING);
+        }
+    }
+
     // Writes an already-loaded sketch to a file, or to stdout for "-"
     private static boolean write(Sketch sketch, String inputPath, String outputPath) {
+        applyOutputOptions(sketch);
         if (outputPath.equals(STDIO)) {
             System.out.println(sketch.toSVGString());
             System.out.flush();
@@ -306,6 +320,7 @@ public class Main {
               -d, --batch <dir>        Batch convert all .txt files inside directory
               -r, --recursive          With -d, also convert subfolders (mirrored under -o)
               -w, --watch              Re-convert whenever the input (or an included file) changes
+              -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
               -c, --check              Only report errors and warnings; write nothing
                                        (exit code 1 if any script has errors)
               -h, --help               Display this help message

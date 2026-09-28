@@ -202,4 +202,23 @@ public abstract class Shape extends Elem {
     protected void transform(Vec2 p){
         p.mul(scale).cmul(rotation).add(pos);
     }
+
+    // Adds this shape's extent in sketch space (+y up), including half its stroke, to `out`
+    public void collectBounds(Bounds out){
+        Bounds own = new Bounds();
+        addGeometry(own);
+        if(hasStyle() && strokeWidth > 0.f && (strokeGradient != null || !ColorInt.isClear(stroke)))
+            own.expand(strokeWidth * 0.5f);
+        out.add(own);
+    }
+
+    // Subclasses add their outline points (usually via addLocalPoint) so auto-fit can frame them
+    protected void addGeometry(Bounds b){ /* no geometry by default */ }
+
+    // Adds a point given in this shape's local coordinates, after scale, rotation and position
+    protected final void addLocalPoint(Bounds b, float x, float y){
+        Vec2 p = new Vec2(x, y);
+        transform(p);
+        b.add(p.x, p.y);
+    }
 }

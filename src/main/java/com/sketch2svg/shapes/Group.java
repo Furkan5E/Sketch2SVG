@@ -3,6 +3,7 @@ package com.sketch2svg.shapes;
 import com.sketch2svg.core.Attrib;
 import com.sketch2svg.core.Num;
 import com.sketch2svg.core.Shape;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 
 import java.util.ArrayList;
@@ -32,6 +33,21 @@ public class Group extends Shape {
     @Override
     public String getTag() {
         return "g";
+    }
+
+    // Children's box, moved through this group's transform (its corners, since the group may rotate)
+    @Override
+    protected void addGeometry(Bounds b) {
+        Bounds inner = new Bounds();
+        for (Shape child : children) {
+            child.collectBounds(inner);
+        }
+        if (!inner.isEmpty()) {
+            addLocalPoint(b, inner.minX, inner.minY);
+            addLocalPoint(b, inner.maxX, inner.minY);
+            addLocalPoint(b, inner.minX, inner.maxY);
+            addLocalPoint(b, inner.maxX, inner.maxY);
+        }
     }
 
     // Paint is applied to the children directly, so the group itself has no style

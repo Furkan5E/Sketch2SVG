@@ -1,6 +1,7 @@
 package com.sketch2svg.shapes;
 
 import com.sketch2svg.core.*;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 
 public class LineStrip extends Shape {
@@ -35,6 +36,12 @@ public class LineStrip extends Shape {
             s.append(Num.format(p.x)).append(",").append(Num.format(p.y)).append(" ");
         }
         attribPoints.val = s.toString();
+    }
+
+    @Override
+    protected void addGeometry(Bounds b){
+        for(int i=0; i<getNumVertices(); i++)
+            addLocalPoint(b, getVertex(i,0), getVertex(i,1));
     }
 
     public void setNumVertices(int n){

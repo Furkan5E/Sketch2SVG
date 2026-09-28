@@ -84,6 +84,7 @@ Options:
   -d, --batch <dir>        Batch convert all .txt files inside directory
   -r, --recursive          With -d, also convert subfolders (mirrored under -o)
   -w, --watch              Re-convert whenever the input (or an included file) changes
+  -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
   -c, --check              Only report errors and warnings; write nothing
                            (exit code 1 if any script has errors)
   -h, --help               Display this help message
@@ -108,6 +109,7 @@ Options:
 | Polygon (free) | `polygon <x,y> <x,y> <x,y> ... [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeRGBA]` |
 | Path | `path M <x,y> L <x,y> Q <c,c> <x,y> C <c,c> <c,c> <x,y> Z [strokeWidth] [strokeRGBA] [fillRGBA]` |
+| Canvas | `canvas <w> <h> [cx cy]` or `canvas auto [padding]` (default: 200×200 centred on 0,0) |
 | Background | `background <color>` (fills the whole canvas, always drawn first) |
 
 ```text

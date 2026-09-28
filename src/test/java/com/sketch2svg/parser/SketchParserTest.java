@@ -628,6 +628,52 @@ public class SketchParserTest {
                 .parse(new org.xml.sax.InputSource(new java.io.StringReader(svg))), "well-formed XML");
     }
 
+    // The viewBox attribute of an SVG document
+    private static String viewBox(String svg) {
+        Matcher m = Pattern.compile("viewBox=\"([^\"]*)\"").matcher(svg);
+        assertTrue(m.find(), svg);
+        return m.group(1);
+    }
+
+    @Test
+    void testCanvasCommand() throws IOException {
+        assertEquals("-100 -100 200 200", viewBox(parse("circle 5 0 0\n").toSVGString()));
+        // 300x100 centred on (50, 20): SVG y runs downward, so the top edge is at -(20 + 50)
+        assertEquals("-100 -70 300 100", viewBox(parse("canvas 300 100 50 20\ncircle 5 0 0\n").toSVGString()));
+        assertEquals("-80 -45 160 90", viewBox(parse("canvas 160 90\n").toSVGString()));
+
+        // The background follows the canvas: exactly the viewBox, x -100..200 and SVG y -70..30
+        String withBackground = parse("canvas 300 100 50 20\nbackground navy\n").toSVGString();
+        assertTrue(withBackground.contains("points=\"-100,30 200,30 200,-70 -100,-70 \""), withBackground);
+
+        String log = stderrOf(() -> parse("canvas 0 10\ncanvas 10\n"));
+        assertTrue(log.contains("(canvas size must be greater than zero)"), log);
+    }
+
+    @Test
+    void testAutoFitFramesTheDrawing() throws IOException {
+        // Circle r=10 at (50,50) with stroke 2 reaches 61; a rotated square's corner reaches sqrt(2)*5 ~ 7.07 past its centre
+        Sketch sketch = parse("""
+                canvas auto 5
+                circle 10 50 50 2 black
+                square 10 -20 -20 0 none red rot=45
+                """);
+        // x: -27.07-5 .. 61+5 -> floor/ceil = -33 .. 66;  y (flipped): -(61+5) .. 27.07+5 -> -66 .. 33
+        assertEquals("-33 -66 99 99", viewBox(sketch.toSVGString()));
+
+        // Groups contribute their transformed children; text is estimated at 0.6em per character
+        Sketch grouped = parse("""
+                canvas auto 0
+                group at=100,0 rot=90
+                  rect 40 10 0 0 0 none red
+                end
+                """);
+        assertEquals("95 -20 10 40", viewBox(grouped.toSVGString()));
+
+        // Nothing drawn: keep the default view
+        assertEquals("-100 -100 200 200", viewBox(parse("canvas auto\n").toSVGString()));
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

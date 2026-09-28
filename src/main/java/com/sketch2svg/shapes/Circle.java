@@ -1,6 +1,7 @@
 package com.sketch2svg.shapes;
 
 import com.sketch2svg.core.*;
+import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
 
 // Circle; becomes an SVG <ellipse> when scaled unevenly
@@ -59,6 +60,16 @@ public class Circle extends Shape{
     @Override
     public String getTag(){
         return isEllipse() ? "ellipse" : "circle";
+    }
+
+    // Sampled outline, so rotated and stretched ellipses get a tight box
+    @Override
+    protected void addGeometry(Bounds b){
+        final int samples = 72;
+        for(int i = 0; i < samples; i++){
+            double t = 2 * Math.PI * i / samples;
+            addLocalPoint(b, (float)(radius * Math.cos(t)), (float)(radiusY * Math.sin(t)));
+        }
     }
     @Override
     protected void updateAttribs() {
