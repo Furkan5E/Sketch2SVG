@@ -583,6 +583,51 @@ public class SketchParserTest {
         assertTrue(log.contains("(Expected normal|bold|lighter|bolder|100..900 in weight=heavy)"), log);
     }
 
+    @Test
+    void testGradients() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                gradient sky linear 90 #0b1020 3a86ff80   # night to day
+                gradient sun radial gold orange red
+                gradient flat linear 000000 ffffff
+                background sky
+                circle 10 0 0 2 sun sky
+                group fill=sun
+                  square 5 0 0 stroke=sky
+                end
+                gradient gold linear red blue
+                gradient bad radial red
+                rect 5 5 0 0 fill=nope
+                """));
+        Sketch sketch = result[0];
+
+        String svg = sketch.toSVGString();
+        // Definitions come first so every later reference resolves
+        assertTrue(svg.indexOf("<defs>") < svg.indexOf("url(#sky)"), svg);
+        // 90deg runs bottom to top: y1=1 (bottom in SVG space) to y2=0
+        assertTrue(svg.contains("<linearGradient id=\"sky\" x1=\"0.5\" y1=\"1\" x2=\"0.5\" y2=\"0\">"), svg);
+        assertTrue(svg.contains("<stop offset=\"1\" stop-color=\"#3A86FF\" stop-opacity=\"0.502\"/>"), svg);
+        assertTrue(svg.contains("<radialGradient id=\"sun\">"), svg);
+        assertTrue(svg.contains("<stop offset=\"0.5\" stop-color=\"#FFA500\"/>"), svg);
+        // No angle: 000000 is the first colour, not an angle of zero
+        assertTrue(svg.contains("<linearGradient id=\"flat\" x1=\"0\" y1=\"0.5\" x2=\"1\" y2=\"0.5\">"), svg);
+        assertTrue(svg.contains("<stop offset=\"0\" stop-color=\"#000000\"/>"), svg);
+
+        assertEquals("sky", sketch.getShapes().get(0).getFillGradient());
+        assertEquals("sun", sketch.getShapes().get(0).getStrokeGradient());
+        assertTrue(svg.contains("style=\"fill:url(#sky);stroke-width:2;stroke:url(#sun)\""), svg);
+
+        Shape square = ((Group) sketch.getShapes().get(1)).getChildren().get(0);
+        assertEquals("sun", square.getFillGradient());
+        assertEquals("sky", square.getStrokeGradient());
+
+        assertTrue(log.contains("(Gradient name 'gold' is already a color name)"), log);
+        assertTrue(log.contains("(A gradient needs at least two colors)"), log);
+        assertTrue(log.contains("(Invalid color in fill=nope)"), log);
+        assertDoesNotThrow(() -> javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                .parse(new org.xml.sax.InputSource(new java.io.StringReader(svg))), "well-formed XML");
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

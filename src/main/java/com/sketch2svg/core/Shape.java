@@ -9,8 +9,10 @@ public abstract class Shape extends Elem {
 
     private int fill = ColorInt.from(0,0);
     private int stroke = ColorInt.from(0);
+    private String fillGradient;   // gradient id painting the fill instead of the colour, or null
+    private String strokeGradient; // same for the stroke
     private float strokeWidth = 1.f;
-    private float[] dash;      // stroke-dasharray, or null for a solid line
+    private float[] dash;     // stroke-dasharray, or null for a solid line
     private String lineCap;    // butt | round | square, or null for the SVG default (butt)
     private String lineJoin;   // miter | round | bevel, or null for the SVG default (miter)
 
@@ -28,10 +30,11 @@ public abstract class Shape extends Elem {
     // If overriding in a subclass, make sure to call this method via super.updateAttribs().
     @Override
     protected void updateAttribs(){
-        var style = "fill:" + (ColorInt.isClear(fill) ? "none" : paint("fill", fill));
-        if(strokeWidth > 0.f && !ColorInt.isClear(stroke)){
+        var style = "fill:" + (fillGradient != null ? "url(#" + fillGradient + ")"
+                : ColorInt.isClear(fill) ? "none" : paint("fill", fill));
+        if(strokeWidth > 0.f && (strokeGradient != null || !ColorInt.isClear(stroke))){
             style += ";stroke-width:" + Num.format(strokeWidth);
-            style += ";stroke:" + paint("stroke", stroke);
+            style += ";stroke:" + (strokeGradient != null ? "url(#" + strokeGradient + ")" : paint("stroke", stroke));
             if(dash != null && dash.length > 0){
                 StringBuilder d = new StringBuilder();
                 for(float v : dash)
@@ -102,6 +105,22 @@ public abstract class Shape extends Elem {
     }
     public Shape setFill(int color){
         this.fill = color;
+        this.fillGradient = null;
+        return this;
+    }
+    public String getFillGradient(){
+        return fillGradient;
+    }
+    // Paint the fill with the gradient of this id (defined in the SVG's <defs>)
+    public Shape setFillGradient(String id){
+        this.fillGradient = id;
+        return this;
+    }
+    public String getStrokeGradient(){
+        return strokeGradient;
+    }
+    public Shape setStrokeGradient(String id){
+        this.strokeGradient = id;
         return this;
     }
     public int getStroke(){
@@ -109,6 +128,7 @@ public abstract class Shape extends Elem {
     }
     public Shape setStroke(int color){
         this.stroke = color;
+        this.strokeGradient = null;
         return this;
     }
     public float getStrokeWidth(){

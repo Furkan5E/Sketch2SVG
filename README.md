@@ -148,6 +148,15 @@ group at=30,-40 rot=10 stroke=2 fill=brown
 end
 ```
 
+### Gradients
+`gradient <name> linear [angle] <color> <color> …` or `gradient <name> radial <color> <color> …` defines a gradient with evenly spaced colors. Use its name anywhere a color goes: `fill=`, `stroke=`, the positional colors, `background`, and group styles. The angle is counter-clockwise (0 = left to right, 90 = bottom to top) and the gradient stretches over each shape it paints.
+```text
+gradient sky linear 90 #ff9e6d #0b1020
+gradient sun radial #fff3b0 #ffd166 #f77f00
+background sky
+circle 30 0 20 0 none sun
+```
+
 ### Include
 `include <path>` inlines another sketch file at that point. Paths are relative to the file containing the `include`; wrap them in quotes if they contain spaces. Errors inside included files report the file name, and circular includes are rejected.
 ```text

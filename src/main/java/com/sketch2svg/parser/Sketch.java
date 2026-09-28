@@ -5,6 +5,8 @@ import com.sketch2svg.math.Vec2;
 import com.sketch2svg.math.ViewBox;
 import com.sketch2svg.shapes.*;
 import com.sketch2svg.svg.ColorInt;
+import com.sketch2svg.svg.Defs;
+import com.sketch2svg.svg.Gradient;
 import com.sketch2svg.svg.SVG;
 
 import java.io.IOException;
@@ -14,8 +16,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.InputMismatchException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -24,6 +28,8 @@ public class Sketch {
     // Store all parsed or programmatically added shapes
     private final List<Shape> shapes = new ArrayList<>();
     private Integer background; // RGBA fill for the whole canvas, or null for none
+    private String backgroundGradient; // gradient name filling the canvas instead, or null
+    private final Map<String, Gradient> gradients = new LinkedHashMap<>();
     private final Variables variables = new Variables();
     private final Diagnostics diagnostics = new Diagnostics();
     private final List<Path> sourceFiles = new ArrayList<>();
@@ -46,6 +52,8 @@ public class Sketch {
     public void clear() {
         shapes.clear();
         background = null;
+        backgroundGradient = null;
+        gradients.clear();
     }
 
     public Integer getBackground() {
@@ -54,6 +62,20 @@ public class Sketch {
 
     public Sketch setBackground(Integer rgba) {
         this.background = rgba;
+        this.backgroundGradient = null;
+        return this;
+    }
+
+    // Fill the canvas with a gradient defined via addGradient()
+    public Sketch setBackgroundGradient(String name) {
+        this.backgroundGradient = name;
+        this.background = null;
+        return this;
+    }
+
+    // Makes a gradient available to shapes as setFillGradient(name) / setStrokeGradient(name)
+    public Sketch addGradient(String name, Gradient gradient) {
+        gradients.put(name, gradient);
         return this;
     }
 
@@ -91,11 +113,18 @@ public class Sketch {
 
     private SVG buildSVG() {
         SVG svg = new SVG();
-        if (background != null) {
+        if (!gradients.isEmpty()) {
+            Defs defs = new Defs();
+            gradients.values().forEach(defs::addContent);
+            svg.addContent(defs);
+        }
+        if (background != null || backgroundGradient != null) {
             // Cover the whole viewBox; convert its SVG-space centre back to +y-up sketch space
             ViewBox vb = svg.getViewBox();
-            svg.addContent(new Rect(vb.w, vb.h, vb.x + vb.w * 0.5f, -(vb.y + vb.h * 0.5f))
-                    .setFill(background).setStrokeWidth(0.f));
+            Shape canvas = new Rect(vb.w, vb.h, vb.x + vb.w * 0.5f, -(vb.y + vb.h * 0.5f)).setStrokeWidth(0.f);
+            if (backgroundGradient != null) canvas.setFillGradient(backgroundGradient);
+            else canvas.setFill(background);
+            svg.addContent(canvas);
         }
         for (Shape shape : shapes) {
             svg.addContent(shape);
@@ -283,7 +312,7 @@ public class Sketch {
         StyleArgs args;
         try (Scanner ls = new Scanner(variables.substituteLine(line.text())).useLocale(Locale.ROOT)) {
             ls.next(); // "group"
-            args = StyleArgs.parse(ls, null, line.where(), diagnostics);
+            args = StyleArgs.parse(ls, null, line.where(), diagnostics, gradients.keySet());
         } catch (NoSuchElementException e) {
             diagnostics.syntaxError(line, e);
             return;
@@ -358,16 +387,23 @@ public class Sketch {
             String type = ls.next().toLowerCase(Locale.ROOT);
             if (type.equals("background")) {
                 String color = ls.next();
-                if (!ColorInt.isColor(color)) {
+                if (gradients.containsKey(color)) {
+                    setBackgroundGradient(color);
+                } else if (ColorInt.isColor(color)) {
+                    setBackground(ColorInt.parseColor(color));
+                } else {
                     throw new InputMismatchException("Invalid color: " + color);
                 }
-                background = ColorInt.parseColor(color);
+                return;
+            }
+            if (type.equals("gradient")) {
+                defineGradient(ls);
                 return;
             }
             Shape shape = parseShape(type, ls);
 
             if (shape != null) {
-                StyleArgs own = StyleArgs.parse(ls, shape, line.where(), diagnostics);
+                StyleArgs own = StyleArgs.parse(ls, shape, line.where(), diagnostics, gradients.keySet());
                 for (StyleArgs inherited : groupPaint) {
                     inherited.applyPaint(shape); // outer groups first, so inner ones win
                 }
@@ -377,6 +413,37 @@ public class Sketch {
                 diagnostics.error(line.where(), "Unknown shape command '" + type + "'");
             }
         }
+    }
+
+    // gradient <name> linear [angle] <color> <color> ... | gradient <name> radial <color> <color> ...
+    private void defineGradient(Scanner ls) {
+        String name = ls.next();
+        if (!Variables.NAME.matcher(name).matches()) {
+            throw new InputMismatchException("Invalid gradient name '" + name + "'");
+        }
+        if (ColorInt.isColor(name)) {
+            throw new InputMismatchException("Gradient name '" + name + "' is already a color name");
+        }
+        String type = ls.next().toLowerCase(Locale.ROOT);
+        if (!type.equals("linear") && !type.equals("radial")) {
+            throw new InputMismatchException("Expected linear or radial, not '" + type + "'");
+        }
+        // Optional angle: a number that isn't also a 6/8-digit hex colour such as 000000
+        float angle = type.equals("linear") && ls.hasNext(StyleArgs.NUMBER) && !ls.hasNext("[0-9a-fA-F]{6}|[0-9a-fA-F]{8}")
+                ? ls.nextFloat() : 0.f;
+
+        List<Integer> colors = new ArrayList<>();
+        while (ls.hasNext() && !ls.hasNext("#|#[^0-9a-fA-F].*")) { // stop at a trailing # comment
+            String tok = ls.next();
+            if (!ColorInt.isColor(tok)) {
+                throw new InputMismatchException("Invalid color: " + tok);
+            }
+            colors.add(ColorInt.parseColor(tok));
+        }
+        if (colors.size() < 2) {
+            throw new InputMismatchException("A gradient needs at least two colors");
+        }
+        gradients.put(name, type.equals("linear") ? Gradient.linear(name, angle, colors) : Gradient.radial(name, colors));
     }
 
     // Adds to the group being built, or to the sketch at the top level

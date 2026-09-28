@@ -11,6 +11,7 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 // Optional arguments that follow a command's required parameters:
@@ -28,8 +29,8 @@ final class StyleArgs {
     static final Pattern POINT = Pattern.compile(NUMBER.pattern() + "," + NUMBER.pattern());
 
     Float strokeWidth;
-    Integer stroke;
-    Integer fill;
+    Object stroke;  // paint: an Integer RGBA colour or a String gradient name
+    Object fill;
     Float rotation;
     float[] at;
     float[] scale;
@@ -42,12 +43,16 @@ final class StyleArgs {
     String align;
     Boolean italic;
 
+    // Names of gradients defined so far; they can be used anywhere a colour can
+    private Set<String> gradients = Set.of();
+
     // Reads the remaining tokens of a line. `where` prefixes warnings, e.g. "Line 5".
     // target is the shape being styled, or null for a group (whose options are passed down to its shapes).
-    static StyleArgs parse(Scanner ls, Shape target, String where, Diagnostics diagnostics) {
+    static StyleArgs parse(Scanner ls, Shape target, String where, Diagnostics diagnostics, Set<String> gradients) {
         StyleArgs args = new StyleArgs();
+        args.gradients = gradients;
         List<Float> numbers = new ArrayList<>();
-        List<Integer> colors = new ArrayList<>();
+        List<Object> colors = new ArrayList<>();
 
         while (ls.hasNext()) {
             String tok = ls.next();
@@ -67,8 +72,8 @@ final class StyleArgs {
 
             if (eq > 0) {
                 args.applyNamed(tok.substring(0, eq).toLowerCase(Locale.ROOT), tok.substring(eq + 1), tok, where, diagnostics);
-            } else if (ColorInt.isColor(tok)) {
-                colors.add(ColorInt.parseColor(tok));
+            } else if (ColorInt.isColor(tok) || gradients.contains(tok)) {
+                colors.add(args.paint(tok, tok));
             } else if (NUMBER.matcher(tok).matches()) {
                 numbers.add(Float.parseFloat(tok));
             } else if (tok.equalsIgnoreCase("bold")) {
@@ -116,11 +121,11 @@ final class StyleArgs {
     private void applyNamed(String key, String value, String tok, String where, Diagnostics diagnostics) {
         switch (key) {
             case "rot" -> rotation = number(value, tok);
-            case "fill" -> fill = color(value, tok);
+            case "fill" -> fill = paint(value, tok);
             case "stroke" -> {
-                // stroke=<color> sets the colour, stroke=<number> the width
-                if (ColorInt.isColor(value)) stroke = ColorInt.parseColor(value);
-                else strokeWidth = number(value, tok);
+                // stroke=<color|gradient> sets the paint, stroke=<number> the width
+                if (NUMBER.matcher(value).matches() && !ColorInt.isColor(value)) strokeWidth = number(value, tok);
+                else stroke = paint(value, tok);
             }
             case "stroke-width", "sw" -> strokeWidth = number(value, tok);
             case "at" -> at = pair(value, tok);
@@ -151,8 +156,10 @@ final class StyleArgs {
     // Stroke and fill (what groups pass down to their shapes)
     void applyPaint(Shape shape) {
         if (strokeWidth != null) shape.setStrokeWidth(strokeWidth);
-        if (stroke != null) shape.setStroke(stroke);
-        if (fill != null) shape.setFill(fill);
+        if (stroke instanceof Integer rgba) shape.setStroke(rgba);
+        if (stroke instanceof String gradient) shape.setStrokeGradient(gradient);
+        if (fill instanceof Integer rgba) shape.setFill(rgba);
+        if (fill instanceof String gradient) shape.setFillGradient(gradient);
         if (dash != null) shape.setDash(dash);
         if (cap != null) shape.setLineCap(cap);
         if (join != null) shape.setLineJoin(join);
@@ -214,10 +221,13 @@ final class StyleArgs {
         return Float.parseFloat(value);
     }
 
-    private static int color(String value, String tok) {
-        if (!ColorInt.isColor(value))
-            throw new InputMismatchException("Invalid color in " + tok);
-        return ColorInt.parseColor(value);
+    // A colour (Integer RGBA) or the name of a defined gradient (String)
+    private Object paint(String value, String tok) {
+        if (ColorInt.isColor(value))
+            return ColorInt.parseColor(value);
+        if (gradients.contains(value))
+            return value;
+        throw new InputMismatchException("Invalid color in " + tok);
     }
 
     private static float[] pair(String value, String tok) {
