@@ -3,6 +3,7 @@ package com.sketch2svg.parser;
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.shapes.Arrow;
 import com.sketch2svg.shapes.Line;
+import com.sketch2svg.shapes.Text;
 import com.sketch2svg.svg.ColorInt;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
 //   positional  [strokeWidth] [strokeColor] [fillColor]
 //   named       rot=<deg> stroke=<color|width> fill=<color> stroke-width=<n> (sw=) at=<x,y> scale=<s|sx,sy>
 //               dash=<a,b,...|none> cap=<butt|round|square> join=<miter|round|bevel> arrow=<start|end|both|none>
+//               text: font=<family|"family name"> weight=<bold|100..900> align=<left|center|right>, bold, italic
 // Named arguments may appear in any order and override positional ones.
 final class StyleArgs {
 
@@ -35,6 +37,10 @@ final class StyleArgs {
     String cap;
     String join;
     String arrow;   // line arrowheads: start, end, both or none
+    String font;    // text options
+    String weight;
+    String align;
+    Boolean italic;
 
     // Reads the remaining tokens of a line. `where` prefixes warnings, e.g. "Line 5".
     // target is the shape being styled, or null for a group (whose options are passed down to its shapes).
@@ -47,12 +53,28 @@ final class StyleArgs {
             String tok = ls.next();
             int eq = tok.indexOf('=');
 
+            // key="value with spaces": the scanner split it, so join the pieces back up to the closing quote
+            if (eq > 0 && tok.startsWith("\"", eq + 1) && (tok.length() == eq + 2 || !tok.endsWith("\""))) {
+                StringBuilder joined = new StringBuilder(tok);
+                while (ls.hasNext() && !joined.toString().endsWith("\"")) {
+                    joined.append(' ').append(ls.next());
+                }
+                if (!joined.toString().endsWith("\"")) {
+                    throw new InputMismatchException("Missing closing quote in " + joined);
+                }
+                tok = joined.toString();
+            }
+
             if (eq > 0) {
                 args.applyNamed(tok.substring(0, eq).toLowerCase(Locale.ROOT), tok.substring(eq + 1), tok, where, diagnostics);
             } else if (ColorInt.isColor(tok)) {
                 colors.add(ColorInt.parseColor(tok));
             } else if (NUMBER.matcher(tok).matches()) {
                 numbers.add(Float.parseFloat(tok));
+            } else if (tok.equalsIgnoreCase("bold")) {
+                args.weight = "bold";
+            } else if (tok.equalsIgnoreCase("italic")) {
+                args.italic = true;
             } else if (tok.startsWith("#")) {
                 break; // trailing comment
             } else {
@@ -62,6 +84,10 @@ final class StyleArgs {
 
         if (args.arrow != null && target != null && !(target instanceof Line)) {
             diagnostics.warning(where, "Ignored arrow=" + args.arrow + " (only lines have arrowheads)");
+        }
+        boolean textOptions = args.font != null || args.weight != null || args.align != null || args.italic != null;
+        if (textOptions && target != null && !(target instanceof Text)) {
+            diagnostics.warning(where, "Ignored font options (only text has a font)");
         }
 
         // Deprecated "arrow ... <rot> <strokeWidth>" form
@@ -105,6 +131,19 @@ final class StyleArgs {
             case "cap" -> cap = keyword(value, tok, "butt", "round", "square");
             case "join" -> join = keyword(value, tok, "miter", "round", "bevel");
             case "arrow" -> arrow = keyword(value, tok, "start", "end", "both", "none");
+            case "font" -> {
+                font = unquote(value);
+                if (font.isBlank()) {
+                    throw new InputMismatchException("Empty font name in " + tok);
+                }
+            }
+            case "weight" -> {
+                weight = value.toLowerCase(Locale.ROOT);
+                if (!weight.matches("normal|bold|lighter|bolder|[1-9]00")) {
+                    throw new InputMismatchException("Expected normal|bold|lighter|bolder|100..900 in " + tok);
+                }
+            }
+            case "align" -> align = keyword(value, tok, "left", "center", "right");
             default -> diagnostics.warning(where, "Ignored unrecognized argument '" + tok + "'");
         }
     }
@@ -118,6 +157,17 @@ final class StyleArgs {
         if (cap != null) shape.setLineCap(cap);
         if (join != null) shape.setLineJoin(join);
         if (arrow != null && shape instanceof Line line) line.setArrows(arrow);
+        if (shape instanceof Text text) {
+            if (font != null) text.fontFamily(font);
+            if (weight != null) text.fontWeight(weight);
+            if (align != null) text.align(align);
+            if (italic != null) text.italic(italic);
+        }
+    }
+
+    private static String unquote(String value) {
+        return value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")
+                ? value.substring(1, value.length() - 1) : value;
     }
 
     // dash=<len,len,...> (dash and gap lengths) or dash=none

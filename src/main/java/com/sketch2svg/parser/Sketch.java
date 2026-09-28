@@ -493,7 +493,8 @@ public class Sketch {
                 
                 String content;
                 // Direct line search extracts quoted text cleanly across whitespace tokens
-                String quoted = ls.findInLine("\"([^\"]*)\"");
+                // Only when the content itself is quoted, so a later font="..." isn't taken as the text
+                String quoted = ls.hasNext("\".*") ? ls.findInLine("\"([^\"]*)\"") : null;
                 if (quoted != null) {
                     content = quoted.substring(1, quoted.length() - 1);
                 } else {

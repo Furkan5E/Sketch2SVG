@@ -170,6 +170,9 @@ Any shape also accepts named arguments, in any order, after its required paramet
 | `cap=butt\|round\|square` | Stroke line caps |
 | `join=miter\|round\|bevel` | Stroke line joins |
 | `arrow=end\|start\|both\|none` | Arrowheads on a `line` (drawn in its stroke colour and width) |
+| `font=<family>` / `font="Family Name"` | Text font family |
+| `weight=bold\|normal\|100…900`, `bold`, `italic` | Text weight and style |
+| `align=left\|center\|right` | Which side of the text sits on its position (default `center`) |
 
 ```text
 rect 40 20 0 0 rot=30 stroke=2 fill=ffdc7a

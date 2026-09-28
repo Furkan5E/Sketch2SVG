@@ -554,6 +554,35 @@ public class SketchParserTest {
         assertTrue(log.contains("Line 4: Ignored arrow=end (only lines have arrowheads)"), log);
     }
 
+    @Test
+    void testTextFontOptions() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                text 0 0 12 "Hello World" font="Courier New" bold italic align=left
+                text 0 0 12 Hi font=serif weight=300
+                group font=monospace align=right
+                  text 0 0 10 "a"
+                end
+                circle 5 0 0 bold
+                text 0 0 12 "x" weight=heavy
+                """));
+        Sketch sketch = result[0];
+
+        String first = sketch.getShapes().get(0).toString();
+        assertTrue(first.contains("font-family=\"Courier New\" font-weight=\"bold\" font-style=\"italic\" text-anchor=\"start\""), first);
+        assertTrue(first.contains(">\nHello World\n<"), first);
+
+        String second = sketch.getShapes().get(1).toString();
+        assertTrue(second.contains("font-family=\"serif\" font-weight=\"300\" text-anchor=\"middle\""), second);
+        assertTrue(second.contains(">\nHi\n<"), second);
+
+        String grouped = ((Group) sketch.getShapes().get(2)).getChildren().get(0).toString();
+        assertTrue(grouped.contains("font-family=\"monospace\" text-anchor=\"end\""), grouped);
+
+        assertTrue(log.contains("Line 6: Ignored font options (only text has a font)"), log);
+        assertTrue(log.contains("(Expected normal|bold|lighter|bolder|100..900 in weight=heavy)"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;
