@@ -215,6 +215,24 @@ public class MainTest {
     }
 
     @Test
+    void testSizeAndFitOptions() throws IOException {
+        Path input = tempDir.resolve("in.txt");
+        Files.writeString(input, "canvas 300 100\ncircle 10 0 0\n");
+
+        String[] sized = runWithStdio("", "-i", input.toString(), "-o", "-", "--size", "600");
+        assertEquals("0", sized[0]);
+        // 300x100 canvas at 600px wide is 200px tall
+        assertTrue(sized[1].startsWith("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"600\" height=\"200\" viewBox=\"-150 -50 300 100\">"), sized[1]);
+
+        // --fit replaces the script's canvas with the drawing's bounds (circle r=10 + half stroke + 10 margin)
+        String[] fitted = runWithStdio("", "-i", input.toString(), "-o", "-", "--fit");
+        assertTrue(fitted[1].contains("viewBox=\"-21 -21 42 42\""), fitted[1]);
+
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "--size", "0"}));
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "--size", "wide"}));
+    }
+
+    @Test
     void testBatchRejectsStdout() {
         assertEquals(1, Main.run(new String[]{"-d", tempDir.toString(), "-o", "-"}));
     }

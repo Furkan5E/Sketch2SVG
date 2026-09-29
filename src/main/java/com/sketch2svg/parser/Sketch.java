@@ -33,6 +33,7 @@ public class Sketch {
     private final Map<String, Gradient> gradients = new LinkedHashMap<>();
     private float[] canvas;          // explicit view {width, height, centreX, centreY}, or null for -100..100
     private Float autoFitPadding;    // non-null: size the view to the drawing plus this margin instead
+    private Integer pixelWidth;      // width/height attributes on <svg>, or null to omit them
     private final Variables variables = new Variables();
     private final Diagnostics diagnostics = new Diagnostics();
     private final List<Path> sourceFiles = new ArrayList<>();
@@ -90,6 +91,15 @@ public class Sketch {
         return this;
     }
 
+    // Display size of the image: width in pixels (height follows the canvas), or null for none
+    public Sketch setPixelWidth(Integer width) {
+        if (width != null && width <= 0) {
+            throw new IllegalArgumentException("Width must be positive: " + width);
+        }
+        this.pixelWidth = width;
+        return this;
+    }
+
     // Makes a gradient available to shapes as setFillGradient(name) / setStrokeGradient(name)
     public Sketch addGradient(String name, Gradient gradient) {
         gradients.put(name, gradient);
@@ -130,6 +140,7 @@ public class Sketch {
 
     private SVG buildSVG() {
         SVG svg = new SVG();
+        svg.setPixelWidth(pixelWidth);
         ViewBox view = svg.getViewBox();
         if (autoFitPadding != null) {
             Bounds drawn = new Bounds();

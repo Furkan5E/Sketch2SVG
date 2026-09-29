@@ -30,10 +30,11 @@ public class Main {
         boolean recursive = false;
         boolean watch = false;
         fit = false;
+        pixelWidth = null;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
-                case "-i", "--input", "-o", "--output", "-d", "--dir", "--batch" -> {
+                case "-i", "--input", "-o", "--output", "-d", "--dir", "--batch", "-s", "--size" -> {
                     String option = args[i];
                     String value = optionValue(args, i);
                     if (value == null) {
@@ -45,6 +46,13 @@ public class Main {
                     switch (option) {
                         case "-i", "--input" -> inputPath = value;
                         case "-o", "--output" -> outputPath = value;
+                        case "-s", "--size" -> {
+                            if (!value.matches("[1-9][0-9]{0,5}")) {
+                                System.err.println("Option " + option + " needs a positive whole number of pixels, not " + value);
+                                return 1;
+                            }
+                            pixelWidth = Integer.parseInt(value);
+                        }
                         default -> dirPath = value;
                     }
                 }
@@ -205,12 +213,16 @@ public class Main {
 
     // Output options from the command line; they override what the script itself sets
     private static boolean fit;
+    private static Integer pixelWidth;
 
     private static final float FIT_PADDING = 10.f;
 
     private static void applyOutputOptions(Sketch sketch) {
         if (fit) {
             sketch.setAutoFit(FIT_PADDING);
+        }
+        if (pixelWidth != null) {
+            sketch.setPixelWidth(pixelWidth);
         }
     }
 
@@ -321,6 +333,7 @@ public class Main {
               -r, --recursive          With -d, also convert subfolders (mirrored under -o)
               -w, --watch              Re-convert whenever the input (or an included file) changes
               -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
+              -s, --size <px>          Set the image width in pixels (height follows the canvas)
               -c, --check              Only report errors and warnings; write nothing
                                        (exit code 1 if any script has errors)
               -h, --help               Display this help message
