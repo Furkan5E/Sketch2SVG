@@ -233,6 +233,26 @@ public class MainTest {
     }
 
     @Test
+    void testPrettyAndMinifiedOutput() throws IOException {
+        Path input = tempDir.resolve("in.txt");
+        Files.writeString(input, "group at=5,0\n  circle 1 0 0\n  text 0 0 5 \"hi\"\nend\n");
+
+        String pretty = runWithStdio("", "-i", input.toString(), "-o", "-", "--pretty")[1];
+        // Each level (svg > g > circle/text > text content) indents by two more spaces
+        assertTrue(pretty.contains("\n  <g transform=\"translate(5 0)\">"
+                + "\n    <circle style=\"fill:none;stroke-width:1;stroke:#000000\" cx=\"0\" cy=\"0\" r=\"1\"/>"
+                + "\n    <text"), pretty);
+        assertTrue(pretty.contains("\n      hi\n    </text>\n  </g>\n</svg>"), pretty);
+
+        String minified = runWithStdio("", "-i", input.toString(), "-o", "-", "--minify")[1].strip();
+        assertFalse(minified.contains("\n"), minified);
+        assertTrue(minified.contains("<g transform=\"translate(5 0)\"><circle"), minified);
+        assertTrue(minified.contains(">hi</text></g></svg>"), minified);
+
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "--pretty", "--minify"}));
+    }
+
+    @Test
     void testBatchRejectsStdout() {
         assertEquals(1, Main.run(new String[]{"-d", tempDir.toString(), "-o", "-"}));
     }

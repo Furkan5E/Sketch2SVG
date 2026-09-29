@@ -1,5 +1,6 @@
 package com.sketch2svg.parser;
 
+import com.sketch2svg.core.OutputStyle;
 import com.sketch2svg.core.Shape;
 import com.sketch2svg.math.Bounds;
 import com.sketch2svg.math.Vec2;
@@ -35,6 +36,7 @@ public class Sketch {
     private float[] canvas;          // explicit view {width, height, centreX, centreY}, or null for -100..100
     private Float autoFitPadding;    // non-null: size the view to the drawing plus this margin instead
     private Integer pixelWidth;      // width/height attributes on <svg>, or null to omit them
+    private OutputStyle outputStyle = OutputStyle.DEFAULT;
     private String title;            // <title> and <desc> for screen readers (and tooltips), or null
     private String description;
     private final Variables variables = new Variables();
@@ -143,14 +145,20 @@ public class Sketch {
                 && exportSVG(folder.resolve(name + ".svg").toString());
     }
 
+    // Layout of the written document: DEFAULT, PRETTY (indented) or MINIFIED
+    public Sketch setOutputStyle(OutputStyle style) {
+        this.outputStyle = style;
+        return this;
+    }
+
     // Returns false if the file could not be written
     public boolean exportSVG(String svgFilePath) {
-        return buildSVG().toFile(svgFilePath);
+        return buildSVG().toFile(svgFilePath, outputStyle);
     }
 
     // The complete SVG document as text
     public String toSVGString() {
-        return buildSVG().toString();
+        return buildSVG().toString(outputStyle);
     }
 
     private SVG buildSVG() {

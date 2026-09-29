@@ -1,5 +1,6 @@
 package com.sketch2svg;
 
+import com.sketch2svg.core.OutputStyle;
 import com.sketch2svg.parser.Sketch;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class Main {
         boolean watch = false;
         fit = false;
         pixelWidth = null;
+        style = null;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -64,6 +66,14 @@ public class Main {
                 case "-r", "--recursive" -> recursive = true;
                 case "-w", "--watch" -> watch = true;
                 case "-f", "--fit" -> fit = true;
+                case "--pretty", "--minify" -> {
+                    OutputStyle chosen = args[i].equals("--pretty") ? OutputStyle.PRETTY : OutputStyle.MINIFIED;
+                    if (style != null && style != chosen) {
+                        System.err.println("Choose either --pretty or --minify, not both");
+                        return 1;
+                    }
+                    style = chosen;
+                }
                 case "-v", "--version" -> {
                     System.out.println("Sketch2SVG " + version());
                     return 0;
@@ -214,6 +224,7 @@ public class Main {
     // Output options from the command line; they override what the script itself sets
     private static boolean fit;
     private static Integer pixelWidth;
+    private static OutputStyle style;
 
     private static final float FIT_PADDING = 10.f;
 
@@ -223,6 +234,9 @@ public class Main {
         }
         if (pixelWidth != null) {
             sketch.setPixelWidth(pixelWidth);
+        }
+        if (style != null) {
+            sketch.setOutputStyle(style);
         }
     }
 
@@ -334,6 +348,8 @@ public class Main {
               -w, --watch              Re-convert whenever the input (or an included file) changes
               -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
               -s, --size <px>          Set the image width in pixels (height follows the canvas)
+                  --pretty             Indent nested elements
+                  --minify             Write everything on one line (smallest file)
               -c, --check              Only report errors and warnings; write nothing
                                        (exit code 1 if any script has errors)
               -h, --help               Display this help message

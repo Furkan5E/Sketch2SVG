@@ -86,6 +86,8 @@ Options:
   -w, --watch              Re-convert whenever the input (or an included file) changes
   -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
   -s, --size <px>          Set the image width in pixels (height follows the canvas)
+      --pretty             Indent nested elements
+      --minify             Write everything on one line (smallest file)
   -c, --check              Only report errors and warnings; write nothing
                            (exit code 1 if any script has errors)
   -h, --help               Display this help message

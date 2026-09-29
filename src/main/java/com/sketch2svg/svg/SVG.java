@@ -47,8 +47,12 @@ public class SVG extends Elem{
 
     // Returns false if the file could not be written
     public boolean toFile(String filename){
+        return toFile(filename, OutputStyle.DEFAULT);
+    }
+
+    public boolean toFile(String filename, OutputStyle style){
         try (FileWriter fw = new FileWriter(filename)) {
-            fw.write(toString());
+            fw.write(toString(style));
             System.out.println("wrote SVG file: " + filename);
             return true;
         }
