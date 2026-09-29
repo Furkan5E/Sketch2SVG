@@ -9,6 +9,7 @@ import com.sketch2svg.svg.ColorInt;
 import com.sketch2svg.svg.Defs;
 import com.sketch2svg.svg.Gradient;
 import com.sketch2svg.svg.SVG;
+import com.sketch2svg.svg.TextElement;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +35,8 @@ public class Sketch {
     private float[] canvas;          // explicit view {width, height, centreX, centreY}, or null for -100..100
     private Float autoFitPadding;    // non-null: size the view to the drawing plus this margin instead
     private Integer pixelWidth;      // width/height attributes on <svg>, or null to omit them
+    private String title;            // <title> and <desc> for screen readers (and tooltips), or null
+    private String description;
     private final Variables variables = new Variables();
     private final Diagnostics diagnostics = new Diagnostics();
     private final List<Path> sourceFiles = new ArrayList<>();
@@ -100,6 +103,18 @@ public class Sketch {
         return this;
     }
 
+    // Accessible name of the image (<title>)
+    public Sketch setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    // Longer accessible description (<desc>)
+    public Sketch setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
     // Makes a gradient available to shapes as setFillGradient(name) / setStrokeGradient(name)
     public Sketch addGradient(String name, Gradient gradient) {
         gradients.put(name, gradient);
@@ -153,6 +168,13 @@ public class Sketch {
             view.set(canvas[2] - canvas[0] * 0.5f, -(canvas[3] + canvas[1] * 0.5f), canvas[0], canvas[1]);
         }
 
+        // Title and description come first, as the SVG spec recommends
+        if (title != null) {
+            svg.addContent(new TextElement("title", title));
+        }
+        if (description != null) {
+            svg.addContent(new TextElement("desc", description));
+        }
         if (!gradients.isEmpty()) {
             Defs defs = new Defs();
             gradients.values().forEach(defs::addContent);
@@ -438,6 +460,17 @@ public class Sketch {
             }
             if (type.equals("gradient")) {
                 defineGradient(ls);
+                return;
+            }
+            if (type.equals("title") || type.equals("desc")) {
+                // title "text" (quotes optional; without them the rest of the line is used)
+                String quoted = ls.hasNext("\".*") ? ls.findInLine("\"([^\"]*)\"") : null;
+                String value = quoted != null ? quoted.substring(1, quoted.length() - 1) : ls.hasNextLine() ? ls.nextLine().strip() : "";
+                if (value.isEmpty()) {
+                    throw new InputMismatchException(type + " needs some text");
+                }
+                if (type.equals("title")) setTitle(value);
+                else setDescription(value);
                 return;
             }
             if (type.equals("canvas")) {

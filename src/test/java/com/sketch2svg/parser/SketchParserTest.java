@@ -674,6 +674,23 @@ public class SketchParserTest {
         assertEquals("-100 -100 200 200", viewBox(parse("canvas auto\n").toSVGString()));
     }
 
+    @Test
+    void testTitleAndDescription() throws IOException {
+        String svg = parse("""
+                gradient sky linear red blue
+                circle 5 0 0
+                title "Night & day"
+                desc A house on a hill, under the stars
+                """).toSVGString();
+
+        // First children of <svg>, before definitions and shapes, and escaped
+        assertTrue(svg.contains("viewBox=\"-100 -100 200 200\">\n<title>\nNight &amp; day\n</title>\n<desc>\n"
+                + "A house on a hill, under the stars\n</desc>\n<defs>"), svg);
+
+        String log = stderrOf(() -> parse("title\n"));
+        assertTrue(log.contains("(title needs some text)"), log);
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

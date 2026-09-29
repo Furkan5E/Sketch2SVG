@@ -111,6 +111,7 @@ Options:
 | Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeRGBA]` |
 | Path | `path M <x,y> L <x,y> Q <c,c> <x,y> C <c,c> <c,c> <x,y> Z [strokeWidth] [strokeRGBA] [fillRGBA]` |
 | Canvas | `canvas <w> <h> [cx cy]` or `canvas auto [padding]` (default: 200×200 centred on 0,0) |
+| Title / description | `title "<text>"`, `desc "<text>"` (accessible name and description, shown by screen readers and as tooltips) |
 | Background | `background <color>` (fills the whole canvas, always drawn first) |
 
 ```text
