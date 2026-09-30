@@ -26,10 +26,13 @@ A lightweight, zero dependency Java vector graphics engine and CLI tool that con
 
 ## Examples
 
-| Night scene | Sunflower | Badge |
-|:---:|:---:|:---:|
-| <img src="examples/night.svg" width="240" alt="House on a hill under a night sky"> | <img src="examples/sunflower.svg" width="240" alt="Sunflower built with loops"> | <img src="examples/badge.svg" width="240" alt="Octagonal badge with stars and a ribbon"> |
-| [`sketch.txt`](src/main/resources/sketch.txt) | [`sunflower.txt`](examples/sunflower.txt) | [`badge.txt`](examples/badge.txt) |
+| Night scene | Sunflower |
+|:---:|:---:|
+| <img src="examples/night.svg" width="300" alt="House on a hill under a night sky"> | <img src="examples/sunflower.svg" width="300" alt="Sunflower built with loops"> |
+| [`sketch.txt`](src/main/resources/sketch.txt) | [`sunflower.txt`](examples/sunflower.txt) |
+| **Badge** | **Sunset** |
+| <img src="examples/badge.svg" width="300" alt="Octagonal badge with stars and a ribbon"> | <img src="examples/sunset.svg" width="300" alt="Sailboat on the sea at sunset"> |
+| [`badge.txt`](examples/badge.txt) | [`sunset.txt`](examples/sunset.txt) — gradients, curves, dashes, arrows |
 
 The sunflower's 16 petals and 42 seeds come from a few lines of loops and expressions:
 ```text
@@ -41,7 +44,7 @@ group at=0,20
   ...
 end
 ```
-Regenerate all examples with `java -jar target/Sketch2SVG.jar -d examples`.
+The examples double as snapshot tests: `SnapshotTest` fails if the output of any `examples/*.txt` stops matching its `.svg`. After an intended change, regenerate them with `mvn test -Dsnapshots.update=true` (or `java -jar target/Sketch2SVG.jar -d examples`).
 
 ---
 ## Build Instructions

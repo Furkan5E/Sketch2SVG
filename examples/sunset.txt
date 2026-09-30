@@ -1,0 +1,34 @@
+# Sunset: gradients, paths, rounded rectangles, dashes, arrows and text options
+title "Sunset over the sea"
+canvas 240 160
+
+gradient sky linear 90 #ff7b54 #ffb26b #6a4c93
+gradient sea linear 90 #03045e #0077b6
+gradient sun radial #fff3b0 #ffd166 #f77f00
+
+background sky
+circle 26 0 8 0 none sun
+rect 240 70 0 -45 0 none sea
+
+# the sun's reflection: dashed, round-capped strokes that shrink towards the viewer
+repeat 5 i
+  line {-22 + i*4} {-16 - i*11} {22 - i*4} {-16 - i*11} 2.5 #ffd166 dash=7,4 cap=round
+end
+
+# sailboat: a straight-edged hull and a curved sail
+group at=-72,-8
+  path M -16,0 L 16,0 L 11,-7 L -11,-7 Z 0 none #3d2b1f
+  line 0 0 0 38 1.5 #3d2b1f
+  path M 2,4 L 2,36 Q 12,22 20,4 Z 0 none white
+end
+
+# gulls: two quadratic curves each
+repeat 3 k
+  path M {-10 + k*16},{52 + k*7} Q {-5 + k*16},{58 + k*7} {k*16},{52 + k*7} Q {5 + k*16},{58 + k*7} {10 + k*16},{52 + k*7} 1.5 #2b2d42 cap=round join=round
+end
+
+# label with a pointer
+line 92 44 34 16 1.2 white arrow=end
+text 92 52 9 "sunset" fill=white italic align=left font=serif
+roundrect 96 22 8 66 -64 1.2 white #00000055
+text 66 -64 11 "Sketch2SVG" fill=white bold font=sans-serif
