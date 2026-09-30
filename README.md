@@ -86,6 +86,7 @@ Options:
   -w, --watch              Re-convert whenever the input (or an included file) changes
   -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
   -s, --size <px>          Set the image width in pixels (height follows the canvas)
+  -g, --grid               Draw a coordinate grid and axes over the result (for placing shapes)
       --pretty             Indent nested elements
       --minify             Write everything on one line (smallest file)
   -c, --check              Only report errors and warnings; write nothing

@@ -31,6 +31,7 @@ public class Main {
         boolean recursive = false;
         boolean watch = false;
         fit = false;
+        grid = false;
         pixelWidth = null;
         style = null;
 
@@ -66,6 +67,7 @@ public class Main {
                 case "-r", "--recursive" -> recursive = true;
                 case "-w", "--watch" -> watch = true;
                 case "-f", "--fit" -> fit = true;
+                case "-g", "--grid" -> grid = true;
                 case "--pretty", "--minify" -> {
                     OutputStyle chosen = args[i].equals("--pretty") ? OutputStyle.PRETTY : OutputStyle.MINIFIED;
                     if (style != null && style != chosen) {
@@ -223,6 +225,7 @@ public class Main {
 
     // Output options from the command line; they override what the script itself sets
     private static boolean fit;
+    private static boolean grid;
     private static Integer pixelWidth;
     private static OutputStyle style;
 
@@ -237,6 +240,9 @@ public class Main {
         }
         if (style != null) {
             sketch.setOutputStyle(style);
+        }
+        if (grid) {
+            sketch.setGrid(true);
         }
     }
 
@@ -348,6 +354,7 @@ public class Main {
               -w, --watch              Re-convert whenever the input (or an included file) changes
               -f, --fit                Size the canvas to fit the drawing (overrides the script's canvas)
               -s, --size <px>          Set the image width in pixels (height follows the canvas)
+              -g, --grid               Draw a coordinate grid and axes over the result (for placing shapes)
                   --pretty             Indent nested elements
                   --minify             Write everything on one line (smallest file)
               -c, --check              Only report errors and warnings; write nothing

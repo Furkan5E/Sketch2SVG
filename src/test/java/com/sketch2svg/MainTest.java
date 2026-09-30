@@ -253,6 +253,27 @@ public class MainTest {
     }
 
     @Test
+    void testGridOverlay() throws IOException {
+        Path input = tempDir.resolve("in.txt");
+        Files.writeString(input, "circle 10 0 0\n");
+
+        String svg = runWithStdio("", "-i", input.toString(), "-o", "-", "--grid")[1];
+        // Default 200-unit view: 10-unit steps from -100 to 100 inclusive is 21 positions per direction,
+        // minus 0 (drawn as an axis instead): 20 vertical + 20 horizontal lines + 2 axes
+        assertEquals(42, svg.split("<polyline").length - 1, svg);
+        assertTrue(svg.contains("points=\"-100,0 100,0 \""), svg);   // x axis
+        assertTrue(svg.contains("stroke:#E63946"), svg);
+        // Drawn on top of the shapes
+        assertTrue(svg.indexOf("<circle") < svg.indexOf("<g>"), svg);
+
+        // A 2000-unit canvas gets 100-unit steps
+        Files.writeString(input, "canvas 2000 2000\ncircle 10 0 0\n");
+        String large = runWithStdio("", "-i", input.toString(), "-o", "-", "--grid")[1];
+        assertTrue(large.contains("points=\"100,1000 100,-1000 \""), large);
+        assertFalse(large.contains("points=\"10,"), large);
+    }
+
+    @Test
     void testBatchRejectsStdout() {
         assertEquals(1, Main.run(new String[]{"-d", tempDir.toString(), "-o", "-"}));
     }

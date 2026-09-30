@@ -37,6 +37,7 @@ public class Sketch {
     private Float autoFitPadding;    // non-null: size the view to the drawing plus this margin instead
     private Integer pixelWidth;      // width/height attributes on <svg>, or null to omit them
     private OutputStyle outputStyle = OutputStyle.DEFAULT;
+    private boolean grid;            // debug overlay: grid lines and axes on top of the drawing
     private String title;            // <title> and <desc> for screen readers (and tooltips), or null
     private String description;
     private final Variables variables = new Variables();
@@ -145,6 +146,12 @@ public class Sketch {
                 && exportSVG(folder.resolve(name + ".svg").toString());
     }
 
+    // Draw a coordinate grid over the result, to help place shapes while sketching
+    public Sketch setGrid(boolean grid) {
+        this.grid = grid;
+        return this;
+    }
+
     // Layout of the written document: DEFAULT, PRETTY (indented) or MINIFIED
     public Sketch setOutputStyle(OutputStyle style) {
         this.outputStyle = style;
@@ -199,7 +206,43 @@ public class Sketch {
         for (Shape shape : shapes) {
             svg.addContent(shape);
         }
+        if (grid) {
+            svg.addContent(gridOverlay(view));
+        }
         return svg;
+    }
+
+    // Grid lines every "nice" step (1, 2 or 5 x 10^n, about 20 across) plus the two axes, sized to the view
+    private static Group gridOverlay(ViewBox view) {
+        float extent = Math.max(view.w, view.h);
+        double raw = extent / 20.0;
+        double magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
+        double step = raw / magnitude < 1.5 ? magnitude : raw / magnitude < 3.5 ? 2 * magnitude : 5 * magnitude;
+        float thin = extent / 1000.f;
+
+        // View edges in sketch space (+y up)
+        float left = view.x, right = view.x + view.w;
+        float bottom = -(view.y + view.h), top = -view.y;
+
+        Group overlay = new Group();
+        // Count whole steps (rather than adding step repeatedly) so positions don't drift; 0 is drawn as an axis below
+        for (long i = (long) Math.ceil(left / step); i * step <= right; i++) {
+            if (i != 0) {
+                overlay.add(gridLine((float) (i * step), bottom, (float) (i * step), top, thin, 0x80808066));
+            }
+        }
+        for (long i = (long) Math.ceil(bottom / step); i * step <= top; i++) {
+            if (i != 0) {
+                overlay.add(gridLine(left, (float) (i * step), right, (float) (i * step), thin, 0x80808066));
+            }
+        }
+        overlay.add(gridLine(left, 0, right, 0, thin * 2, 0xE63946CC)); // x axis
+        overlay.add(gridLine(0, bottom, 0, top, thin * 2, 0x2A9D8FCC)); // y axis
+        return overlay;
+    }
+
+    private static Shape gridLine(float x1, float y1, float x2, float y2, float width, int rgba) {
+        return new Line(x1, y1, x2, y2).setStroke(rgba).setStrokeWidth(width);
     }
 
     // Returns false if the file could not be read; bad lines are reported but skipped
