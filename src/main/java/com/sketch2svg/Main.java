@@ -249,12 +249,20 @@ public class Main {
     // Writes an already-loaded sketch to a file, or to stdout for "-"
     private static boolean write(Sketch sketch, String inputPath, String outputPath) {
         applyOutputOptions(sketch);
+        String svg = render(sketch, inputPath);
+        if (svg == null) {
+            System.err.println("Failed to convert: " + displayName(inputPath));
+            return false;
+        }
         if (outputPath.equals(STDIO)) {
-            System.out.println(sketch.toSVGString());
+            System.out.println(svg);
             System.out.flush();
             return true;
         }
-        if (!sketch.exportSVG(outputPath)) {
+        try {
+            Files.writeString(Path.of(outputPath), svg);
+        } catch (IOException e) {
+            System.err.println("Could not write SVG file: " + outputPath + " (" + e.getMessage() + ")");
             System.err.println("Failed to convert: " + displayName(inputPath));
             return false;
         }
@@ -262,15 +270,28 @@ public class Main {
         return true;
     }
 
-    // Parses without writing anything; fails if the script has errors (warnings are reported but allowed)
+    // Builds the whole document in memory first, so a failure never leaves a half-written file.
+    // Returns null if a value can't be written, e.g. a coordinate that overflowed to Infinity.
+    private static String render(Sketch sketch, String inputPath) {
+        try {
+            return sketch.toSVGString();
+        } catch (IllegalArgumentException e) {
+            System.err.println("[Error] " + displayName(inputPath) + ": " + e.getMessage()
+                    + " (a size, position or scale is too large)");
+            return null;
+        }
+    }
+
+    // Parses and renders in memory without writing; fails if the script has errors (warnings are reported but allowed)
     private static boolean checkFile(String inputPath) {
         Sketch sketch = load(inputPath);
         if (sketch == null) {
             return false;
         }
-        log.printf("%s: %d error(s), %d warning(s)%n",
-                displayName(inputPath), sketch.getErrorCount(), sketch.getWarningCount());
-        return sketch.getErrorCount() == 0;
+        applyOutputOptions(sketch);
+        int errors = sketch.getErrorCount() + (render(sketch, inputPath) == null ? 1 : 0);
+        log.printf("%s: %d error(s), %d warning(s)%n", displayName(inputPath), errors, sketch.getWarningCount());
+        return errors == 0;
     }
 
     private static boolean convertBatch(String inputDir, String outputDir, boolean check, boolean recursive) {

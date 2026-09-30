@@ -536,8 +536,8 @@ public class Sketch {
                     }
                     float cx = 0.f, cy = 0.f;
                     if (ls.hasNext(StyleArgs.NUMBER)) { // optional centre, always given as a pair
-                        cx = ls.nextFloat();
-                        cy = ls.nextFloat();
+                        cx = number(ls);
+                        cy = number(ls);
                     }
                     setCanvas(w, h, cx, cy);
                 }
@@ -573,7 +573,7 @@ public class Sketch {
         }
         // Optional angle: a number that isn't also a 6/8-digit hex colour such as 000000
         float angle = type.equals("linear") && ls.hasNext(StyleArgs.NUMBER) && !ls.hasNext("[0-9a-fA-F]{6}|[0-9a-fA-F]{8}")
-                ? ls.nextFloat() : 0.f;
+                ? number(ls) : 0.f;
 
         List<Integer> colors = new ArrayList<>();
         while (ls.hasNext() && !ls.hasNext("#|#[^0-9a-fA-F].*")) { // stop at a trailing # comment
@@ -606,81 +606,82 @@ public class Sketch {
         return switch (type) {
             case "circle" -> {
                 float r = size(ls, "radius");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Circle(r, cx, cy);
             }
             case "ellipse" -> {
                 float rx = size(ls, "x radius");
                 float ry = size(ls, "y radius");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Circle(rx, cx, cy).radii(rx, ry);
             }
             case "arc" -> {
                 float radius = size(ls, "radius");
-                float angle = ls.nextFloat();
-                float length = ls.nextFloat();
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float angle = number(ls);
+                float length = number(ls);
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Arc(radius, angle, length, cx, cy);
             }
             case "line" -> {
-                float x1 = ls.nextFloat();
-                float y1 = ls.nextFloat();
-                float x2 = ls.nextFloat();
-                float y2 = ls.nextFloat();
+                float x1 = number(ls);
+                float y1 = number(ls);
+                float x2 = number(ls);
+                float y2 = number(ls);
                 yield new Line(x1, y1, x2, y2);
             }
             case "rect" -> {
                 float w = size(ls, "width");
                 float h = size(ls, "height");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Rect(w, h, cx, cy);
             }
             case "square" -> {
                 float w = size(ls, "size");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Square(w, cx, cy);
             }
             case "ngon" -> {
                 int sides = ls.nextInt();
                 float radius = size(ls, "radius");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new RegPolygon(sides, radius, cx, cy);
             }
             case "trapezoid" -> {
                 float topW = size(ls, "top width");
                 float botW = size(ls, "bottom width");
                 float h = size(ls, "height");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Trapezoid(topW, botW, h, cx, cy);
             }
             case "star" -> {
                 int points = ls.nextInt();
                 float outerR = size(ls, "outer radius");
                 float innerR = size(ls, "inner radius");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Star(points, outerR, innerR, cx, cy);
             }
             case "arrow" -> {
                 float length = size(ls, "length");
                 float width = size(ls, "width");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new Arrow(length, width, cx, cy);
             }
             case "polygon", "polyline" -> {
                 boolean closed = type.equals("polygon");
                 List<Vec2> points = new ArrayList<>();
                 while (ls.hasNext(StyleArgs.POINT)) {
-                    String[] xy = ls.next().split(",");
-                    points.add(new Vec2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
+                    String tok = ls.next();
+                    String[] xy = tok.split(",");
+                    points.add(new Vec2(StyleArgs.finite(xy[0], tok), StyleArgs.finite(xy[1], tok)));
                 }
                 if (points.size() < (closed ? 3 : 2)) {
                     throw new InputMismatchException(type + " needs at least " + (closed ? 3 : 2) + " x,y points");
@@ -692,13 +693,13 @@ public class Sketch {
                 float w = size(ls, "width");
                 float h = size(ls, "height");
                 float r = size(ls, "corner radius");
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 yield new RoundRect(w, h, r, cx, cy);
             }
             case "text" -> {
-                float cx = ls.nextFloat();
-                float cy = ls.nextFloat();
+                float cx = number(ls);
+                float cy = number(ls);
                 float fontSize = size(ls, "font size");
                 
                 String content;
@@ -717,9 +718,27 @@ public class Sketch {
         };
     }
 
+    // Reads a number; Scanner also accepts NaN, Infinity and values beyond float range, which SVG can't represent
+    private static float number(Scanner ls) {
+        String tok = ls.hasNext() ? ls.next() : null;
+        if (tok == null) {
+            throw new NoSuchElementException();
+        }
+        try (Scanner single = new Scanner(tok).useLocale(Locale.ROOT)) {
+            if (!single.hasNextFloat()) {
+                throw new InputMismatchException();
+            }
+            float value = single.nextFloat();
+            if (!Float.isFinite(value)) {
+                throw new InputMismatchException("number " + tok + " is not finite or is too large");
+            }
+            return value;
+        }
+    }
+
     // Reads a size parameter; negative sizes would produce invalid or mirrored SVG
     private static float size(Scanner ls, String name) {
-        float value = ls.nextFloat();
+        float value = number(ls);
         if (value < 0) {
             throw new InputMismatchException(name + " must not be negative");
         }
@@ -756,7 +775,7 @@ public class Sketch {
                 throw new InputMismatchException("point " + tok + " needs a command before it");
             }
             String[] xy = tok.split(",");
-            pending.add(new float[]{Float.parseFloat(xy[0]), Float.parseFloat(xy[1])});
+            pending.add(new float[]{StyleArgs.finite(xy[0], tok), StyleArgs.finite(xy[1], tok)});
 
             int needed = command == 'Q' ? 2 : command == 'C' ? 3 : 1;
             if (pending.size() == needed) {

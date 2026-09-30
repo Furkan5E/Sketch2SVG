@@ -691,6 +691,31 @@ public class SketchParserTest {
         assertTrue(log.contains("(title needs some text)"), log);
     }
 
+    @Test
+    void testNonFiniteNumbersAreSyntaxErrors() throws IOException {
+        Sketch[] result = new Sketch[1];
+        String log = stderrOf(() -> result[0] = parse("""
+                circle NaN 0 0
+                circle 5 Infinity 0
+                circle 1e39 0 0
+                rect 10 10 0 0 rot=1e39
+                rect 10 10 0 0 1e39
+                polygon 0,0 1e39,0 5,5
+                path M 0,0 L 1e39,0
+                circle {1e20 * 1e20} 0 0
+                circle 5 0 0
+                """));
+
+        // Only the valid line is drawn; every bad number is reported with its line, and nothing throws
+        assertEquals(1, result[0].getShapes().size());
+        for (int line = 1; line <= 8; line++) {
+            assertTrue(log.contains("[Syntax Error] Line " + line + ":"), "line " + line + "\n" + log);
+        }
+        assertTrue(log.contains("(number 1e39 is not finite or is too large)"), log);
+        assertTrue(log.contains("(number 1e39 is too large in rot=1e39)"), log);
+        assertEquals(8, result[0].getErrorCount());
+    }
+
     // Runs the action and returns everything it printed to stderr
     private static String stderrOf(ThrowingRunnable action) throws IOException {
         PrintStream originalErr = System.err;

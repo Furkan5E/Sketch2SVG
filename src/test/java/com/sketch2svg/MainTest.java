@@ -274,6 +274,22 @@ public class MainTest {
     }
 
     @Test
+    void testOverflowingOutputFailsCleanly() throws IOException {
+        // Each number is valid on its own, but radius x scale overflows float range when rendered
+        Path input = tempDir.resolve("huge.txt");
+        Files.writeString(input, "circle 1e30 0 0 scale=1e30\n");
+        Path output = tempDir.resolve("huge.svg");
+
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "-o", output.toString()}));
+        assertFalse(Files.exists(output), "no half-written file is left behind");
+
+        // --check renders in memory too, so it no longer passes a file that can't be converted
+        String[] checked = runWithStdio("", "--check", "-i", input.toString());
+        assertEquals("1", checked[0]);
+        assertTrue(checked[1].contains("1 error(s)"), checked[1]);
+    }
+
+    @Test
     void testBatchRejectsStdout() {
         assertEquals(1, Main.run(new String[]{"-d", tempDir.toString(), "-o", "-"}));
     }

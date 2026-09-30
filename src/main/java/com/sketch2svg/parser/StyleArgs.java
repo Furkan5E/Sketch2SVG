@@ -75,7 +75,7 @@ final class StyleArgs {
             } else if (ColorInt.isColor(tok) || gradients.contains(tok)) {
                 colors.add(args.paint(tok, tok));
             } else if (NUMBER.matcher(tok).matches()) {
-                numbers.add(Float.parseFloat(tok));
+                numbers.add(finite(tok, tok));
             } else if (tok.equalsIgnoreCase("bold")) {
                 args.weight = "bold";
             } else if (tok.equalsIgnoreCase("italic")) {
@@ -218,7 +218,15 @@ final class StyleArgs {
     private static float number(String value, String tok) {
         if (!NUMBER.matcher(value).matches())
             throw new InputMismatchException("Invalid number in " + tok);
-        return Float.parseFloat(value);
+        return finite(value, tok);
+    }
+
+    // Parses an already-validated number, rejecting values beyond float range (e.g. 1e39 becomes Infinity)
+    static float finite(String value, String tok) {
+        float f = Float.parseFloat(value);
+        if (!Float.isFinite(f))
+            throw new InputMismatchException("number " + value + " is too large in " + tok);
+        return f;
     }
 
     // A colour (Integer RGBA) or the name of a defined gradient (String)
@@ -234,6 +242,6 @@ final class StyleArgs {
         if (!POINT.matcher(value).matches())
             throw new InputMismatchException("Expected x,y in " + tok);
         String[] xy = value.split(",");
-        return new float[]{Float.parseFloat(xy[0]), Float.parseFloat(xy[1])};
+        return new float[]{finite(xy[0], tok), finite(xy[1], tok)};
     }
 }
