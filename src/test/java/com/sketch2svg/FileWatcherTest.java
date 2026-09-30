@@ -46,6 +46,31 @@ public class FileWatcherTest {
     }
 
     @Test
+    void testEditDuringBuildIsNotMissed() throws IOException {
+        Path sketch = tempDir.resolve("sketch.txt");
+        Path include = tempDir.resolve("part.txt");
+        Files.writeString(sketch, "include part.txt\n");
+        Files.writeString(include, "circle 1 0 0\n");
+        FileWatcher watcher = new FileWatcher();
+
+        // Watch loop order: snapshot the known files, build (reading them), then track what the build used
+        var before = watcher.snapshot(List.of(sketch, include));
+        touch(include, 5); // saved while the build was still running
+        watcher.track(List.of(sketch, include), before);
+        assertTrue(watcher.changed(), "the edit made during the build triggers another build");
+
+        // Tracking with post-build times (the old behaviour) would have swallowed that edit
+        watcher.track(List.of(sketch, include));
+        assertFalse(watcher.changed());
+
+        // An include seen for the first time has no earlier snapshot, so it's recorded as it is now
+        Path added = tempDir.resolve("added.txt");
+        Files.writeString(added, "square 1 0 0\n");
+        watcher.track(List.of(sketch, include, added), watcher.snapshot(List.of(sketch, include)));
+        assertFalse(watcher.changed());
+    }
+
+    @Test
     void testSketchReportsIncludedAndMissingFiles() throws IOException {
         Files.writeString(tempDir.resolve("main.txt"), "include part.txt\ninclude todo.txt\n");
         Files.writeString(tempDir.resolve("part.txt"), "circle 1 0 0\n");

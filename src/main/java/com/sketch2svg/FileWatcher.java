@@ -16,9 +16,25 @@ final class FileWatcher {
 
     // Replaces the watched set and records the files' current state
     void track(Collection<Path> files) {
+        track(files, Map.of());
+    }
+
+    // Current modification times of the files (null for missing ones), to take *before* reading them
+    Map<Path, FileTime> snapshot(Collection<Path> files) {
+        Map<Path, FileTime> times = new HashMap<>();
+        for (Path file : files) {
+            times.put(file, modifiedTime(file));
+        }
+        return times;
+    }
+
+    // Replaces the watched set, keeping the times in `before` (taken before the files were read), so a file
+    // saved while a build was reading it still counts as changed. Files not in `before` (e.g. an include
+    // seen for the first time) are recorded now.
+    void track(Collection<Path> files, Map<Path, FileTime> before) {
         snapshot.clear();
         for (Path file : files) {
-            snapshot.put(file, modifiedTime(file));
+            snapshot.put(file, before.containsKey(file) ? before.get(file) : modifiedTime(file));
         }
     }
 

@@ -8,9 +8,11 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class Main {
@@ -201,7 +203,12 @@ public class Main {
         Path main = Path.of(inputPath).toAbsolutePath().normalize();
         FileWatcher watcher = new FileWatcher();
         log.println("Watching " + inputPath + " for changes (Ctrl+C to stop)");
+        List<Path> known = List.of(main);
         while (true) {
+            // Timestamps from *before* the files are read: a save that lands while this build runs
+            // then differs from the snapshot and triggers another build instead of being missed
+            Map<Path, FileTime> before = watcher.snapshot(known);
+
             log.println("Processing: " + inputPath);
             Sketch sketch = load(inputPath);
             List<Path> sources = new ArrayList<>(List.of(main));
@@ -209,7 +216,8 @@ public class Main {
                 write(sketch, inputPath, outputPath);
                 sources.addAll(sketch.getSourceFiles()); // includes can change between builds
             }
-            watcher.track(sources);
+            watcher.track(sources, before);
+            known = sources;
 
             try {
                 do {
