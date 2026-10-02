@@ -14,6 +14,7 @@ import com.sketch2svg.svg.TextElement;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -249,7 +250,13 @@ public class Sketch {
     public boolean fromFile(String filename) {
         diagnostics.reset();
         sourceFiles.clear();
-        Path path = Path.of(filename);
+        Path path;
+        try {
+            path = Path.of(filename);
+        } catch (InvalidPathException e) {
+            System.err.println("Error: Invalid file path: " + filename + " (" + e.getReason() + ")");
+            return false;
+        }
         if (!Files.isRegularFile(path)) {
             System.err.println("Error: File not found: " + filename);
             return false;
@@ -308,7 +315,13 @@ public class Sketch {
                 error(line, "include needs a file path");
                 continue;
             }
-            Path included = baseDir.resolve(target);
+            Path included;
+            try {
+                included = baseDir.resolve(target);
+            } catch (InvalidPathException e) {
+                error(line, "Invalid include path: " + target + " (" + e.getReason() + ")");
+                continue;
+            }
             if (!Files.isRegularFile(included)) {
                 sourceFiles.add(included.toAbsolutePath().normalize());
                 error(line, "Included file not found: " + target);

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -94,6 +95,19 @@ public class Main {
                         return 1;
                     }
                 }
+            }
+        }
+
+        // Reject paths the file system can't represent (e.g. "a?.svg" on Windows) before anything uses them
+        for (String path : new String[]{inputPath, outputPath, dirPath}) {
+            if (path == null || path.equals(STDIO)) {
+                continue;
+            }
+            try {
+                Path.of(path);
+            } catch (InvalidPathException e) {
+                System.err.println("Invalid path: " + path + " (" + e.getReason() + ")");
+                return 1;
             }
         }
 

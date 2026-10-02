@@ -71,6 +71,22 @@ public class MainTest {
     }
 
     @Test
+    void testInvalidPathsFailCleanly() throws IOException {
+        Path input = tempDir.resolve("in.txt");
+        Files.writeString(input, "circle 10 0 0\n");
+        String bad = "bad\0name"; // a NUL character is not allowed in a path on any platform
+
+        assertEquals(1, Main.run(new String[]{"-i", bad + ".txt"}));
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "-o", bad + ".svg"}));
+        assertEquals(1, Main.run(new String[]{"-d", bad}));
+
+        // An include with such a path is a script error, not a crash
+        Files.writeString(input, "include \"" + bad + ".txt\"\ncircle 10 0 0\n");
+        assertEquals(1, Main.run(new String[]{"--check", "-i", input.toString()}));
+        assertEquals(0, Main.run(new String[]{"-i", input.toString(), "-o", tempDir.resolve("out.svg").toString()}));
+    }
+
+    @Test
     void testUnknownArgumentFails() {
         assertEquals(1, Main.run(new String[]{"a.txt", "b.svg", "c"}));
     }
