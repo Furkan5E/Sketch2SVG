@@ -267,8 +267,14 @@ public class Main {
             System.out.flush();
             return true;
         }
+        Path output = Path.of(outputPath);
+        if (isSourceOf(sketch, output)) {
+            System.err.println("Refusing to overwrite the sketch's own source file: " + outputPath + " (choose a different -o)");
+            System.err.println("Failed to convert: " + displayName(inputPath));
+            return false;
+        }
         try {
-            Files.writeString(Path.of(outputPath), svg);
+            Files.writeString(output, svg);
         } catch (IOException e) {
             System.err.println("Could not write SVG file: " + outputPath + " (" + e.getMessage() + ")");
             System.err.println("Failed to convert: " + displayName(inputPath));
@@ -276,6 +282,26 @@ public class Main {
         }
         log.println("Successfully generated: " + outputPath);
         return true;
+    }
+
+    // Whether writing to `output` would replace the sketch itself or a file it includes
+    // (the same file under another spelling counts too, e.g. a relative path or different letter case)
+    private static boolean isSourceOf(Sketch sketch, Path output) {
+        if (!Files.exists(output)) {
+            return false; // nothing there to lose
+        }
+        for (Path source : sketch.getSourceFiles()) {
+            try {
+                if (Files.exists(source) && Files.isSameFile(output, source)) {
+                    return true;
+                }
+            } catch (IOException e) {
+                if (output.toAbsolutePath().normalize().equals(source.toAbsolutePath().normalize())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // Builds the whole document in memory first, so a failure never leaves a half-written file.

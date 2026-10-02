@@ -49,6 +49,28 @@ public class MainTest {
     }
 
     @Test
+    void testOutputOverInputIsRefused() throws IOException {
+        Path input = tempDir.resolve("drawing.txt");
+        Files.writeString(input, "circle 10 0 0\n");
+
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "-o", input.toString()}));
+        // The same file under another spelling
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "-o", tempDir.resolve("./drawing.txt").toString()}));
+        assertEquals("circle 10 0 0\n", Files.readString(input));
+    }
+
+    @Test
+    void testOutputOverIncludedFileIsRefused() throws IOException {
+        Path input = tempDir.resolve("main.txt");
+        Path part = tempDir.resolve("part.txt");
+        Files.writeString(input, "include part.txt\n");
+        Files.writeString(part, "circle 10 0 0\n");
+
+        assertEquals(1, Main.run(new String[]{"-i", input.toString(), "-o", part.toString()}));
+        assertEquals("circle 10 0 0\n", Files.readString(part));
+    }
+
+    @Test
     void testUnknownArgumentFails() {
         assertEquals(1, Main.run(new String[]{"a.txt", "b.svg", "c"}));
     }
