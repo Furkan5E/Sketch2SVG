@@ -1,6 +1,8 @@
 package com.sketch2svg.parser;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Map;
 
@@ -13,42 +15,47 @@ public class ExprTest {
         return Expr.evaluate(src, vars::get);
     }
 
-    @Test
-    void testPrecedenceAndAssociativity() {
-        assertEquals(-60 + 3 * 30, eval("-60 + i*30"));
-        assertEquals(20, eval("(1 + 1) * r"));
-        assertEquals(1, eval("10 % 3"));
-        assertEquals(512, eval("2 ^ 3 ^ 2")); // right-associative: 2^(3^2)
-        assertEquals(-9, eval("-i^2"));
-        assertEquals(2.5, eval("r / 4"));
+    // i = 3 and r = 10; ^ is right-associative, and sin/cos work in degrees
+    @ParameterizedTest(name = "{0} = {1}")
+    @CsvSource(delimiter = '|', textBlock = """
+            -60 + i*30    | 30
+            (1 + 1) * r   | 20
+            10 % 3        | 1
+            2 ^ 3 ^ 2     | 512
+            -i^2          | -9
+            r / 4         | 2.5
+            sin(90)       | 1
+            r * cos(180)  | -10
+            min(i, 1, 2)  | 1
+            max(i, r)     | 10
+            round(3.5)    | 4
+            sqrt(9)       | 3
+            """)
+    void testEvaluates(String expression, double expected) {
+        assertEquals(expected, eval(expression), 1e-12);
     }
 
     @Test
-    void testFunctionsUseDegrees() {
-        assertEquals(1, eval("sin(90)"), 1e-12);
-        assertEquals(-10, eval("r * cos(180)"), 1e-12);
+    void testPiIsAConstant() {
         assertEquals(Math.PI, eval("pi"));
-        assertEquals(1, eval("min(i, 1, 2)"));
-        assertEquals(10, eval("max(i, r)"));
-        assertEquals(4, eval("round(3.5)"));
-        assertEquals(3, eval("sqrt(9)"));
     }
 
-    @Test
-    void testErrorsAreReadable() {
-        assertEquals("Unknown variable 'x'", assertThrows(IllegalArgumentException.class, () -> eval("x + 1")).getMessage());
-        assertTrue(assertThrows(IllegalArgumentException.class, () -> eval("1 +")).getMessage().contains("Unexpected end"));
-        assertTrue(assertThrows(IllegalArgumentException.class, () -> eval("(1 + 2")).getMessage().contains("Expected ')'"));
-        assertTrue(assertThrows(IllegalArgumentException.class, () -> eval("1 / 0")).getMessage().contains("not a finite number"));
-        assertTrue(assertThrows(IllegalArgumentException.class, () -> eval("foo(1)")).getMessage().contains("Unknown function"));
+    @ParameterizedTest(name = "{0} -> {1}")
+    @CsvSource(delimiter = '|', textBlock = """
+            x + 1    | Unknown variable
+            1 +      | Unexpected end
+            (1 + 2   | Expected ')'
+            1 / 0    | not a finite number
+            foo(1)   | Unknown function
+            """)
+    void testErrorsAreReadable(String expression, String message) {
+        String actual = assertThrows(IllegalArgumentException.class, () -> eval(expression)).getMessage();
+        assertTrue(actual.contains(message), actual);
     }
 
-    @Test
-    void testFormattingKeepsIntegersIntegral() {
-        assertEquals("5", Variables.format(5.0));
-        assertEquals("-60", Variables.format(-60.0));
-        assertEquals("2.5", Variables.format(2.5));
-        assertEquals("0", Variables.format(-0.0));
-        assertEquals("0.0001", Variables.format(1e-4));
+    @ParameterizedTest(name = "{0} -> {1}")
+    @CsvSource({"5.0, 5", "-60.0, -60", "2.5, 2.5", "-0.0, 0", "1e-4, 0.0001"})
+    void testFormattingKeepsIntegersIntegral(double value, String expected) {
+        assertEquals(expected, Variables.format(value));
     }
 }
