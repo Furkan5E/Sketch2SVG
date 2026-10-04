@@ -33,10 +33,10 @@ public class Main {
         boolean check = false;
         boolean recursive = false;
         boolean watch = false;
-        fit = false;
-        grid = false;
-        pixelWidth = null;
-        style = null;
+        boolean fit = false;
+        boolean grid = false;
+        Integer pixelWidth = null;
+        OutputStyle style = null;
 
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
@@ -111,6 +111,8 @@ public class Main {
             }
         }
 
+        Options options = new Options(fit, grid, pixelWidth, style);
+
         //batch directory conversion
         if (dirPath != null) {
             if (watch) {
@@ -122,7 +124,7 @@ public class Main {
                 return 1;
             }
             log = System.out;
-            return convertBatch(dirPath, outputPath, check, recursive) ? 0 : 1;
+            return convertBatch(dirPath, outputPath, check, recursive, options) ? 0 : 1;
         }
 
         //single file conversion
@@ -150,12 +152,12 @@ public class Main {
                 System.err.println("--watch needs an input file and an output file (not stdin/stdout or --check)");
                 return 1;
             }
-            return watch(inputPath, outputPath);
+            return watch(inputPath, outputPath, options);
         }
         if (check) {
-            return checkFile(inputPath) ? 0 : 1;
+            return checkFile(inputPath, options) ? 0 : 1;
         }
-        return convertSingleFile(inputPath, outputPath) ? 0 : 1;
+        return convertSingleFile(inputPath, outputPath, options) ? 0 : 1;
     }
 
     // "-" as an input or output path means stdin / stdout
@@ -199,21 +201,21 @@ public class Main {
         return next.equals("-") || !next.startsWith("-") ? next : null;
     }
 
-    private static boolean convertSingleFile(String inputPath, String outputPath) {
+    private static boolean convertSingleFile(String inputPath, String outputPath, Options options) {
         log.println("Processing: " + displayName(inputPath));
         Sketch sketch = load(inputPath);
         if (sketch == null) {
             System.err.println("Failed to convert: " + displayName(inputPath));
             return false;
         }
-        return write(sketch, inputPath, outputPath);
+        return write(sketch, inputPath, outputPath, options);
     }
 
     private static final long POLL_MILLIS = 300;
     private static final long SETTLE_MILLIS = 100;
 
     // Converts once, then again whenever the sketch or anything it includes changes; runs until interrupted
-    private static int watch(String inputPath, String outputPath) {
+    private static int watch(String inputPath, String outputPath, Options options) {
         Path main = Path.of(inputPath).toAbsolutePath().normalize();
         FileWatcher watcher = new FileWatcher();
         log.println("Watching " + inputPath + " for changes (Ctrl+C to stop)");
@@ -227,7 +229,7 @@ public class Main {
             Sketch sketch = load(inputPath);
             List<Path> sources = new ArrayList<>(List.of(main));
             if (sketch != null) {
-                write(sketch, inputPath, outputPath);
+                write(sketch, inputPath, outputPath, options);
                 sources.addAll(sketch.getSourceFiles()); // includes can change between builds
             }
             watcher.track(sources, before);
@@ -245,32 +247,31 @@ public class Main {
         }
     }
 
-    // Output options from the command line; they override what the script itself sets
-    private static boolean fit;
-    private static boolean grid;
-    private static Integer pixelWidth;
-    private static OutputStyle style;
-
     private static final float FIT_PADDING = 10.f;
 
-    private static void applyOutputOptions(Sketch sketch) {
-        if (fit) {
-            sketch.setAutoFit(FIT_PADDING);
-        }
-        if (pixelWidth != null) {
-            sketch.setPixelWidth(pixelWidth);
-        }
-        if (style != null) {
-            sketch.setOutputStyle(style);
-        }
-        if (grid) {
-            sketch.setGrid(true);
+    // Output options from the command line; they override what the script itself sets
+    // (pixelWidth and style are null when not given)
+    private record Options(boolean fit, boolean grid, Integer pixelWidth, OutputStyle style) {
+
+        void applyTo(Sketch sketch) {
+            if (fit) {
+                sketch.setAutoFit(FIT_PADDING);
+            }
+            if (pixelWidth != null) {
+                sketch.setPixelWidth(pixelWidth);
+            }
+            if (style != null) {
+                sketch.setOutputStyle(style);
+            }
+            if (grid) {
+                sketch.setGrid(true);
+            }
         }
     }
 
     // Writes an already-loaded sketch to a file, or to stdout for "-"
-    private static boolean write(Sketch sketch, String inputPath, String outputPath) {
-        applyOutputOptions(sketch);
+    private static boolean write(Sketch sketch, String inputPath, String outputPath, Options options) {
+        options.applyTo(sketch);
         String svg = render(sketch, inputPath);
         if (svg == null) {
             System.err.println("Failed to convert: " + displayName(inputPath));
@@ -331,18 +332,18 @@ public class Main {
     }
 
     // Parses and renders in memory without writing; fails if the script has errors (warnings are reported but allowed)
-    private static boolean checkFile(String inputPath) {
+    private static boolean checkFile(String inputPath, Options options) {
         Sketch sketch = load(inputPath);
         if (sketch == null) {
             return false;
         }
-        applyOutputOptions(sketch);
+        options.applyTo(sketch);
         int errors = sketch.getErrorCount() + (render(sketch, inputPath) == null ? 1 : 0);
         log.printf("%s: %d error(s), %d warning(s)%n", displayName(inputPath), errors, sketch.getWarningCount());
         return errors == 0;
     }
 
-    private static boolean convertBatch(String inputDir, String outputDir, boolean check, boolean recursive) {
+    private static boolean convertBatch(String inputDir, String outputDir, boolean check, boolean recursive, Options options) {
         Path folder = Path.of(inputDir);
         if (!Files.isDirectory(folder)) {
             System.err.println("Error: Provided path is not a directory: " + inputDir);
@@ -372,13 +373,13 @@ public class Main {
         for (Path file : files) {
             boolean ok;
             if (check) {
-                ok = checkFile(file.toString());
+                ok = checkFile(file.toString(), options);
             } else {
                 // Mirror the input's folder structure under the target directory
                 Path relative = folder.relativize(file);
                 String outName = relative.getFileName().toString().replaceAll("(?i)\\.txt$", "") + ".svg";
                 Path outPath = targetDir.resolve(relative).resolveSibling(outName);
-                ok = createParent(outPath) && convertSingleFile(file.toString(), outPath.toString());
+                ok = createParent(outPath) && convertSingleFile(file.toString(), outPath.toString(), options);
             }
             if (!ok) {
                 failed++;
