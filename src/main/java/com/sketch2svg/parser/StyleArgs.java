@@ -29,8 +29,8 @@ final class StyleArgs {
     static final Pattern POINT = Pattern.compile(NUMBER.pattern() + "," + NUMBER.pattern());
 
     Float strokeWidth;
-    Object stroke;  // paint: an Integer RGBA colour or a String gradient name
-    Object fill;
+    Paint stroke;
+    Paint fill;
     Float rotation;
     float[] at;
     float[] scale;
@@ -52,7 +52,7 @@ final class StyleArgs {
         StyleArgs args = new StyleArgs();
         args.gradients = gradients;
         List<Float> numbers = new ArrayList<>();
-        List<Object> colors = new ArrayList<>();
+        List<Paint> colors = new ArrayList<>();
 
         while (ls.hasNext()) {
             String tok = ls.next();
@@ -156,10 +156,8 @@ final class StyleArgs {
     // Stroke and fill (what groups pass down to their shapes)
     void applyPaint(Shape shape) {
         if (strokeWidth != null) shape.setStrokeWidth(strokeWidth);
-        if (stroke instanceof Integer rgba) shape.setStroke(rgba);
-        if (stroke instanceof String gradient) shape.setStrokeGradient(gradient);
-        if (fill instanceof Integer rgba) shape.setFill(rgba);
-        if (fill instanceof String gradient) shape.setFillGradient(gradient);
+        if (stroke != null) stroke.applyToStroke(shape);
+        if (fill != null) fill.applyToFill(shape);
         if (dash != null) shape.setDash(dash);
         if (cap != null) shape.setLineCap(cap);
         if (join != null) shape.setLineJoin(join);
@@ -229,12 +227,12 @@ final class StyleArgs {
         return f;
     }
 
-    // A colour (Integer RGBA) or the name of a defined gradient (String)
-    private Object paint(String value, String tok) {
+    // A colour or the name of a defined gradient
+    private Paint paint(String value, String tok) {
         if (ColorInt.isColor(value))
-            return ColorInt.parseColor(value);
+            return new Paint.Color(ColorInt.parseColor(value));
         if (gradients.contains(value))
-            return value;
+            return new Paint.GradientRef(value);
         throw new InputMismatchException("Invalid color in " + tok);
     }
 
