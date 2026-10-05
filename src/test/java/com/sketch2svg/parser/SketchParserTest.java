@@ -337,6 +337,30 @@ public class SketchParserTest {
     }
 
     @Test
+    void testProblemsInsideLoopsAreReportedOnce() throws IOException {
+        Sketch sketch = parse("""
+                repeat 3 i
+                  circle 5 0 0 fill=nope
+                  rect 1 1 0 0 bogus
+                  circle 5 0 0 fill={i}
+                end
+                """);
+
+        // One entry per distinct problem, with the number of times it came up
+        List<Diagnostic> found = sketch.getDiagnostics();
+        assertEquals("[Syntax Error] Line 2: Invalid or missing parameters in 'circle 5 0 0 fill=nope' (Invalid color in fill=nope) (3 times)",
+                found.get(0).toString());
+        assertEquals("[Warning] Line 3: Ignored unrecognized argument 'bogus' (3 times)", found.get(1).toString());
+        assertEquals(3, found.get(1).count());
+
+        // The same line failing differently each time stays separate
+        assertEquals(5, found.size());
+        assertEquals(1, found.get(2).count());
+        assertEquals(4, sketch.getErrorCount());
+        assertEquals(1, sketch.getWarningCount());
+    }
+
+    @Test
     void testRepeatWithoutEndRunsToEndOfFile() throws IOException {
         Sketch[] result = new Sketch[1];
         String log = report(result[0] = parse("""
