@@ -45,20 +45,13 @@ public class SVG extends Elem{
         return viewBox;
     }
 
-    // Returns false if the file could not be written
-    public boolean toFile(String filename){
-        return toFile(filename, OutputStyle.DEFAULT);
+    public void toFile(String filename) throws IOException{
+        toFile(filename, OutputStyle.DEFAULT);
     }
 
-    public boolean toFile(String filename, OutputStyle style){
+    public void toFile(String filename, OutputStyle style) throws IOException{
         try (FileWriter fw = new FileWriter(filename)) {
             fw.write(toString(style));
-            System.out.println("wrote SVG file: " + filename);
-            return true;
-        }
-        catch (IOException error) {
-            System.err.println("could not write SVG file: " + filename + " (" + error.getMessage() + ")");
-            return false;
         }
     }
 }

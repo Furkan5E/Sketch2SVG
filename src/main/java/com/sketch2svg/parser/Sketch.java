@@ -125,7 +125,12 @@ public class Sketch {
         return this;
     }
 
-    // Problems reported by the last fromFile(): errors skip a line or block, warnings only ignore part of one
+    // Problems found by the last fromFile() / fromString(), in the order they came up; nothing is printed
+    public List<Diagnostic> getDiagnostics() {
+        return diagnostics.all();
+    }
+
+    // Counts of those problems: errors skip a line or block, warnings only ignore part of one
     public int getErrorCount() {
         return diagnostics.errors();
     }
@@ -139,12 +144,16 @@ public class Sketch {
         return List.copyOf(sourceFiles);
     }
 
-    // Converts <dir>/<name>.txt to <dir>/<name>.svg
-    public boolean render(String dir, String name) {
+    // Converts <dir>/<name>.txt to <dir>/<name>.svg. Returns false (and writes nothing) if the script
+    // could not be read; throws if the SVG could not be written.
+    public boolean render(String dir, String name) throws IOException {
         clear();
         Path folder = Path.of(dir);
-        return fromFile(folder.resolve(name + ".txt").toString())
-                && exportSVG(folder.resolve(name + ".svg").toString());
+        if (!fromFile(folder.resolve(name + ".txt").toString())) {
+            return false;
+        }
+        exportSVG(folder.resolve(name + ".svg").toString());
+        return true;
     }
 
     // Draw a coordinate grid over the result, to help place shapes while sketching
@@ -159,9 +168,8 @@ public class Sketch {
         return this;
     }
 
-    // Returns false if the file could not be written
-    public boolean exportSVG(String svgFilePath) {
-        return buildSVG().toFile(svgFilePath, outputStyle);
+    public void exportSVG(String svgFilePath) throws IOException {
+        buildSVG().toFile(svgFilePath, outputStyle);
     }
 
     // The complete SVG document as text
@@ -246,7 +254,7 @@ public class Sketch {
         return new Line(x1, y1, x2, y2).setStroke(rgba).setStrokeWidth(width);
     }
 
-    // Returns false if the file could not be read; bad lines are reported but skipped
+    // Returns false if the file could not be read; bad lines are skipped. Either way getDiagnostics() says why.
     public boolean fromFile(String filename) {
         diagnostics.reset();
         sourceFiles.clear();
@@ -254,11 +262,11 @@ public class Sketch {
         try {
             path = Path.of(filename);
         } catch (InvalidPathException e) {
-            System.err.println("Error: Invalid file path: " + filename + " (" + e.getReason() + ")");
+            diagnostics.error(null, "Invalid file path: " + filename + " (" + e.getReason() + ")");
             return false;
         }
         if (!Files.isRegularFile(path)) {
-            System.err.println("Error: File not found: " + filename);
+            diagnostics.error(null, "File not found: " + filename);
             return false;
         }
 
@@ -266,7 +274,7 @@ public class Sketch {
         try {
             load(path, null, new ArrayDeque<>(), lines);
         } catch (IOException e) {
-            System.err.println("Could not open: " + filename);
+            diagnostics.error(null, "Could not open: " + filename);
             return false;
         }
         run(lines);

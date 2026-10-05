@@ -1,41 +1,43 @@
 package com.sketch2svg.parser;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-// Prints script problems to stderr and counts them, so callers (e.g. --check) can tell whether a script is clean
+// Collects script problems so callers (e.g. the CLI) can report them and tell whether a script is clean
 final class Diagnostics {
 
-    private int errors;
-    private int warnings;
+    private final List<Diagnostic> found = new ArrayList<>();
 
     void reset() {
-        errors = 0;
-        warnings = 0;
+        found.clear();
+    }
+
+    List<Diagnostic> all() {
+        return List.copyOf(found);
     }
 
     int errors() {
-        return errors;
+        return (int) found.stream().filter(Diagnostic::isError).count();
     }
 
     int warnings() {
-        return warnings;
+        return found.size() - errors();
     }
 
     // Something was ignored, but the line still did its job
     void warning(String where, String message) {
-        warnings++;
-        System.err.printf("[Warning] %s: %s%n", where, message);
+        found.add(new Diagnostic(Diagnostic.Kind.WARNING, where, message));
     }
 
     // The line (or block) was skipped
     void error(String where, String message) {
-        errors++;
-        System.err.printf("[Error] %s: %s%n", where, message);
+        found.add(new Diagnostic(Diagnostic.Kind.ERROR, where, message));
     }
 
     void syntaxError(SourceLine line, NoSuchElementException e) {
-        errors++;
         String reason = e.getMessage() != null ? " (" + e.getMessage() + ")" : "";
-        System.err.printf("[Syntax Error] %s: Invalid or missing parameters in '%s'%s%n", line.where(), line.text(), reason);
+        found.add(new Diagnostic(Diagnostic.Kind.SYNTAX_ERROR, line.where(),
+                "Invalid or missing parameters in '" + line.text() + "'" + reason));
     }
 }

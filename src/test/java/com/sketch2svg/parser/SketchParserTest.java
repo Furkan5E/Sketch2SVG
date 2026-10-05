@@ -6,16 +6,14 @@ import com.sketch2svg.shapes.Group;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,9 +35,10 @@ public class SketchParserTest {
     @Test
     void testGracefulHandlingOfNonExistentFile() {
         Sketch sketch = new Sketch();
-        // Should log an error message without throwing an uncaught crash
+        // Should report an error without throwing an uncaught crash
         assertFalse(assertDoesNotThrow(() -> sketch.fromFile("non_existent_file.txt")));
         assertEquals(0, sketch.getShapes().size());
+        assertEquals("[Error] File not found: non_existent_file.txt", report(sketch));
     }
 
     @Test
@@ -129,21 +128,13 @@ public class SketchParserTest {
 
     @Test
     void testUnusedStyleArgumentsAreWarned() throws IOException {
-        PrintStream originalErr = System.err;
-        ByteArrayOutputStream err = new ByteArrayOutputStream();
-        Sketch sketch;
-        try {
-            System.setErr(new PrintStream(err, true, StandardCharsets.UTF_8));
-            sketch = parse("""
-                    circle 5 0 0 2 ff00 000000ff
-                    circle 5 0 0 2 3 NaN
-                    circle 5 0 0 000000ff ff0000ff 00ff00ff
-                    circle 5 0 0 4 000000ff # the moon
-                    """);
-        } finally {
-            System.setErr(originalErr);
-        }
-        String log = err.toString(StandardCharsets.UTF_8);
+        Sketch sketch = parse("""
+                circle 5 0 0 2 ff00 000000ff
+                circle 5 0 0 2 3 NaN
+                circle 5 0 0 000000ff ff0000ff 00ff00ff
+                circle 5 0 0 4 000000ff # the moon
+                """);
+        String log = report(sketch);
 
         assertTrue(log.contains("Line 1: Ignored unrecognized argument 'ff00'"), log);
         assertTrue(log.contains("Line 2: Ignored unrecognized argument 'NaN'"), log);
@@ -236,7 +227,7 @@ public class SketchParserTest {
         assertEquals(1, sketch.getShapes().size());
 
         Path output = tempDir.resolve("out.svg");
-        assertTrue(sketch.exportSVG(output.toString()));
+        sketch.exportSVG(output.toString());
         String svg = Files.readString(output);
 
         // Drawn first, covering the default -100..100 viewBox, even though it came after the circle
@@ -254,7 +245,7 @@ public class SketchParserTest {
         Files.writeString(tempDir.resolve("loop.txt"), "include loop.txt\n");
 
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 circle 5 0 0
                 include parts/house.txt   # the house
                 include "missing.txt"
@@ -273,7 +264,7 @@ public class SketchParserTest {
     @Test
     void testVariablesAndExpressions() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 set gold ffd700ff
                 set r 5
                 set d {r * 2}
@@ -310,7 +301,7 @@ public class SketchParserTest {
     @Test
     void testRepeatLoops() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 set i outer
                 set n 3
                 repeat n i
@@ -348,7 +339,7 @@ public class SketchParserTest {
     @Test
     void testRepeatWithoutEndRunsToEndOfFile() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 repeat 3
                   circle 1 0 0
                 """));
@@ -423,7 +414,7 @@ public class SketchParserTest {
     @Test
     void testNegativeSizesAreRejected() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 circle -5 0 0
                 rect 10 -2 0 0
                 text 0 0 -12 "hi"
@@ -457,7 +448,7 @@ public class SketchParserTest {
     @Test
     void testPathCommand() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 path M 0,0 L 10,0 10,10 Q 5,15 0,10 Z fill=gold
                 path M -5,0 C -5,5 5,5 5,0 rot=180
                 path m 0,0 l 1,1
@@ -502,7 +493,7 @@ public class SketchParserTest {
     @Test
     void testDashCapAndJoin() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 polyline 0,0 10,0 10,10 2 black dash=4,2 cap=ROUND join=bevel
                 group dash=1,1 cap=square
                   line 0 0 10 0
@@ -532,7 +523,7 @@ public class SketchParserTest {
     @Test
     void testLineArrowheads() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 line 0 0 20 0 1 red arrow=end
                 line 0 0 0 20 arrow=both
                 line 0 0 20 0 arrow=none
@@ -557,7 +548,7 @@ public class SketchParserTest {
     @Test
     void testTextFontOptions() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 text 0 0 12 "Hello World" font="Courier New" bold italic align=left
                 text 0 0 12 Hi font=serif weight=300
                 group font=monospace align=right
@@ -586,7 +577,7 @@ public class SketchParserTest {
     @Test
     void testGradients() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 gradient sky linear 90 #0b1020 3a86ff80   # night to day
                 gradient sun radial gold orange red
                 gradient flat linear 000000 ffffff
@@ -646,7 +637,7 @@ public class SketchParserTest {
         String withBackground = parse("canvas 300 100 50 20\nbackground navy\n").toSVGString();
         assertTrue(withBackground.contains("points=\"-100,30 200,30 200,-70 -100,-70 \""), withBackground);
 
-        String log = stderrOf(() -> parse("canvas 0 10\ncanvas 10\n"));
+        String log = report(parse("canvas 0 10\ncanvas 10\n"));
         assertTrue(log.contains("(canvas size must be greater than zero)"), log);
     }
 
@@ -687,14 +678,14 @@ public class SketchParserTest {
         assertTrue(svg.contains("viewBox=\"-100 -100 200 200\">\n<title>\nNight &amp; day\n</title>\n<desc>\n"
                 + "A house on a hill, under the stars\n</desc>\n<defs>"), svg);
 
-        String log = stderrOf(() -> parse("title\n"));
+        String log = report(parse("title\n"));
         assertTrue(log.contains("(title needs some text)"), log);
     }
 
     @Test
     void testNonFiniteNumbersAreSyntaxErrors() throws IOException {
         Sketch[] result = new Sketch[1];
-        String log = stderrOf(() -> result[0] = parse("""
+        String log = report(result[0] = parse("""
                 circle NaN 0 0
                 circle 5 Infinity 0
                 circle 1e39 0 0
@@ -716,21 +707,9 @@ public class SketchParserTest {
         assertEquals(8, result[0].getErrorCount());
     }
 
-    // Runs the action and returns everything it printed to stderr
-    private static String stderrOf(ThrowingRunnable action) throws IOException {
-        PrintStream originalErr = System.err;
-        ByteArrayOutputStream err = new ByteArrayOutputStream();
-        try {
-            System.setErr(new PrintStream(err, true, StandardCharsets.UTF_8));
-            action.run();
-        } finally {
-            System.setErr(originalErr);
-        }
-        return err.toString(StandardCharsets.UTF_8);
-    }
-
-    private interface ThrowingRunnable {
-        void run() throws IOException;
+    // Every problem the sketch reported, one per line, as the CLI would print them
+    private static String report(Sketch sketch) {
+        return sketch.getDiagnostics().stream().map(Diagnostic::toString).collect(Collectors.joining("\n"));
     }
 
     private Sketch parse(String source) throws IOException {

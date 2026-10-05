@@ -254,7 +254,7 @@ Sketch sketch = new Sketch()
 
 String svg = sketch.toSVGString();   // or sketch.exportSVG("out.svg")
 ```
-Scripts can be loaded the same way with `sketch.fromFile("sketch.txt")`.
+Scripts can be loaded the same way with `sketch.fromFile("sketch.txt")`. The library never prints: script errors and warnings are returned by `sketch.getDiagnostics()`, and `exportSVG` throws an `IOException` if the file can't be written.
 
 ---
 

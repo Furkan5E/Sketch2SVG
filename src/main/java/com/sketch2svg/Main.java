@@ -167,19 +167,22 @@ public class Main {
     private static PrintStream log = System.out;
 
     // Parses a sketch from a file, or from stdin for "-" (includes then resolve against the working directory).
-    // Returns null if the input could not be read.
+    // Reports the script's errors and warnings; returns null if the input could not be read.
     private static Sketch load(String inputPath) {
         Sketch sketch = new Sketch();
+        boolean read = true;
         if (!inputPath.equals(STDIO)) {
-            return sketch.fromFile(inputPath) ? sketch : null;
+            read = sketch.fromFile(inputPath);
+        } else {
+            try {
+                sketch.fromString(new String(System.in.readAllBytes(), StandardCharsets.UTF_8), Path.of(""));
+            } catch (IOException e) {
+                System.err.println("Could not read stdin: " + e.getMessage());
+                return null;
+            }
         }
-        try {
-            sketch.fromString(new String(System.in.readAllBytes(), StandardCharsets.UTF_8), Path.of(""));
-            return sketch;
-        } catch (IOException e) {
-            System.err.println("Could not read stdin: " + e.getMessage());
-            return null;
-        }
+        sketch.getDiagnostics().forEach(System.err::println);
+        return read ? sketch : null;
     }
 
     private static String displayName(String path) {
