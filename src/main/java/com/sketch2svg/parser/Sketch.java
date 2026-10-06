@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Sketch {
@@ -404,7 +403,7 @@ public class Sketch {
         int count;
         String index;
         try {
-            List<String> tokens = Variables.tokenize(line.text());
+            List<String> tokens = Tokens.split(line.text());
             if (tokens.size() < 2) {
                 throw new InputMismatchException("repeat needs a count");
             }
@@ -444,7 +443,8 @@ public class Sketch {
     private void executeGroup(SourceLine line, List<SourceLine> lines, int bodyStart, int bodyEnd) {
         Group group = new Group();
         StyleArgs args;
-        try (Scanner ls = new Scanner(variables.substituteLine(line.text())).useLocale(Locale.ROOT)) {
+        try {
+            Tokens ls = variables.substituteAll(Tokens.split(line.text()));
             ls.next(); // "group"
             args = StyleArgs.parse(ls, null, line.where(), diagnostics, gradients.keySet());
         } catch (NoSuchElementException e) {
@@ -489,11 +489,11 @@ public class Sketch {
 
     private void executeLine(SourceLine line) {
         try {
-            List<String> tokens = Variables.tokenize(line.text());
+            List<String> tokens = Tokens.split(line.text());
             if (tokens.get(0).equalsIgnoreCase("set")) {
                 executeSet(tokens, line);
             } else {
-                executeCommand(variables.substituteLine(line.text()), line);
+                executeCommand(variables.substituteAll(tokens), line);
             }
         } catch (NoSuchElementException e) {
             diagnostics.syntaxError(line, e);
@@ -516,71 +516,69 @@ public class Sketch {
     }
 
     // Runs one already-substituted command line
-    private void executeCommand(String text, SourceLine line) {
-        try (Scanner ls = new Scanner(text).useLocale(Locale.ROOT)) {
-            String type = ls.next().toLowerCase(Locale.ROOT);
-            if (type.equals("background")) {
-                String color = ls.next();
-                if (gradients.containsKey(color)) {
-                    setBackgroundGradient(color);
-                } else if (ColorInt.isColor(color)) {
-                    setBackground(ColorInt.parseColor(color));
-                } else {
-                    throw new InputMismatchException("Invalid color: " + color);
-                }
-                return;
-            }
-            if (type.equals("gradient")) {
-                defineGradient(ls);
-                return;
-            }
-            if (type.equals("title") || type.equals("desc")) {
-                // title "text" (quotes optional; without them the rest of the line is used)
-                String quoted = ls.hasNext("\".*") ? ls.findInLine("\"([^\"]*)\"") : null;
-                String value = quoted != null ? quoted.substring(1, quoted.length() - 1) : ls.hasNextLine() ? ls.nextLine().strip() : "";
-                if (value.isEmpty()) {
-                    throw new InputMismatchException(type + " needs some text");
-                }
-                if (type.equals("title")) setTitle(value);
-                else setDescription(value);
-                return;
-            }
-            if (type.equals("canvas")) {
-                // canvas auto [padding] | canvas <width> <height> [cx cy]
-                if (ls.hasNext("(?i)auto")) {
-                    ls.next();
-                    setAutoFit(ls.hasNext(StyleArgs.NUMBER) ? size(ls, "padding") : 10.f);
-                } else {
-                    float w = size(ls, "width"), h = size(ls, "height");
-                    if (w == 0 || h == 0) {
-                        throw new InputMismatchException("canvas size must be greater than zero");
-                    }
-                    float cx = 0.f, cy = 0.f;
-                    if (ls.hasNext(StyleArgs.NUMBER)) { // optional centre, always given as a pair
-                        cx = number(ls);
-                        cy = number(ls);
-                    }
-                    setCanvas(w, h, cx, cy);
-                }
-                return;
-            }
-            Shape shape = parseShape(type, ls);
-
-            if (shape != null) {
-                StyleArgs own = StyleArgs.parse(ls, shape, line.where(), diagnostics, gradients.keySet());
-                for (StyleArgs inherited : groupPaint) {
-                    inherited.applyPaint(shape); // outer groups first, so inner ones win
-                }
-                own.applyTo(shape);
-                addShape(shape);
+    private void executeCommand(Tokens ls, SourceLine line) {
+        String type = ls.next().toLowerCase(Locale.ROOT);
+        if (type.equals("background")) {
+            String color = ls.next();
+            if (gradients.containsKey(color)) {
+                setBackgroundGradient(color);
+            } else if (ColorInt.isColor(color)) {
+                setBackground(ColorInt.parseColor(color));
             } else {
-                diagnostics.error(line.where(), "Unknown shape command '" + type + "'");
+                throw new InputMismatchException("Invalid color: " + color);
             }
+            return;
+        }
+        if (type.equals("gradient")) {
+            defineGradient(ls);
+            return;
+        }
+        if (type.equals("title") || type.equals("desc")) {
+            // title "text" (quotes optional; without them the rest of the line is used)
+            String quoted = ls.hasNext() ? Tokens.quoted(ls.peek()) : null;
+            String value = quoted != null ? quoted : ls.rest();
+            if (value.isEmpty()) {
+                throw new InputMismatchException(type + " needs some text");
+            }
+            if (type.equals("title")) setTitle(value);
+            else setDescription(value);
+            return;
+        }
+        if (type.equals("canvas")) {
+            // canvas auto [padding] | canvas <width> <height> [cx cy]
+            if (ls.hasNext("(?i)auto")) {
+                ls.next();
+                setAutoFit(ls.hasNext(StyleArgs.NUMBER) ? size(ls, "padding") : 10.f);
+            } else {
+                float w = size(ls, "width"), h = size(ls, "height");
+                if (w == 0 || h == 0) {
+                    throw new InputMismatchException("canvas size must be greater than zero");
+                }
+                float cx = 0.f, cy = 0.f;
+                if (ls.hasNext(StyleArgs.NUMBER)) { // optional centre, always given as a pair
+                    cx = number(ls);
+                    cy = number(ls);
+                }
+                setCanvas(w, h, cx, cy);
+            }
+            return;
+        }
+        Shape shape = parseShape(type, ls);
+
+        if (shape != null) {
+            StyleArgs own = StyleArgs.parse(ls, shape, line.where(), diagnostics, gradients.keySet());
+            for (StyleArgs inherited : groupPaint) {
+                inherited.applyPaint(shape); // outer groups first, so inner ones win
+            }
+            own.applyTo(shape);
+            addShape(shape);
+        } else {
+            diagnostics.error(line.where(), "Unknown shape command '" + type + "'");
         }
     }
 
     // gradient <name> linear [angle] <color> <color> ... | gradient <name> radial <color> <color> ...
-    private void defineGradient(Scanner ls) {
+    private void defineGradient(Tokens ls) {
         String name = ls.next();
         if (!Variables.NAME.matcher(name).matches()) {
             throw new InputMismatchException("Invalid gradient name '" + name + "'");
@@ -623,7 +621,7 @@ public class Sketch {
         diagnostics.error(line.where(), message);
     }
 
-    private Shape parseShape(String type, Scanner ls) {
+    private Shape parseShape(String type, Tokens ls) {
         return switch (type) {
             case "circle" -> {
                 float r = size(ls, "radius");
@@ -723,15 +721,9 @@ public class Sketch {
                 float cy = number(ls);
                 float fontSize = size(ls, "font size");
                 
-                String content;
-                // Direct line search extracts quoted text cleanly across whitespace tokens
-                // Only when the content itself is quoted, so a later font="..." isn't taken as the text
-                String quoted = ls.hasNext("\".*") ? ls.findInLine("\"([^\"]*)\"") : null;
-                if (quoted != null) {
-                    content = quoted.substring(1, quoted.length() - 1);
-                } else {
-                    content = ls.next();
-                }
+                // "Quoted content" is one token; quotes are only needed when it contains spaces
+                String word = ls.next();
+                String content = Tokens.quoted(word) != null ? Tokens.quoted(word) : word;
                 
                 yield new Text(content, cx, cy, fontSize);
             }
@@ -739,26 +731,24 @@ public class Sketch {
         };
     }
 
-    // Reads a number; Scanner also accepts NaN, Infinity and values beyond float range, which SVG can't represent
-    private static float number(Scanner ls) {
-        String tok = ls.hasNext() ? ls.next() : null;
-        if (tok == null) {
-            throw new NoSuchElementException();
+    private static final Pattern NON_FINITE = Pattern.compile("[+-]?(NaN|Infinity)");
+
+    // Reads a number; NaN, Infinity and values beyond float range are rejected, as SVG can't represent them
+    private static float number(Tokens ls) {
+        String tok = ls.next();
+        boolean plain = StyleArgs.NUMBER.matcher(tok).matches();
+        if (!plain && !NON_FINITE.matcher(tok).matches()) {
+            throw new InputMismatchException();
         }
-        try (Scanner single = new Scanner(tok).useLocale(Locale.ROOT)) {
-            if (!single.hasNextFloat()) {
-                throw new InputMismatchException();
-            }
-            float value = single.nextFloat();
-            if (!Float.isFinite(value)) {
-                throw new InputMismatchException("number " + tok + " is not finite or is too large");
-            }
-            return value;
+        float value = plain ? Float.parseFloat(tok) : Float.NaN;
+        if (!Float.isFinite(value)) {
+            throw new InputMismatchException("number " + tok + " is not finite or is too large");
         }
+        return value;
     }
 
     // Reads a size parameter; negative sizes would produce invalid or mirrored SVG
-    private static float size(Scanner ls, String name) {
+    private static float size(Tokens ls, String name) {
         float value = number(ls);
         if (value < 0) {
             throw new InputMismatchException(name + " must not be negative");
@@ -770,7 +760,7 @@ public class Sketch {
     // the previous command, and points after M continue as lines, like SVG
     private static final Pattern PATH_TOKEN = Pattern.compile("[MLQCZmlqcz]|" + StyleArgs.POINT.pattern());
 
-    private static PathShape parsePath(Scanner ls) {
+    private static PathShape parsePath(Tokens ls) {
         PathShape path = new PathShape();
         char command = 0;
         List<float[]> pending = new ArrayList<>();

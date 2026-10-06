@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,7 +47,7 @@ final class StyleArgs {
 
     // Reads the remaining tokens of a line. `where` prefixes warnings, e.g. "Line 5".
     // target is the shape being styled, or null for a group (whose options are passed down to its shapes).
-    static StyleArgs parse(Scanner ls, Shape target, String where, Diagnostics diagnostics, Set<String> gradients) {
+    static StyleArgs parse(Tokens ls, Shape target, String where, Diagnostics diagnostics, Set<String> gradients) {
         StyleArgs args = new StyleArgs();
         args.gradients = gradients;
         List<Float> numbers = new ArrayList<>();
@@ -58,16 +57,9 @@ final class StyleArgs {
             String tok = ls.next();
             int eq = tok.indexOf('=');
 
-            // key="value with spaces": the scanner split it, so join the pieces back up to the closing quote
+            // key="value with spaces" arrives as one token; without its closing quote it ran to the end of the line
             if (eq > 0 && tok.startsWith("\"", eq + 1) && (tok.length() == eq + 2 || !tok.endsWith("\""))) {
-                StringBuilder joined = new StringBuilder(tok);
-                while (ls.hasNext() && !joined.toString().endsWith("\"")) {
-                    joined.append(' ').append(ls.next());
-                }
-                if (!joined.toString().endsWith("\"")) {
-                    throw new InputMismatchException("Missing closing quote in " + joined);
-                }
-                tok = joined.toString();
+                throw new InputMismatchException("Missing closing quote in " + tok);
             }
 
             if (eq > 0) {

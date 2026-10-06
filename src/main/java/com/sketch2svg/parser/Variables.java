@@ -33,14 +33,13 @@ final class Variables {
         values.clear();
     }
 
-    // Expands a whole line; the first token (the command) is never substituted
-    String substituteLine(String text) {
-        List<String> tokens = tokenize(text);
-        StringBuilder sb = new StringBuilder(tokens.get(0));
-        for (int i = 1; i < tokens.size(); i++) {
-            sb.append(' ').append(substitute(tokens.get(i)));
+    // Expands a whole line's tokens; the first one (the command) is never substituted
+    Tokens substituteAll(List<String> tokens) {
+        List<String> out = new ArrayList<>(tokens.size());
+        for (int i = 0; i < tokens.size(); i++) {
+            out.add(i == 0 ? tokens.get(i) : substitute(tokens.get(i)));
         }
-        return sb.toString();
+        return new Tokens(out);
     }
 
     // Expands one token:
@@ -113,34 +112,5 @@ final class Variables {
             return "0"; // also avoids "-0"
         }
         return BigDecimal.valueOf(value).stripTrailingZeros().toPlainString();
-    }
-
-    // Splits on whitespace, keeping "quoted text" and {braced expressions} as single tokens
-    static List<String> tokenize(String text) {
-        List<String> tokens = new ArrayList<>();
-        StringBuilder current = new StringBuilder();
-        boolean inQuote = false;
-        int braces = 0;
-        for (char c : text.toCharArray()) {
-            if (c == '"' && braces == 0) {
-                inQuote = !inQuote;
-            } else if (!inQuote && c == '{') {
-                braces++;
-            } else if (!inQuote && c == '}' && braces > 0) {
-                braces--;
-            }
-            if (Character.isWhitespace(c) && !inQuote && braces == 0) {
-                if (!current.isEmpty()) {
-                    tokens.add(current.toString());
-                    current.setLength(0);
-                }
-            } else {
-                current.append(c);
-            }
-        }
-        if (!current.isEmpty()) {
-            tokens.add(current.toString());
-        }
-        return tokens;
     }
 }
