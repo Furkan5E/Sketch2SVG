@@ -39,14 +39,14 @@ Hot-air balloons over misty mountains at dawn
 <ellipse style="fill:#F3C4E0" cx="0" cy="0" rx="10.4" ry="16"/>
 <ellipse style="fill:#7B5EA7" cx="0" cy="0" rx="6.6" ry="16"/>
 <ellipse style="fill:#F3C4E0" cx="0" cy="0" rx="2.6" ry="16"/>
-<polygon style="fill:#7B5EA7" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
-<polygon style="fill:#F3C4E0" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
-<polygon style="fill:#7B5EA7" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
-<polygon style="fill:#F3C4E0" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
-<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<polygon style="fill:#7B5EA7" points="-10.56,10.5 10.56,10.5 2.57,21 -2.57,21 "/>
+<polygon style="fill:#F3C4E0" points="-7.93,10.35 7.93,10.35 1.91,21 -1.91,21 "/>
+<polygon style="fill:#7B5EA7" points="-5.09,10.2 5.09,10.2 1.21,21 -1.21,21 "/>
+<polygon style="fill:#F3C4E0" points="-2.02,10.05 2.02,10.05 0.48,21 -0.48,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="2.57" ry="0.7"/>
 <ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-2.3,21.4 -2.6,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="2.3,21.4 2.6,27 "/>
 <path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
 <polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
 </g>
@@ -55,14 +55,14 @@ Hot-air balloons over misty mountains at dawn
 <ellipse style="fill:#FFF4E0" cx="0" cy="0" rx="10.4" ry="16"/>
 <ellipse style="fill:#F4A259" cx="0" cy="0" rx="6.6" ry="16"/>
 <ellipse style="fill:#FFF4E0" cx="0" cy="0" rx="2.6" ry="16"/>
-<polygon style="fill:#F4A259" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
-<polygon style="fill:#FFF4E0" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
-<polygon style="fill:#F4A259" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
-<polygon style="fill:#FFF4E0" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
-<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<polygon style="fill:#F4A259" points="-10.56,10.5 10.56,10.5 2.57,21 -2.57,21 "/>
+<polygon style="fill:#FFF4E0" points="-7.93,10.35 7.93,10.35 1.91,21 -1.91,21 "/>
+<polygon style="fill:#F4A259" points="-5.09,10.2 5.09,10.2 1.21,21 -1.21,21 "/>
+<polygon style="fill:#FFF4E0" points="-2.02,10.05 2.02,10.05 0.48,21 -0.48,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="2.57" ry="0.7"/>
 <ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-2.3,21.4 -2.6,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="2.3,21.4 2.6,27 "/>
 <path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
 <polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
 </g>
@@ -71,14 +71,14 @@ Hot-air balloons over misty mountains at dawn
 <ellipse style="fill:#E9C46A" cx="0" cy="0" rx="10.4" ry="16"/>
 <ellipse style="fill:#2A9D8F" cx="0" cy="0" rx="6.6" ry="16"/>
 <ellipse style="fill:#E9C46A" cx="0" cy="0" rx="2.6" ry="16"/>
-<polygon style="fill:#2A9D8F" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
-<polygon style="fill:#E9C46A" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
-<polygon style="fill:#2A9D8F" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
-<polygon style="fill:#E9C46A" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
-<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<polygon style="fill:#2A9D8F" points="-10.56,10.5 10.56,10.5 2.57,21 -2.57,21 "/>
+<polygon style="fill:#E9C46A" points="-7.93,10.35 7.93,10.35 1.91,21 -1.91,21 "/>
+<polygon style="fill:#2A9D8F" points="-5.09,10.2 5.09,10.2 1.21,21 -1.21,21 "/>
+<polygon style="fill:#E9C46A" points="-2.02,10.05 2.02,10.05 0.48,21 -0.48,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="2.57" ry="0.7"/>
 <ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-2.3,21.4 -2.6,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="2.3,21.4 2.6,27 "/>
 <path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
 <polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
 </g>
@@ -153,14 +153,14 @@ Hot-air balloons over misty mountains at dawn
 <ellipse style="fill:#FDF0D5" cx="0" cy="0" rx="10.4" ry="16"/>
 <ellipse style="fill:#E63946" cx="0" cy="0" rx="6.6" ry="16"/>
 <ellipse style="fill:#FDF0D5" cx="0" cy="0" rx="2.6" ry="16"/>
-<polygon style="fill:#E63946" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
-<polygon style="fill:#FDF0D5" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
-<polygon style="fill:#E63946" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
-<polygon style="fill:#FDF0D5" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
-<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<polygon style="fill:#E63946" points="-10.56,10.5 10.56,10.5 2.57,21 -2.57,21 "/>
+<polygon style="fill:#FDF0D5" points="-7.93,10.35 7.93,10.35 1.91,21 -1.91,21 "/>
+<polygon style="fill:#E63946" points="-5.09,10.2 5.09,10.2 1.21,21 -1.21,21 "/>
+<polygon style="fill:#FDF0D5" points="-2.02,10.05 2.02,10.05 0.48,21 -0.48,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="2.57" ry="0.7"/>
 <ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-2.3,21.4 -2.6,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="2.3,21.4 2.6,27 "/>
 <path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
 <polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
 </g>
@@ -169,14 +169,14 @@ Hot-air balloons over misty mountains at dawn
 <ellipse style="fill:#FFD166" cx="0" cy="0" rx="10.4" ry="16"/>
 <ellipse style="fill:#1D6FA5" cx="0" cy="0" rx="6.6" ry="16"/>
 <ellipse style="fill:#FFD166" cx="0" cy="0" rx="2.6" ry="16"/>
-<polygon style="fill:#1D6FA5" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
-<polygon style="fill:#FFD166" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
-<polygon style="fill:#1D6FA5" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
-<polygon style="fill:#FFD166" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
-<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<polygon style="fill:#1D6FA5" points="-10.56,10.5 10.56,10.5 2.57,21 -2.57,21 "/>
+<polygon style="fill:#FFD166" points="-7.93,10.35 7.93,10.35 1.91,21 -1.91,21 "/>
+<polygon style="fill:#1D6FA5" points="-5.09,10.2 5.09,10.2 1.21,21 -1.21,21 "/>
+<polygon style="fill:#FFD166" points="-2.02,10.05 2.02,10.05 0.48,21 -0.48,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="2.57" ry="0.7"/>
 <ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
-<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-2.3,21.4 -2.6,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="2.3,21.4 2.6,27 "/>
 <path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
 <polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
 </g>
