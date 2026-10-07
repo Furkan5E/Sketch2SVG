@@ -1,0 +1,4 @@
+# One pine with its base at (0,0). Included by ../balloons.txt inside a group that places and sizes it.
+ngon 3 6 0 3 0 none #173a2e
+ngon 3 5 0 8 0 none #1b4435
+ngon 3 4 0 13 0 none #1f4d3c

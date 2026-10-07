@@ -1,2 +1,79 @@
-# Night sky and house on a hill (the sketch bundled with the project)
-include ../src/main/resources/sketch.txt
+# Night: a cabin by a mountain lake under a full moon
+title "Cabin by a mountain lake at night"
+
+gradient sky linear 90 #24356b #0f1a40 #060a1f
+gradient moonglow radial #fff6c866 #fff6c822 #fff6c800
+gradient lake linear 90 #0a1230 #1c2f66
+gradient windowglow radial #ffd97a88 #ffd97a00
+
+background sky
+
+# stars: positions and sizes spread out with a little arithmetic instead of randomness
+repeat 70 i
+  circle {0.35 + (i % 4) * 0.18} {(i * 73) % 200 - 100} {(i * 47) % 95 + 5} 0 none #ffffff{5 + (i % 5)}0
+end
+star 4 3 0.8 62 78 0 none #fff6c8
+star 4 2.4 0.6 -8 88 0 none #fff6c8
+star 4 2 0.5 88 46 0 none #fff6c8
+star 4 2.2 0.6 18 60 0 none #fff6c8
+
+# a shooting star
+line 30 92 52 82 0.8 #ffffffaa cap=round
+line 44 85.6 52 82 1.4 #ffffff cap=round
+
+# moon with a soft glow and a few craters
+circle 40 -52 58 0 none moonglow
+circle 14 -52 58 0 none #fdf6d8
+circle 3 -57 62 0 none #e9dfb6
+circle 2 -48 53 0 none #e9dfb6
+circle 1.4 -54 51 0 none #e9dfb6
+
+# two mountain ranges, the far one with snow caps
+polygon -100,-18 -100,6 -78,30 -60,10 -34,44 -12,8 6,22 30,-4 52,26 76,2 100,18 100,-18 0 none #1b2a5c
+polygon -34,44 -42,33 -36,36 -32,31 -27,35 0 none #dfe7ff
+polygon -78,30 -85,22 -79,24 -74,21 0 none #dfe7ff
+polygon 52,26 45,17 51,19 56,15 60,17 0 none #dfe7ff
+polygon -100,-18 -100,-6 -70,8 -40,-8 -15,4 20,-10 48,6 80,-8 100,0 100,-18 0 none #131f47
+
+# lake, with the moon's reflection as shortening dashes
+rect 200 50 0 -43 0 none lake
+repeat 7 i
+  line {-68 + i*2} {-22 - i*5.5} {-36 - i*2} {-22 - i*5.5} 1.4 #fdf6d8{9 - i}0 dash=6,3 cap=round
+end
+
+# the near shore
+path M -100,-70 Q -50,-66 -10,-56 Q 40,-44 100,-40 L 100,-100 L -100,-100 Z 0 none #0a1c1a
+
+# pines of different sizes along the shore
+repeat 5 t
+  group at={-96 + t*27 + (t % 2) * 8},{-70 + t*4.5} scale={0.8 + ((t * 5) % 4) * 0.17}
+    rect 2.4 8 0 -2 0 none #1a120c
+    ngon 3 9 0 6 0 none #0c2a22
+    ngon 3 7.5 0 12 0 none #0e3329
+    ngon 3 6 0 18 0 none #113d31
+  end
+end
+
+# cabin with lit windows and chimney smoke
+group at=52,-54
+  circle 30 0 4 0 none windowglow
+  rect 6 12 11 22 1 #1a100a #3b2418
+  rect 38 22 0 0 1 #1a100a #5a3e2b
+  trapezoid 26 46 14 0 18 1 #1a100a #3b2418
+  rect 7 13 0 -4.5 1 #1a100a #2a1a10
+  square 7 -11 1 1 #1a100a #ffd97a
+  square 7 11 1 1 #1a100a #ffd97a
+  line -11 -2.5 -11 4.5 0.6 #1a100a
+  line 11 -2.5 11 4.5 0.6 #1a100a
+  repeat 4 s
+    circle {2.5 + s*1.2} {12 + s*3 + s*s*0.6} {32 + s*7} 0 none #ffffff{4 - s}0
+  end
+end
+
+# pine on the right, in front of the cabin's hill
+group at=88,-50 scale=1.3
+  rect 2.4 8 0 -2 0 none #1a120c
+  ngon 3 9 0 6 0 none #0c2a22
+  ngon 3 7.5 0 12 0 none #0e3329
+  ngon 3 6 0 18 0 none #113d31
+end

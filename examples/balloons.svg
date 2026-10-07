@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
+<title>
+Hot-air balloons over misty mountains at dawn
+</title>
+<defs>
+<linearGradient id="sky" x1="0.5" y1="1" x2="0.5" y2="0">
+<stop offset="0" stop-color="#FFE2B8"/>
+<stop offset="0.333" stop-color="#FFC7A8"/>
+<stop offset="0.667" stop-color="#C6D8EE"/>
+<stop offset="1" stop-color="#86B9E6"/>
+</linearGradient>
+<radialGradient id="halo">
+<stop offset="0" stop-color="#FFF4C8" stop-opacity="0.533"/>
+<stop offset="0.5" stop-color="#FFE0A0" stop-opacity="0.267"/>
+<stop offset="1" stop-color="#FFD090" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="sun">
+<stop offset="0" stop-color="#FFFBE0"/>
+<stop offset="1" stop-color="#FFE9A0"/>
+</radialGradient>
+</defs>
+<polygon style="fill:url(#sky)" points="-100,100 100,100 100,-100 -100,-100 "/>
+<circle style="fill:url(#halo)" cx="30" cy="-30" r="70"/>
+<circle style="fill:url(#sun)" cx="30" cy="-30" r="13"/>
+<path style="fill:none;stroke-width:0.7;stroke:#5A5A7A;stroke-linecap:round;stroke-linejoin:round" d="M -20 -84 Q -18 -87 -16 -84 Q -14 -87 -12 -84"/>
+<path style="fill:none;stroke-width:0.7;stroke:#5A5A7A;stroke-linecap:round;stroke-linejoin:round" d="M -11 -79 Q -9 -82 -7 -79 Q -5 -82 -3 -79"/>
+<path style="fill:none;stroke-width:0.7;stroke:#5A5A7A;stroke-linecap:round;stroke-linejoin:round" d="M -2 -84 Q 0 -87 2 -84 Q 4 -87 6 -84"/>
+<path style="fill:none;stroke-width:0.7;stroke:#5A5A7A;stroke-linecap:round;stroke-linejoin:round" d="M 7 -79 Q 9 -82 11 -79 Q 13 -82 15 -79"/>
+<path style="fill:#D5C3E0" d="M -100 100 L -100 -4 Q -72 -24 -44 -8 Q -14 8 18 -12 Q 48 -28 72 -10 Q 88 0 100 -8 L 100 100 Z"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.333" cx="-20" cy="10" rx="90" ry="7"/>
+<path style="fill:#A99BCB" d="M -100 100 L -100 14 Q -60 -6 -26 10 Q 4 24 36 6 Q 66 -10 100 12 L 100 100 Z"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.314" cx="30" cy="26" rx="80" ry="6"/>
+<path style="fill:#7783B5" d="M -100 100 L -100 22 Q -76 14 -52 28 Q -20 46 12 28 Q 44 12 70 30 Q 86 40 100 32 L 100 100 Z"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.282" cx="-30" cy="46" rx="85" ry="6"/>
+<path style="fill:#45707F" d="M -100 100 L -100 50 Q -64 34 -30 50 Q 6 66 44 46 Q 74 32 100 48 L 100 100 Z"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.22" cx="40" cy="62" rx="70" ry="5"/>
+<g transform="translate(-80 -30) scale(0.42 0.42)">
+<ellipse style="fill:#7B5EA7" cx="0" cy="0" rx="14" ry="16"/>
+<ellipse style="fill:#F3C4E0" cx="0" cy="0" rx="10.4" ry="16"/>
+<ellipse style="fill:#7B5EA7" cx="0" cy="0" rx="6.6" ry="16"/>
+<ellipse style="fill:#F3C4E0" cx="0" cy="0" rx="2.6" ry="16"/>
+<polygon style="fill:#7B5EA7" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
+<polygon style="fill:#F3C4E0" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
+<polygon style="fill:#7B5EA7" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
+<polygon style="fill:#F3C4E0" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
+</g>
+<g transform="translate(74 -44) scale(0.6 0.6)">
+<ellipse style="fill:#F4A259" cx="0" cy="0" rx="14" ry="16"/>
+<ellipse style="fill:#FFF4E0" cx="0" cy="0" rx="10.4" ry="16"/>
+<ellipse style="fill:#F4A259" cx="0" cy="0" rx="6.6" ry="16"/>
+<ellipse style="fill:#FFF4E0" cx="0" cy="0" rx="2.6" ry="16"/>
+<polygon style="fill:#F4A259" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
+<polygon style="fill:#FFF4E0" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
+<polygon style="fill:#F4A259" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
+<polygon style="fill:#FFF4E0" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
+</g>
+<g transform="translate(6 -40) scale(0.5 0.5)">
+<ellipse style="fill:#2A9D8F" cx="0" cy="0" rx="14" ry="16"/>
+<ellipse style="fill:#E9C46A" cx="0" cy="0" rx="10.4" ry="16"/>
+<ellipse style="fill:#2A9D8F" cx="0" cy="0" rx="6.6" ry="16"/>
+<ellipse style="fill:#E9C46A" cx="0" cy="0" rx="2.6" ry="16"/>
+<polygon style="fill:#2A9D8F" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
+<polygon style="fill:#E9C46A" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
+<polygon style="fill:#2A9D8F" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
+<polygon style="fill:#E9C46A" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
+</g>
+<path style="fill:#1F4A3A" d="M -100 100 L -100 66 Q -60 56 -20 70 Q 20 84 60 68 Q 82 60 100 66 L 100 100 Z"/>
+<g transform="translate(-92 65.24) scale(0.7 0.7)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(-76 63.16) scale(0.9 0.9)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(-60 63) scale(1.1 1.1)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(-44 64.76) scale(0.7 0.7)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(-28 68.44) scale(0.9 0.9)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(-12 73.5) scale(0.9 0.9)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(4 76.7) scale(0.75 0.75)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(20 77.5) scale(0.6 0.6)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(36 75.9) scale(0.9 0.9)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(52 71.9) scale(0.75 0.75)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(67.222 66.722) scale(0.75 0.75)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(81 64.5)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(93.889 65.389) scale(0.75 0.75)">
+<polygon style="fill:#173A2E" points="0,-9 -5.196,0 5.196,0 "/>
+<polygon style="fill:#1B4435" points="0,-13 -4.33,-5.5 4.33,-5.5 "/>
+<polygon style="fill:#1F4D3C" points="0,-17 -3.464,-11 3.464,-11 "/>
+</g>
+<g transform="translate(-40 -52) scale(1.5 1.5)">
+<ellipse style="fill:#E63946" cx="0" cy="0" rx="14" ry="16"/>
+<ellipse style="fill:#FDF0D5" cx="0" cy="0" rx="10.4" ry="16"/>
+<ellipse style="fill:#E63946" cx="0" cy="0" rx="6.6" ry="16"/>
+<ellipse style="fill:#FDF0D5" cx="0" cy="0" rx="2.6" ry="16"/>
+<polygon style="fill:#E63946" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
+<polygon style="fill:#FDF0D5" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
+<polygon style="fill:#E63946" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
+<polygon style="fill:#FDF0D5" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
+</g>
+<g transform="translate(42 -62)">
+<ellipse style="fill:#1D6FA5" cx="0" cy="0" rx="14" ry="16"/>
+<ellipse style="fill:#FFD166" cx="0" cy="0" rx="10.4" ry="16"/>
+<ellipse style="fill:#1D6FA5" cx="0" cy="0" rx="6.6" ry="16"/>
+<ellipse style="fill:#FFD166" cx="0" cy="0" rx="2.6" ry="16"/>
+<polygon style="fill:#1D6FA5" points="-10.4,10.5 10.4,10.5 3.6,21 -3.6,21 "/>
+<polygon style="fill:#FFD166" points="-7.6,10.5 7.6,10.5 2.6,21 -2.6,21 "/>
+<polygon style="fill:#1D6FA5" points="-4.8,10.5 4.8,10.5 1.6,21 -1.6,21 "/>
+<polygon style="fill:#FFD166" points="-1.9,10.5 1.9,10.5 0.6,21 -0.6,21 "/>
+<ellipse style="fill:#3A2A20" cx="0" cy="21" rx="3.6" ry="0.9"/>
+<ellipse style="fill:#FFFFFF;fill-opacity:0.251" cx="6.5" cy="-3" rx="2.6" ry="8" transform="rotate(12 6.5 -3)"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3.2,21.4 -2.4,27 "/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="3.2,21.4 2.4,27 "/>
+<path style="fill:#9A6A3A;stroke-width:0.4;stroke:#3A2A20" d="M -2 31.3 L 2 31.3 C 2.552 31.3 3 30.852 3 30.3 L 3 27.7 C 3 27.148 2.552 26.7 2 26.7 L -2 26.7 C -2.552 26.7 -3 27.148 -3 27.7 L -3 30.3 C -3 30.852 -2.552 31.3 -2 31.3 Z"/>
+<polyline style="fill:none;stroke-width:0.4;stroke:#3A2A20" points="-3,28.2 3,28.2 "/>
+</g>
+</svg>

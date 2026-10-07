@@ -2,44 +2,81 @@
 <title>
 Sunset over the sea
 </title>
+<desc>
+A sailboat and a lighthouse in front of the setting sun
+</desc>
 <defs>
 <linearGradient id="sky" x1="0.5" y1="1" x2="0.5" y2="0">
-<stop offset="0" stop-color="#FF7B54"/>
-<stop offset="0.5" stop-color="#FFB26B"/>
-<stop offset="1" stop-color="#6A4C93"/>
+<stop offset="0" stop-color="#FFC56B"/>
+<stop offset="0.25" stop-color="#FF8552"/>
+<stop offset="0.5" stop-color="#D9507A"/>
+<stop offset="0.75" stop-color="#6B3A7D"/>
+<stop offset="1" stop-color="#2A2456"/>
 </linearGradient>
 <linearGradient id="sea" x1="0.5" y1="1" x2="0.5" y2="0">
-<stop offset="0" stop-color="#03045E"/>
-<stop offset="1" stop-color="#0077B6"/>
+<stop offset="0" stop-color="#0B1238"/>
+<stop offset="0.5" stop-color="#3A2A6B"/>
+<stop offset="1" stop-color="#C85A6A"/>
 </linearGradient>
 <radialGradient id="sun">
-<stop offset="0" stop-color="#FFF3B0"/>
-<stop offset="0.5" stop-color="#FFD166"/>
-<stop offset="1" stop-color="#F77F00"/>
+<stop offset="0" stop-color="#FFF7C2"/>
+<stop offset="0.5" stop-color="#FFE08A"/>
+<stop offset="1" stop-color="#FFB347"/>
 </radialGradient>
+<radialGradient id="halo">
+<stop offset="0" stop-color="#FFE9A0" stop-opacity="0.4"/>
+<stop offset="0.5" stop-color="#FFB347" stop-opacity="0.2"/>
+<stop offset="1" stop-color="#FF8552" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="beam" x1="0" y1="0.5" x2="1" y2="0.5">
+<stop offset="0" stop-color="#FFF3B0" stop-opacity="0"/>
+<stop offset="1" stop-color="#FFF3B0" stop-opacity="0.4"/>
+</linearGradient>
 </defs>
 <polygon style="fill:url(#sky)" points="-120,80 120,80 120,-80 -120,-80 "/>
-<circle style="fill:url(#sun)" cx="0" cy="-8" r="26"/>
+<circle style="fill:url(#halo)" cx="0" cy="6" r="78"/>
+<circle style="fill:url(#sun)" cx="0" cy="6" r="24"/>
+<ellipse style="fill:#FFD3A0;fill-opacity:0.333" cx="-62" cy="-46" rx="46" ry="4"/>
+<ellipse style="fill:#FFB89A;fill-opacity:0.333" cx="-40" cy="-52" rx="30" ry="3"/>
+<ellipse style="fill:#FFC9A0;fill-opacity:0.4" cx="58" cy="-34" rx="52" ry="4.5"/>
+<ellipse style="fill:#FF9E80;fill-opacity:0.333" cx="78" cy="-41" rx="28" ry="3"/>
+<ellipse style="fill:#C86A9A;fill-opacity:0.333" cx="8" cy="-62" rx="36" ry="3"/>
+<ellipse style="fill:#FFDCAE;fill-opacity:0.4" cx="-84" cy="-22" rx="24" ry="2.5"/>
+<path style="fill:#4A2C5E" d="M -120 10 L -120 2 Q -104 -6 -90 1 Q -78 -4 -66 10 Z"/>
+<path style="fill:#5A3366" d="M 34 10 Q 46 3 60 6 Q 70 4 78 10 Z"/>
 <polygon style="fill:url(#sea)" points="-120,80 120,80 120,10 -120,10 "/>
-<polyline style="fill:none;stroke-width:2.5;stroke:#FFD166;stroke-dasharray:7 4;stroke-linecap:round" points="-22,16 22,16 "/>
-<polyline style="fill:none;stroke-width:2.5;stroke:#FFD166;stroke-dasharray:7 4;stroke-linecap:round" points="-18,27 18,27 "/>
-<polyline style="fill:none;stroke-width:2.5;stroke:#FFD166;stroke-dasharray:7 4;stroke-linecap:round" points="-14,38 14,38 "/>
-<polyline style="fill:none;stroke-width:2.5;stroke:#FFD166;stroke-dasharray:7 4;stroke-linecap:round" points="-10,49 10,49 "/>
-<polyline style="fill:none;stroke-width:2.5;stroke:#FFD166;stroke-dasharray:7 4;stroke-linecap:round" points="-6,60 6,60 "/>
-<g transform="translate(-72 8)">
-<path style="fill:#3D2B1F" d="M -16 0 L 16 0 L 11 7 L -11 7 Z"/>
-<polyline style="fill:none;stroke-width:1.5;stroke:#3D2B1F" points="0,0 0,-38 "/>
-<path style="fill:#FFFFFF" d="M 2 -4 L 2 -36 Q 12 -22 20 -4 Z"/>
+<polyline style="fill:none;stroke-width:1.6;stroke:#FFE08A;stroke-opacity:0.565;stroke-dasharray:5 3;stroke-linecap:round" points="-10,14 10,14 "/>
+<polyline style="fill:none;stroke-width:1.85;stroke:#FFE08A;stroke-opacity:0.502;stroke-dasharray:6 3.5;stroke-linecap:round" points="-13.2,22 13.2,22 "/>
+<polyline style="fill:none;stroke-width:2.1;stroke:#FFE08A;stroke-opacity:0.439;stroke-dasharray:7 4;stroke-linecap:round" points="-16.4,30 16.4,30 "/>
+<polyline style="fill:none;stroke-width:2.35;stroke:#FFE08A;stroke-opacity:0.376;stroke-dasharray:8 4.5;stroke-linecap:round" points="-19.6,38 19.6,38 "/>
+<polyline style="fill:none;stroke-width:2.6;stroke:#FFE08A;stroke-opacity:0.314;stroke-dasharray:9 5;stroke-linecap:round" points="-22.8,46 22.8,46 "/>
+<polyline style="fill:none;stroke-width:2.85;stroke:#FFE08A;stroke-opacity:0.251;stroke-dasharray:10 5.5;stroke-linecap:round" points="-26,54 26,54 "/>
+<polyline style="fill:none;stroke-width:3.1;stroke:#FFE08A;stroke-opacity:0.188;stroke-dasharray:11 6;stroke-linecap:round" points="-29.2,62 29.2,62 "/>
+<polyline style="fill:none;stroke-width:3.35;stroke:#FFE08A;stroke-opacity:0.125;stroke-dasharray:12 6.5;stroke-linecap:round" points="-32.4,70 32.4,70 "/>
+<path style="fill:#1C1430" d="M 120 80 L 120 0 L 90 0 Q 83 3 79 14 Q 72 24 60 30 Q 70 60 64 80 Z"/>
+<polygon style="fill:url(#beam)" points="98,-34 98,-30 -20,-62 -20,-8 "/>
+<polygon style="fill:#F4EAD8" points="95,-33 103,-33 105.5,1 92.5,1 "/>
+<polygon style="fill:#C8394B" points="94.3,-23.5 103.7,-23.5 104.065,-18.5 93.935,-18.5 "/>
+<polygon style="fill:#C8394B" points="93.2,-8.5 104.8,-8.5 105.17,-3.5 92.83,-3.5 "/>
+<path style="fill:#1C1430" d="M 94.5 -33 L 103.5 -33 C 104.052 -33 104.5 -33.448 104.5 -34 L 104.5 -34 C 104.5 -34.552 104.052 -35 103.5 -35 L 94.5 -35 C 93.948 -35 93.5 -34.552 93.5 -34 L 93.5 -34 C 93.5 -33.448 93.948 -33 94.5 -33 Z"/>
+<polygon style="fill:#FFF3B0" points="95.5,-35 102.5,-35 102.5,-41 95.5,-41 "/>
+<polygon style="fill:#1C1430" points="93.5,-41 104.5,-41 99,-48 "/>
+<path style="fill:#1C1430" d="M 99 0.7 L 99 0.7 C 99.828 0.7 100.5 0.028 100.5 -0.8 L 100.5 -2.8 C 100.5 -3.628 99.828 -4.3 99 -4.3 L 99 -4.3 C 98.172 -4.3 97.5 -3.628 97.5 -2.8 L 97.5 -0.8 C 97.5 0.028 98.172 0.7 99 0.7 Z"/>
+<polygon style="fill:#2B1D42" points="91.5,-1.4 106.5,-1.4 108,1 90,1 "/>
+<g transform="translate(-58 20)">
+<path style="fill:#1C1430" d="M -17 0 L 17 0 L 12 7 L -12 7 Z"/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#1C1430" points="0,0 0,-40 "/>
+<path style="fill:#2B1D42" d="M 2 -4 L 2 -38 Q 14 -24 22 -4 Z"/>
+<path style="fill:#2B1D42" d="M -2 -6 L -2 -30 Q -10 -18 -14 -6 Z"/>
 </g>
-<path style="fill:none;stroke-width:1.5;stroke:#2B2D42;stroke-linecap:round;stroke-linejoin:round" d="M -10 -52 Q -5 -58 0 -52 Q 5 -58 10 -52"/>
-<path style="fill:none;stroke-width:1.5;stroke:#2B2D42;stroke-linecap:round;stroke-linejoin:round" d="M 6 -59 Q 11 -65 16 -59 Q 21 -65 26 -59"/>
-<path style="fill:none;stroke-width:1.5;stroke:#2B2D42;stroke-linecap:round;stroke-linejoin:round" d="M 22 -66 Q 27 -72 32 -66 Q 37 -72 42 -66"/>
-<path style="fill:none;stroke-width:1.2;stroke:#FFFFFF" d="M 92 -44 L 34 -16 M 38.787 -15.646 L 34 -16 L 36.7 -19.969"/>
-<text style="fill:#FFFFFF" x="92" y="-52" font-size="9" font-family="serif" font-style="italic" text-anchor="start" dominant-baseline="middle">
-sunset
-</text>
-<path style="fill:#000000;fill-opacity:0.333;stroke-width:1.2;stroke:#FFFFFF" d="M 26 75 L 106 75 C 110.418 75 114 71.418 114 67 L 114 61 C 114 56.582 110.418 53 106 53 L 26 53 C 21.582 53 18 56.582 18 61 L 18 67 C 18 71.418 21.582 75 26 75 Z"/>
-<text style="fill:#FFFFFF" x="66" y="64" font-size="11" font-family="sans-serif" font-weight="bold" text-anchor="middle" dominant-baseline="middle">
+<polyline style="fill:none;stroke-width:1.2;stroke:#1C1430;stroke-opacity:0.4;stroke-dasharray:5 3;stroke-linecap:round" points="-72,30 -44,30 "/>
+<polyline style="fill:none;stroke-width:1.2;stroke:#1C1430;stroke-opacity:0.4;stroke-dasharray:5 3;stroke-linecap:round" points="-69,34 -47,34 "/>
+<polyline style="fill:none;stroke-width:1.2;stroke:#1C1430;stroke-opacity:0.4;stroke-dasharray:5 3;stroke-linecap:round" points="-66,38 -50,38 "/>
+<path style="fill:none;stroke-width:1.2;stroke:#2A2456;stroke-linecap:round;stroke-linejoin:round" d="M -44 -50 Q -40 -55 -36 -50 Q -32 -55 -28 -50"/>
+<path style="fill:none;stroke-width:1.2;stroke:#2A2456;stroke-linecap:round;stroke-linejoin:round" d="M -27 -56 Q -23 -61 -19 -56 Q -15 -61 -11 -56"/>
+<path style="fill:none;stroke-width:1.2;stroke:#2A2456;stroke-linecap:round;stroke-linejoin:round" d="M -10 -44 Q -6 -49 -2 -44 Q 2 -49 6 -44"/>
+<path style="fill:none;stroke-width:1.2;stroke:#2A2456;stroke-linecap:round;stroke-linejoin:round" d="M 7 -50 Q 11 -55 15 -50 Q 19 -55 23 -50"/>
+<text style="fill:#FFFFFF;fill-opacity:0.667" x="-114" y="72" font-size="8" font-family="serif" font-style="italic" text-anchor="start" dominant-baseline="middle">
 Sketch2SVG
 </text>
 </svg>

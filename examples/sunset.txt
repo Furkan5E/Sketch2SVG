@@ -1,34 +1,64 @@
-# Sunset: gradients, paths, rounded rectangles, dashes, arrows and text options
+# Sunset: gradients, curved paths, ellipses, dashes, rounded rectangles and text options
 title "Sunset over the sea"
+desc "A sailboat and a lighthouse in front of the setting sun"
 canvas 240 160
 
-gradient sky linear 90 #ff7b54 #ffb26b #6a4c93
-gradient sea linear 90 #03045e #0077b6
-gradient sun radial #fff3b0 #ffd166 #f77f00
+gradient sky linear 90 #ffc56b #ff8552 #d9507a #6b3a7d #2a2456
+gradient sea linear 90 #0b1238 #3a2a6b #c85a6a
+gradient sun radial #fff7c2 #ffe08a #ffb347
+gradient halo radial #ffe9a066 #ffb34733 #ff855200
+gradient beam linear 0 #fff3b000 #fff3b066
 
 background sky
-circle 26 0 8 0 none sun
-rect 240 70 0 -45 0 none sea
 
-# the sun's reflection: dashed, round-capped strokes that shrink towards the viewer
-repeat 5 i
-  line {-22 + i*4} {-16 - i*11} {22 - i*4} {-16 - i*11} 2.5 #ffd166 dash=7,4 cap=round
+# the sun, half below the horizon, inside a wide halo
+circle 78 0 -6 0 none halo
+circle 24 0 -6 0 none sun
+
+# bands of cloud: stretched, translucent ellipses catching the light
+ellipse 46 4 -62 46 0 none #ffd3a055
+ellipse 30 3 -40 52 0 none #ffb89a55
+ellipse 52 4.5 58 34 0 none #ffc9a066
+ellipse 28 3 78 41 0 none #ff9e8055
+ellipse 36 3 8 62 0 none #c86a9a55
+ellipse 24 2.5 -84 22 0 none #ffdcae66
+
+# far islands on the horizon
+path M -120,-10 L -120,-2 Q -104,6 -90,-1 Q -78,4 -66,-10 Z 0 none #4a2c5e
+path M 34,-10 Q 46,-3 60,-6 Q 70,-4 78,-10 Z 0 none #5a3366
+
+# sea, with the sun's reflection as dashed, round-capped strokes that widen towards the viewer
+rect 240 70 0 -45 0 none sea
+repeat 8 i
+  line {-10 - i*3.2} {-14 - i*8} {10 + i*3.2} {-14 - i*8} {1.6 + i*0.25} #ffe08a{9 - i}0 dash={5 + i},{3 + i * 0.5} cap=round
 end
 
-# sailboat: a straight-edged hull and a curved sail
-group at=-72,-8
-  path M -16,0 L 16,0 L 11,-7 L -11,-7 Z 0 none #3d2b1f
-  line 0 0 0 38 1.5 #3d2b1f
-  path M 2,4 L 2,36 Q 12,22 20,4 Z 0 none white
+# headland and lighthouse, sweeping its beam across the bay
+path M 120,-80 L 120,0 L 90,0 Q 83,-3 79,-14 Q 72,-24 60,-30 Q 70,-60 64,-80 Z 0 none #1c1430
+polygon 98,34 98,30 -20,62 -20,8 0 none beam
+trapezoid 8 13 34 99 16 0 none #f4ead8
+trapezoid 9.4 10.13 5 99 21 0 none #c8394b
+trapezoid 11.6 12.34 5 99 6 0 none #c8394b
+roundrect 11 2 1 99 34 0 none #1c1430
+rect 7 6 99 38 0 none #fff3b0
+polygon 93.5,41 104.5,41 99,48 0 none #1c1430
+roundrect 3 5 1.5 99 1.8 0 none #1c1430
+trapezoid 15 18 2.4 99 0.2 0 none #2b1d42
+
+# sailboat in silhouette: a straight-edged hull and two curved sails
+group at=-58,-20
+  path M -17,0 L 17,0 L 12,-7 L -12,-7 Z 0 none #1c1430
+  line 0 0 0 40 1.4 #1c1430
+  path M 2,4 L 2,38 Q 14,24 22,4 Z 0 none #2b1d42
+  path M -2,6 L -2,30 Q -10,18 -14,6 Z 0 none #2b1d42
+end
+repeat 3 i
+  line {-72 + i*3} {-30 - i*4} {-44 - i*3} {-30 - i*4} 1.2 #1c143066 dash=5,3 cap=round
 end
 
 # gulls: two quadratic curves each
-repeat 3 k
-  path M {-10 + k*16},{52 + k*7} Q {-5 + k*16},{58 + k*7} {k*16},{52 + k*7} Q {5 + k*16},{58 + k*7} {10 + k*16},{52 + k*7} 1.5 #2b2d42 cap=round join=round
+repeat 4 k
+  path M {-44 + k*17},{50 + (k % 2)*9 - k*3} Q {-40 + k*17},{55 + (k % 2)*9 - k*3} {-36 + k*17},{50 + (k % 2)*9 - k*3} Q {-32 + k*17},{55 + (k % 2)*9 - k*3} {-28 + k*17},{50 + (k % 2)*9 - k*3} 1.2 #2a2456 cap=round join=round
 end
 
-# label with a pointer
-line 92 44 34 16 1.2 white arrow=end
-text 92 52 9 "sunset" fill=white italic align=left font=serif
-roundrect 96 22 8 66 -64 1.2 white #00000055
-text 66 -64 11 "Sketch2SVG" fill=white bold font=sans-serif
+text -114 -72 8 "Sketch2SVG" fill=#ffffffaa italic align=left font=serif

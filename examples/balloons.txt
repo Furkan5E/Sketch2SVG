@@ -1,0 +1,77 @@
+# Balloons at dawn: include files as reusable parts, color variables, expressions and gradients
+title "Hot-air balloons over misty mountains at dawn"
+
+gradient sky linear 90 #ffe2b8 #ffc7a8 #c6d8ee #86b9e6
+gradient halo radial #fff4c888 #ffe0a044 #ffd09000
+gradient sun radial #fffbe0 #ffe9a0
+
+background sky
+circle 70 30 30 0 none halo
+circle 13 30 30 0 none sun
+
+# birds
+repeat 4 k
+  path M {-20 + k*9},{84 - (k % 2)*5} Q {-18 + k*9},{87 - (k % 2)*5} {-16 + k*9},{84 - (k % 2)*5} Q {-14 + k*9},{87 - (k % 2)*5} {-12 + k*9},{84 - (k % 2)*5} 0.7 #5a5a7a cap=round join=round
+end
+
+# ridges from far to near, each darker than the last, with bands of mist between them
+path M -100,-100 L -100,4 Q -72,24 -44,8 Q -14,-8 18,12 Q 48,28 72,10 Q 88,0 100,8 L 100,-100 Z 0 none #d5c3e0
+ellipse 90 7 -20 -10 0 none #ffffff55
+path M -100,-100 L -100,-14 Q -60,6 -26,-10 Q 4,-24 36,-6 Q 66,10 100,-12 L 100,-100 Z 0 none #a99bcb
+ellipse 80 6 30 -26 0 none #ffffff50
+path M -100,-100 L -100,-22 Q -76,-14 -52,-28 Q -20,-46 12,-28 Q 44,-12 70,-30 Q 86,-40 100,-32 L 100,-100 Z 0 none #7783b5
+ellipse 85 6 -30 -46 0 none #ffffff48
+path M -100,-100 L -100,-50 Q -64,-34 -30,-50 Q 6,-66 44,-46 Q 74,-32 100,-48 L 100,-100 Z 0 none #45707f
+ellipse 70 5 40 -62 0 none #ffffff38
+
+# small balloons far away, drawn before the nearest ridge
+set c1 #7b5ea7
+set c2 #f3c4e0
+group at=-80,30 scale=0.42
+  include parts/balloon.txt
+end
+set c1 #f4a259
+set c2 #fff4e0
+group at=74,44 scale=0.6
+  include parts/balloon.txt
+end
+set c1 #2a9d8f
+set c2 #e9c46a
+group at=6,40 scale=0.5
+  include parts/balloon.txt
+end
+
+# the nearest ridge
+path M -100,-100 L -100,-66 Q -60,-56 -20,-70 Q 20,-84 60,-68 Q 82,-60 100,-66 L 100,-100 Z 0 none #1f4a3a
+
+# pines planted along the ridge: each loop samples one of the path's quadratic curves
+repeat 5 t
+  set u {(t + 0.5) / 5}
+  group at={-100 + 80*u},{-66*(1-u)^2 - 112*u*(1-u) - 70*u^2 - 1} scale={0.7 + (t % 3) * 0.2}
+    include parts/pine.txt
+  end
+end
+repeat 5 t
+  set u {(t + 0.5) / 5}
+  group at={-20 + 80*u},{-70*(1-u)^2 - 168*u*(1-u) - 68*u^2 - 1} scale={0.9 - (t % 3) * 0.15}
+    include parts/pine.txt
+  end
+end
+repeat 3 t
+  set u {(t + 0.5) / 3}
+  group at={60*(1-u)^2 + 164*u*(1-u) + 100*u^2},{-68*(1-u)^2 - 120*u*(1-u) - 66*u^2 - 1} scale={0.75 + (t % 2) * 0.25}
+    include parts/pine.txt
+  end
+end
+
+# two balloons close by
+set c1 #e63946
+set c2 #fdf0d5
+group at=-40,52 scale=1.5
+  include parts/balloon.txt
+end
+set c1 #1d6fa5
+set c2 #ffd166
+group at=42,62 scale=1
+  include parts/balloon.txt
+end

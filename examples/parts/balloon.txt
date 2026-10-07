@@ -1,0 +1,24 @@
+# One hot-air balloon, drawn around (0,0). Included by ../balloons.txt, which sets the
+# colors c1 and c2 first and wraps this in a group to place and size it.
+
+# envelope: ellipses of the same height and shrinking width make the vertical stripes
+ellipse 14 16 0 0 0 none c1
+ellipse 10.4 16 0 0 0 none c2
+ellipse 6.6 16 0 0 0 none c1
+ellipse 2.6 16 0 0 0 none c2
+
+# the taper down to the mouth
+polygon -10.4,-10.5 10.4,-10.5 3.6,-21 -3.6,-21 0 none c1
+polygon -7.6,-10.5 7.6,-10.5 2.6,-21 -2.6,-21 0 none c2
+polygon -4.8,-10.5 4.8,-10.5 1.6,-21 -1.6,-21 0 none c1
+polygon -1.9,-10.5 1.9,-10.5 0.6,-21 -0.6,-21 0 none c2
+ellipse 3.6 0.9 0 -21 0 none #3a2a20
+
+# a soft highlight on the sunny side
+ellipse 2.6 8 6.5 3 0 none #ffffff40 rot=-12
+
+# ropes and basket
+line -3.2 -21.4 -2.4 -27 0.4 #3a2a20
+line 3.2 -21.4 2.4 -27 0.4 #3a2a20
+roundrect 6 4.6 1 0 -29 0.4 #3a2a20 #9a6a3a
+line -3 -28.2 3 -28.2 0.4 #3a2a20

@@ -1,28 +1,172 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
-<polygon style="fill:#0B1020" points="-100,100 100,100 100,-100 -100,-100 "/>
-<circle style="fill:#E6E6FF" cx="-55" cy="-55" r="18"/>
-<circle style="fill:#0B1020" cx="-50" cy="-58" r="16"/>
-<polygon style="fill:#FFD700" points="-10,-78 -10.588,-75.809 -12.853,-75.927 -10.951,-74.691 -11.763,-72.573 -10,-74 -8.237,-72.573 -9.049,-74.691 -7.147,-75.927 -9.412,-75.809 "/>
-<polygon style="fill:#FFD700" points="10,-67 9.412,-65.809 8.098,-65.618 9.049,-64.691 8.824,-63.382 10,-64 11.176,-63.382 10.951,-64.691 11.902,-65.618 10.588,-65.809 "/>
-<polygon style="fill:#FFD700" points="35,-80 34.412,-78.809 33.098,-78.618 34.049,-77.691 33.824,-76.382 35,-77 36.176,-76.382 35.951,-77.691 36.902,-78.618 35.588,-78.809 "/>
-<polygon style="fill:#FFD700" points="60,-68 59.412,-65.809 57.147,-65.927 59.049,-64.691 58.237,-62.573 60,-64 61.763,-62.573 60.951,-64.691 62.853,-65.927 60.588,-65.809 "/>
-<polygon style="fill:#FFD700" points="-30,-82 -30.588,-80.809 -31.902,-80.618 -30.951,-79.691 -31.176,-78.382 -30,-79 -28.824,-78.382 -29.049,-79.691 -28.098,-80.618 -29.412,-80.809 "/>
-<polygon style="fill:#FFD700" points="-75,-74 -75.588,-72.809 -76.902,-72.618 -75.951,-71.691 -76.176,-70.382 -75,-71 -73.824,-70.382 -74.049,-71.691 -73.098,-72.618 -74.412,-72.809 "/>
-<polygon style="fill:#FFD700" points="80,-82 79.412,-80.809 78.098,-80.618 79.049,-79.691 78.824,-78.382 80,-79 81.176,-78.382 80.951,-79.691 81.902,-80.618 80.588,-80.809 "/>
-<polygon style="fill:#FFD700" points="41.758,-79.627 57.639,-73.847 56.613,-71.028 67.216,-73.554 60.717,-82.304 59.691,-79.485 43.81,-85.265 "/>
-<polygon style="fill:#0F2A1B" points="-10,-67 -89.674,71 69.674,71 "/>
-<polygon style="fill:#133021" points="35,-48 -39.478,81 109.478,81 "/>
-<polygon style="fill:#0A1A12" points="-100,100 100,100 100,70 -100,70 "/>
-<polygon style="fill:#6B4F3A;stroke-width:2;stroke:#000000" points="11,54 53,54 53,26 11,26 "/>
-<polygon style="fill:#2A1D15;stroke-width:2;stroke:#000000" points="27,54 37,54 37,38 27,38 "/>
-<polygon style="fill:#3B2A20;stroke-width:2;stroke:#000000" points="44,23 52,23 52,7 44,7 "/>
-<polygon style="fill:#3B2A20;stroke-width:2;stroke:#000000" points="17,15 47,15 58,31 6,31 "/>
-<polygon style="fill:#FFDC7A;stroke-width:2;stroke:#000000" points="40,44 48,44 48,36 40,36 "/>
-<polygon style="fill:#FFDC7A;stroke-width:2;stroke:#000000" points="16,44 24,44 24,36 16,36 "/>
-<path style="fill:none;stroke-width:1;stroke:#000000;stroke-opacity:0.4" d="M 59 5 A 7 7 0 0 0 45 5"/>
-<path style="fill:none;stroke-width:1;stroke:#000000;stroke-opacity:0.4" d="M 71 -2 A 9 9 0 0 0 53 -2"/>
-<path style="fill:none;stroke-width:1;stroke:#000000;stroke-opacity:0.4" d="M 85 -10 A 11 11 0 0 0 63 -10"/>
-<text style="fill:#0F2A1B" x="0" y="90" font-size="14" text-anchor="middle" dominant-baseline="middle">
-Hello World
-</text>
+<title>
+Cabin by a mountain lake at night
+</title>
+<defs>
+<linearGradient id="sky" x1="0.5" y1="1" x2="0.5" y2="0">
+<stop offset="0" stop-color="#24356B"/>
+<stop offset="0.5" stop-color="#0F1A40"/>
+<stop offset="1" stop-color="#060A1F"/>
+</linearGradient>
+<radialGradient id="moonglow">
+<stop offset="0" stop-color="#FFF6C8" stop-opacity="0.4"/>
+<stop offset="0.5" stop-color="#FFF6C8" stop-opacity="0.133"/>
+<stop offset="1" stop-color="#FFF6C8" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="lake" x1="0.5" y1="1" x2="0.5" y2="0">
+<stop offset="0" stop-color="#0A1230"/>
+<stop offset="1" stop-color="#1C2F66"/>
+</linearGradient>
+<radialGradient id="windowglow">
+<stop offset="0" stop-color="#FFD97A" stop-opacity="0.533"/>
+<stop offset="1" stop-color="#FFD97A" stop-opacity="0"/>
+</radialGradient>
+</defs>
+<polygon style="fill:url(#sky)" points="-100,100 100,100 100,-100 -100,-100 "/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-100" cy="-5" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-27" cy="-52" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="46" cy="-99" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="-81" cy="-51" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-8" cy="-98" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="65" cy="-50" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-62" cy="-97" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="11" cy="-49" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="84" cy="-96" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-43" cy="-48" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="30" cy="-95" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-97" cy="-47" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="-24" cy="-94" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="49" cy="-46" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-78" cy="-93" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-5" cy="-45" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="68" cy="-92" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="-59" cy="-44" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="14" cy="-91" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="87" cy="-43" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-40" cy="-90" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="33" cy="-42" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="-94" cy="-89" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="-21" cy="-41" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="52" cy="-88" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-75" cy="-40" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-2" cy="-87" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="71" cy="-39" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="-56" cy="-86" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="17" cy="-38" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="90" cy="-85" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-37" cy="-37" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="36" cy="-84" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="-91" cy="-36" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-18" cy="-83" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="55" cy="-35" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-72" cy="-82" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="1" cy="-34" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="74" cy="-81" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-53" cy="-33" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="20" cy="-80" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="93" cy="-32" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="-34" cy="-79" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="39" cy="-31" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-88" cy="-78" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-15" cy="-30" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="58" cy="-77" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="-69" cy="-29" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="4" cy="-76" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="77" cy="-28" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-50" cy="-75" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="23" cy="-27" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="96" cy="-74" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="-31" cy="-26" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="42" cy="-73" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="-85" cy="-25" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-12" cy="-72" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="61" cy="-24" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="-66" cy="-71" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="7" cy="-23" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="80" cy="-70" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-47" cy="-22" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="26" cy="-69" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="99" cy="-21" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-28" cy="-68" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.314" cx="45" cy="-20" r="0.53"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.376" cx="-82" cy="-67" r="0.71"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.439" cx="-9" cy="-19" r="0.89"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.502" cx="64" cy="-66" r="0.35"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.565" cx="-63" cy="-18" r="0.53"/>
+<polygon style="fill:#FFF6C8" points="62,-81 61.434,-78.566 59,-78 61.434,-77.434 62,-75 62.566,-77.434 65,-78 62.566,-78.566 "/>
+<polygon style="fill:#FFF6C8" points="-8,-90.4 -8.424,-88.424 -10.4,-88 -8.424,-87.576 -8,-85.6 -7.576,-87.576 -5.6,-88 -7.576,-88.424 "/>
+<polygon style="fill:#FFF6C8" points="88,-48 87.646,-46.354 86,-46 87.646,-45.646 88,-44 88.354,-45.646 90,-46 88.354,-46.354 "/>
+<polygon style="fill:#FFF6C8" points="18,-62.2 17.576,-60.424 15.8,-60 17.576,-59.576 18,-57.8 18.424,-59.576 20.2,-60 18.424,-60.424 "/>
+<polyline style="fill:none;stroke-width:0.8;stroke:#FFFFFF;stroke-opacity:0.667;stroke-linecap:round" points="30,-92 52,-82 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FFFFFF;stroke-linecap:round" points="44,-85.6 52,-82 "/>
+<circle style="fill:url(#moonglow)" cx="-52" cy="-58" r="40"/>
+<circle style="fill:#FDF6D8" cx="-52" cy="-58" r="14"/>
+<circle style="fill:#E9DFB6" cx="-57" cy="-62" r="3"/>
+<circle style="fill:#E9DFB6" cx="-48" cy="-53" r="2"/>
+<circle style="fill:#E9DFB6" cx="-54" cy="-51" r="1.4"/>
+<polygon style="fill:#1B2A5C" points="-100,18 -100,-6 -78,-30 -60,-10 -34,-44 -12,-8 6,-22 30,4 52,-26 76,-2 100,-18 100,18 "/>
+<polygon style="fill:#DFE7FF" points="-34,-44 -42,-33 -36,-36 -32,-31 -27,-35 "/>
+<polygon style="fill:#DFE7FF" points="-78,-30 -85,-22 -79,-24 -74,-21 "/>
+<polygon style="fill:#DFE7FF" points="52,-26 45,-17 51,-19 56,-15 60,-17 "/>
+<polygon style="fill:#131F47" points="-100,18 -100,6 -70,-8 -40,8 -15,-4 20,10 48,-6 80,8 100,0 100,18 "/>
+<polygon style="fill:url(#lake)" points="-100,68 100,68 100,18 -100,18 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.565;stroke-dasharray:6 3;stroke-linecap:round" points="-68,22 -36,22 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.502;stroke-dasharray:6 3;stroke-linecap:round" points="-66,27.5 -38,27.5 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.439;stroke-dasharray:6 3;stroke-linecap:round" points="-64,33 -40,33 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.376;stroke-dasharray:6 3;stroke-linecap:round" points="-62,38.5 -42,38.5 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.314;stroke-dasharray:6 3;stroke-linecap:round" points="-60,44 -44,44 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.251;stroke-dasharray:6 3;stroke-linecap:round" points="-58,49.5 -46,49.5 "/>
+<polyline style="fill:none;stroke-width:1.4;stroke:#FDF6D8;stroke-opacity:0.188;stroke-dasharray:6 3;stroke-linecap:round" points="-56,55 -48,55 "/>
+<path style="fill:#0A1C1A" d="M -100 70 Q -50 66 -10 56 Q 40 44 100 40 L 100 100 L -100 100 Z"/>
+<g transform="translate(-96 70) scale(0.8 0.8)">
+<polygon style="fill:#1A120C" points="-1.2,6 1.2,6 1.2,-2 -1.2,-2 "/>
+<polygon style="fill:#0C2A22" points="0,-15 -7.794,-1.5 7.794,-1.5 "/>
+<polygon style="fill:#0E3329" points="0,-19.5 -6.495,-8.25 6.495,-8.25 "/>
+<polygon style="fill:#113D31" points="0,-24 -5.196,-15 5.196,-15 "/>
+</g>
+<g transform="translate(-61 65.5) scale(0.97 0.97)">
+<polygon style="fill:#1A120C" points="-1.2,6 1.2,6 1.2,-2 -1.2,-2 "/>
+<polygon style="fill:#0C2A22" points="0,-15 -7.794,-1.5 7.794,-1.5 "/>
+<polygon style="fill:#0E3329" points="0,-19.5 -6.495,-8.25 6.495,-8.25 "/>
+<polygon style="fill:#113D31" points="0,-24 -5.196,-15 5.196,-15 "/>
+</g>
+<g transform="translate(-42 61) scale(1.14 1.14)">
+<polygon style="fill:#1A120C" points="-1.2,6 1.2,6 1.2,-2 -1.2,-2 "/>
+<polygon style="fill:#0C2A22" points="0,-15 -7.794,-1.5 7.794,-1.5 "/>
+<polygon style="fill:#0E3329" points="0,-19.5 -6.495,-8.25 6.495,-8.25 "/>
+<polygon style="fill:#113D31" points="0,-24 -5.196,-15 5.196,-15 "/>
+</g>
+<g transform="translate(-7 56.5) scale(1.31 1.31)">
+<polygon style="fill:#1A120C" points="-1.2,6 1.2,6 1.2,-2 -1.2,-2 "/>
+<polygon style="fill:#0C2A22" points="0,-15 -7.794,-1.5 7.794,-1.5 "/>
+<polygon style="fill:#0E3329" points="0,-19.5 -6.495,-8.25 6.495,-8.25 "/>
+<polygon style="fill:#113D31" points="0,-24 -5.196,-15 5.196,-15 "/>
+</g>
+<g transform="translate(12 52) scale(0.8 0.8)">
+<polygon style="fill:#1A120C" points="-1.2,6 1.2,6 1.2,-2 -1.2,-2 "/>
+<polygon style="fill:#0C2A22" points="0,-15 -7.794,-1.5 7.794,-1.5 "/>
+<polygon style="fill:#0E3329" points="0,-19.5 -6.495,-8.25 6.495,-8.25 "/>
+<polygon style="fill:#113D31" points="0,-24 -5.196,-15 5.196,-15 "/>
+</g>
+<g transform="translate(52 54)">
+<circle style="fill:url(#windowglow)" cx="0" cy="-4" r="30"/>
+<polygon style="fill:#3B2418;stroke-width:1;stroke:#1A100A" points="8,-16 14,-16 14,-28 8,-28 "/>
+<polygon style="fill:#5A3E2B;stroke-width:1;stroke:#1A100A" points="-19,11 19,11 19,-11 -19,-11 "/>
+<polygon style="fill:#3B2418;stroke-width:1;stroke:#1A100A" points="-13,-25 13,-25 23,-11 -23,-11 "/>
+<polygon style="fill:#2A1A10;stroke-width:1;stroke:#1A100A" points="-3.5,11 3.5,11 3.5,-2 -3.5,-2 "/>
+<polygon style="fill:#FFD97A;stroke-width:1;stroke:#1A100A" points="-14.5,2.5 -7.5,2.5 -7.5,-4.5 -14.5,-4.5 "/>
+<polygon style="fill:#FFD97A;stroke-width:1;stroke:#1A100A" points="7.5,2.5 14.5,2.5 14.5,-4.5 7.5,-4.5 "/>
+<polyline style="fill:none;stroke-width:0.6;stroke:#1A100A" points="-11,2.5 -11,-4.5 "/>
+<polyline style="fill:none;stroke-width:0.6;stroke:#1A100A" points="11,2.5 11,-4.5 "/>
+<circle style="fill:#FFFFFF;fill-opacity:0.251" cx="12" cy="-32" r="2.5"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.188" cx="15.6" cy="-39" r="3.7"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.125" cx="20.4" cy="-46" r="4.9"/>
+<circle style="fill:#FFFFFF;fill-opacity:0.063" cx="26.4" cy="-53" r="6.1"/>
+</g>
+<g transform="translate(88 50) scale(1.3 1.3)">
+<polygon style="fill:#1A120C" points="-1.2,6 1.2,6 1.2,-2 -1.2,-2 "/>
+<polygon style="fill:#0C2A22" points="0,-15 -7.794,-1.5 7.794,-1.5 "/>
+<polygon style="fill:#0E3329" points="0,-19.5 -6.495,-8.25 6.495,-8.25 "/>
+<polygon style="fill:#113D31" points="0,-24 -5.196,-15 5.196,-15 "/>
+</g>
 </svg>

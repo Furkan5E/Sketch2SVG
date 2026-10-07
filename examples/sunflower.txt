@@ -1,24 +1,70 @@
-# Sunflower: variables, loops, expressions and groups
-background #bde0fe
-set petals 16
+# Sunflowers on a hillside: variables, loops, expressions, groups and gradients
+title "Sunflowers on a hillside"
 
-# stem and leaves (stretched circles become ellipses)
-rect 4 90 0 -55 0 none #2d6a4f
-circle 10 18 -38 scale=2,0.8 rot=25 0 none #40916c
-circle 10 -18 -58 scale=2,0.8 rot=-25 0 none #40916c
+gradient sky linear 90 #dff3ff #8ecbff #4a9be8
+gradient sunshine radial #fff9d6 #ffe27a #ffc93c
+gradient farhill linear 90 #5fae6b #9bd17f
+gradient nearhill linear 90 #2f7d4a #6cbf5f
+gradient seeds radial #8a5a2b #5a3515 #3d2410
 
-# petals and seeds, all positioned relative to the flower head
-group at=0,20
-  repeat petals i
-    set a {i * 360 / petals}
-    circle 12 {30*cos(a)} {30*sin(a)} scale=1.6,0.7 rot=a 1 #e09f3e #ffc300
+background sky
+
+# sun with a ring of rays
+set rays 14
+group at=-66,66
+  repeat rays i
+    line {17*cos(i*360/rays)} {17*sin(i*360/rays)} {25*cos(i*360/rays)} {25*sin(i*360/rays)} 2 #ffd75e cap=round
   end
-  circle 22 0 0 2 #3d2b1f #6f4518
-  repeat 3 ring
-    repeat {8 + ring*6} k
-      circle 1.5 {(5 + ring*5)*cos(k*360/(8 + ring*6))} {(5 + ring*5)*sin(k*360/(8 + ring*6))} 0 none #3d2b1f
+  circle 13 0 0 0 none sunshine
+end
+
+# clouds: a few overlapping ellipses each
+repeat 3 c
+  group at={-10 + c*48},{70 - (c % 2) * 22} scale={1 - c*0.15}
+    ellipse 16 7 0 0 0 none #ffffffdd
+    ellipse 10 8 -8 5 0 none #ffffffdd
+    ellipse 11 9 5 7 0 none #ffffffdd
+    ellipse 9 6 14 2 0 none #ffffffdd
+  end
+end
+
+# rolling hills, the far one dotted with distant flowers
+path M -100,-18 Q -60,8 -15,-8 Q 30,-24 60,-4 Q 82,8 100,2 L 100,-100 L -100,-100 Z 0 none farhill
+repeat 26 i
+  circle 1.3 {(i * 61) % 190 - 95} {-22 - (i * 29) % 22} 0 none #ffd23f
+end
+path M -100,-52 Q -50,-30 0,-48 Q 45,-64 100,-40 L 100,-100 L -100,-100 Z 0 none nearhill
+
+# three sunflowers: the same drawing at different positions and sizes
+set petals 16
+repeat 3 f
+  group at={-62 + f*62},{20 - abs(f - 1) * 24} scale={0.75 - abs(f - 1) * 0.23}
+    # stem and leaves (stretched circles become ellipses)
+    rect 4 92 0 -46 0 none #2d6a4f
+    circle 10 15 -44 scale=2,0.8 rot=25 0 none #40916c
+    circle 10 -15 -62 scale=2,0.8 rot=-25 0 none #40916c
+
+    # two rows of petals, the back row turned half a step
+    repeat petals i
+      set a {(i + 0.5) * 360 / petals}
+      circle 12 {30*cos(a)} {30*sin(a)} scale=1.6,0.6 rot=a 0 none #f4a300
+    end
+    repeat petals i
+      set a {i * 360 / petals}
+      circle 12 {28*cos(a)} {28*sin(a)} scale=1.6,0.7 rot=a 1 #e09f3e #ffc300
+    end
+
+    # seed head: rings of seeds that get denser towards the rim
+    circle 21 0 0 2 #3d2b1f seeds
+    repeat 3 ring
+      repeat {8 + ring*6} k
+        circle 1.4 {(5 + ring*5)*cos(k*360/(8 + ring*6))} {(5 + ring*5)*sin(k*360/(8 + ring*6))} 0 none #2a180b
+      end
     end
   end
 end
 
-text 0 86 12 "Sketch2SVG" fill=#1d3557
+# grass along the bottom edge
+repeat 40 g
+  line {-100 + g*5.1} -100 {-98 + g*5.1 + (g % 3) * 2} {-88 + (g * 7) % 6} 1.6 #1f5f3a cap=round
+end
