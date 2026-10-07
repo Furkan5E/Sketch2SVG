@@ -10,7 +10,7 @@
     <version>${revision}</version>
 
     <properties>
-        <revision>2.0.0</revision>
+        <revision>2.1.0</revision>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
