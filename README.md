@@ -3,10 +3,10 @@
 ![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)
 ![Maven](https://img.shields.io/badge/Build-Maven-C71A22?logo=apachemaven)
 ![JUnit](https://img.shields.io/badge/JUnit-5-25A162?logo=junit5)
-![License](https://img.shields.io/badge/License-MIT-blue)
+![Licence](https://img.shields.io/badge/Licence-MIT-blue)
 [![Java CI with Maven](https://github.com/Furkan5E/Sketch2SVG/actions/workflows/maven.yml/badge.svg)](https://github.com/Furkan5E/Sketch2SVG/actions/workflows/maven.yml)
 
-A lightweight, zero dependency Java vector graphics engine and CLI tool that converts geometric sketch scripts (`.txt`) into standards-compliant Scalable Vector Graphics (`.svg`).
+A lightweight, zero-dependency Java vector graphics engine and CLI tool that converts geometric sketch scripts (`.txt`) into standards-compliant Scalable Vector Graphics (`.svg`).
 
 [![Download Latest Release](https://img.shields.io/github/v/release/Furkan5E/Sketch2SVG?style=for-the-badge&label=Download%20.jar&color=success&logo=github)](https://github.com/Furkan5E/Sketch2SVG/releases/latest)
 
@@ -16,32 +16,42 @@ A lightweight, zero dependency Java vector graphics engine and CLI tool that con
 
 - **Zero External Runtime Dependencies:** Pure Java; the SVG is written directly, no libraries needed.
 - **Rich Shape Set:** `circle`, `ellipse`, `rect`, `roundrect`, `square`, `line`, `arc`, `star`, `ngon`, `trapezoid`, `arrow`, `polygon`, `polyline`, `path` (Bezier curves) and `text`.
-- **Scripting:** Variables, `{expressions}`, `repeat` loops, `group` blocks, `include` files, gradients, named arguments and named colors.
+- **Scripting:** Variables, `{expressions}`, `repeat` loops, `group` blocks, `include` files, gradients, named arguments and named colours.
 - **Fluent Java API:** Build drawings in code with `.at()`, `.fill()`, `.stroke()`, `.rotate()`, `.scale()`.
-- **Fault Tolerant Parser:** Error and warning diagnostics with line (and included file) reporting.
-- **Dynamic CLI:** Single file, batch (`-d`, `-r`), stdin/stdout pipelines, `--watch` and `--check` modes.
+- **Fault-Tolerant Parser:** Bad lines are skipped and reported with their line (and included file); the rest of the sketch still renders.
+- **Flexible CLI:** Single file, batch (`-d`, `-r`), stdin/stdout pipelines, `--watch` and `--check` modes.
 - **Automated CI/CD:** JUnit 5 test suite and tagged releases via GitHub Actions.
 
 ---
 
 ## Examples
 
-| Night scene | Sunflower |
+| Night | Sunflowers |
 |:---:|:---:|
-| <img src="examples/night.svg" width="300" alt="House on a hill under a night sky"> | <img src="examples/sunflower.svg" width="300" alt="Sunflower built with loops"> |
-| [`sketch.txt`](src/main/resources/sketch.txt) | [`sunflower.txt`](examples/sunflower.txt) |
-| **Badge** | **Sunset** |
-| <img src="examples/badge.svg" width="300" alt="Octagonal badge with stars and a ribbon"> | <img src="examples/sunset.svg" width="300" alt="Sailboat on the sea at sunset"> |
-| [`badge.txt`](examples/badge.txt) | [`sunset.txt`](examples/sunset.txt) — gradients, curves, dashes, arrows |
+| <img src="examples/night.svg" width="300" alt="Cabin by a mountain lake under a full moon"> | <img src="examples/sunflower.svg" width="300" alt="Three sunflowers on a sunny hillside"> |
+| [`night.txt`](examples/night.txt): gradients, loops, groups | [`sunflower.txt`](examples/sunflower.txt): loops, expressions, groups |
+| **Balloons** | **Sunset** |
+| <img src="examples/balloons.svg" width="300" alt="Hot-air balloons over misty mountain ridges at dawn"> | <img src="examples/sunset.svg" width="300" alt="Sailboat and lighthouse in front of the setting sun"> |
+| [`balloons.txt`](examples/balloons.txt): `include` files as reusable parts, colour variables | [`sunset.txt`](examples/sunset.txt): gradients, curves, dashes, text options |
 
-The sunflower's 16 petals come from a few lines of loops and expressions:
+The three sunflowers are one drawing repeated at different positions and sizes, and each flower's 16 petals come from a loop:
 ```text
 set petals 16
-group at=0,20
-  repeat petals i
-    set a {i * 360 / petals}
-    circle 12 {30*cos(a)} {30*sin(a)} scale=1.6,0.7 rot=a 1 #e09f3e #ffc300
+repeat 3 f
+  group at={-62 + f*62},{20 - abs(f - 1) * 24} scale={0.75 - abs(f - 1) * 0.23}
+    repeat petals i
+      set a {i * 360 / petals}
+      circle 12 {28*cos(a)} {28*sin(a)} scale=1.6,0.7 rot=a 1 #e09f3e #ffc300
+    end
   end
+end
+```
+Every balloon is the same included file, [`parts/balloon.txt`](examples/parts/balloon.txt), drawn in whatever colours are set before it:
+```text
+set c1 #e63946
+set c2 #fdf0d5
+group at=-40,52 scale=1.5
+  include parts/balloon.txt
 end
 ```
 The examples double as snapshot tests: `SnapshotTest` fails if the output of any `examples/*.txt` stops matching its `.svg`. After an intended change, regenerate them with `java -jar target/Sketch2SVG.jar -d examples`.
@@ -51,7 +61,7 @@ The examples double as snapshot tests: `SnapshotTest` fails if the output of any
 ## Requirements
 
 - **Java 25 or newer** to run the jar (older versions fail with `UnsupportedClassVersionError`).
-- **Maven** to build from source.
+- Nothing else to build from source: the included Maven wrapper downloads Maven on first use.
 
 ## Quick Start
 
@@ -59,13 +69,14 @@ Download `Sketch2SVG.jar` from the [latest release](https://github.com/Furkan5E/
 ```bash
 java -jar Sketch2SVG.jar -i sketch.txt            # writes sketch.svg next to it
 java -jar Sketch2SVG.jar -i sketch.txt -o art.svg
+java -jar Sketch2SVG.jar sketch.txt art.svg       # -i and -o are optional
 ```
 
 ## Build Instructions
 ```bash
-mvn clean package
+./mvnw clean package        # Windows: mvnw.cmd clean package
 ```
-This runs the tests and produces `target/Sketch2SVG.jar`.
+This runs the tests and produces `target/Sketch2SVG.jar`. With Maven installed, `mvn clean package` does the same.
 
 ---
 
@@ -75,8 +86,9 @@ The commands below use the jar built by Maven; with a downloaded release, use `S
 
 ### Basic Conversion
 ```bash
-java -jar target/Sketch2SVG.jar -i src/main/resources/sketch.txt -o output.svg
+java -jar target/Sketch2SVG.jar -i examples/night.txt -o output.svg
 ```
+The exit code is 0 on success and 1 on failure. To protect your work, the tool refuses to write the SVG over the sketch itself or over a file it includes.
 
 ### Watch Mode
 ```bash
@@ -119,12 +131,12 @@ Options:
 
 ## Writing Sketches
 
-A sketch is a text file with one command per line. Lines starting with `#` are comments, and `#` after a command's arguments starts a trailing comment.
+A sketch is a text file with one command per line. Lines starting with `#` are comments, and `#` after a command's arguments starts a trailing comment. Put a space after that `#`: a word such as `#add` or `#face` is read as a hex colour.
 
 **Coordinates work like a maths graph, not like plain SVG:**
 - `(0, 0)` is the **centre** of the canvas, and **+y points up**.
 - The default canvas spans **-100 to 100** on both axes (change it with `canvas`).
-- Angles (`rot=`, `arc`, gradients) are in degrees, **counter-clockwise**.
+- Angles (`rot=`, `arc`, gradients) are in degrees, **anticlockwise**.
 - Shapes are positioned by their **centre** (`<cx> <cy>`).
 
 Use `--grid` to overlay the axes and a grid while you work out positions.
@@ -137,40 +149,43 @@ circle 20 0 0 2 black gold   # radius 20, stroke 2
 ## Commands
 | Command | Syntax |
 |---|---|
-| Circle | `circle <radius> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Ellipse | `ellipse <rx> <ry> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Rectangle | `rect <w> <h> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Rounded rectangle | `roundrect <w> <h> <cornerRadius> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Square | `square <size> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Star | `star <points> <outerR> <innerR> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Regular polygon | `ngon <sides> <radius> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Trapezoid | `trapezoid <topW> <botW> <h> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Arrow | `arrow <length> <width> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Line | `line <x1> <y1> <x2> <y2> [strokeWidth] [strokeColor]` |
-| Arc | `arc <radius> <angle> <length> <cx> <cy> [strokeWidth] [strokeColor] [fillColor]` |
-| Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeColor] [fillColor]` |
-| Polygon | `polygon <x,y> <x,y> <x,y> ... [strokeWidth] [strokeColor] [fillColor]` |
-| Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeColor]` |
-| Path | `path M <x,y> L <x,y> Q <c,c> <x,y> C <c,c> <c,c> <x,y> Z [strokeWidth] [strokeColor] [fillColor]` |
+| Circle | `circle <radius> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Ellipse | `ellipse <rx> <ry> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Rectangle | `rect <w> <h> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Rounded rectangle | `roundrect <w> <h> <cornerRadius> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Square | `square <size> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Star | `star <points> <outerR> <innerR> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Regular polygon | `ngon <sides> <radius> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Trapezium | `trapezoid <topW> <botW> <h> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Arrow | `arrow <length> <width> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Line | `line <x1> <y1> <x2> <y2> [strokeWidth] [strokeColour]` |
+| Arc | `arc <radius> <angle> <length> <cx> <cy> [strokeWidth] [strokeColour] [fillColour]` |
+| Text | `text <cx> <cy> <fontSize> "<content>" [strokeWidth] [strokeColour] [fillColour]` |
+| Polygon | `polygon <x,y> <x,y> <x,y> ... [strokeWidth] [strokeColour] [fillColour]` |
+| Polyline | `polyline <x,y> <x,y> ... [strokeWidth] [strokeColour]` |
+| Path | `path M <x,y> L <x,y> Q <c,c> <x,y> C <c,c> <c,c> <x,y> Z [strokeWidth] [strokeColour] [fillColour]` |
 | Canvas | `canvas <w> <h> [cx cy]` or `canvas auto [padding]` (default: 200×200 centred on 0,0) |
 | Title / description | `title "<text>"`, `desc "<text>"` (accessible name and description, shown by screen readers and as tooltips) |
-| Background | `background <color>` (fills the whole canvas, always drawn first) |
+| Background | `background <colour>` (fills the whole canvas, always drawn first) |
 
 Notes:
+- `arc`: `<angle>` is the direction of the arc's middle and `<length>` is how many degrees it spans, so `arc 10 90 180 0 0` is the top half of a circle.
 - `text` content needs quotes only when it contains spaces: `text 0 0 12 Hello` works too.
+- `text` is filled white with no outline unless you say otherwise, so on a light background give it a colour, e.g. `fill=black`.
+- `title` and `desc` without quotes take the rest of the line, including any `#` comment; quote the text if a comment follows.
 - `path` uses absolute, uppercase commands only (`M`, `L`, `Q`, `C`, `Z`). Extra points repeat the previous command, and points after `M` continue as lines.
 
-### Colors
+### Colours
 | Form | Examples |
 |---|---|
 | `RRGGBBAA` / `RRGGBB` hex, `#` optional | `ffdc7aff`, `#ffdc7a` |
 | `#RGB` / `#RGBA` shorthand (`#` required) | `#fd7`, `#fd78` |
-| A name | `black` `white` `gray` `silver` `red` `maroon` `orange` `gold` `yellow` `olive` `lime` `green` `teal` `cyan` `blue` `navy` `purple` `magenta` `pink` `brown` |
+| A name | `black` `white` `gray` `silver` `red` `maroon` `orange` `gold` `yellow` `olive` `lime` `green` `teal` `cyan` `blue` `navy` `purple` `magenta` `pink` `brown` (`grey` also works) |
 | No paint | `none`, `transparent` |
 | A gradient | any name defined with `gradient` (see below) |
 
 ### Variables & expressions
-`set <name> <value>` stores a number, color, `"text"` or the result of an expression. Use a variable by writing its name as an argument (or after `key=`), and put arithmetic inside `{ }` anywhere in an argument.
+`set <name> <value>` stores a number, colour, `"text"` or the result of an expression. Use a variable by writing its name as an argument (or after `key=`), and put arithmetic inside `{ }` anywhere in an argument.
 ```text
 set gold ffd700ff
 set r 5
@@ -181,7 +196,7 @@ polygon 0,0 {d},0 {d},{d} fill=gold
 Expressions support `+ - * / % ^`, parentheses, `pi`, and `sin cos tan` (degrees), `sqrt abs floor ceil round min max`. Quoted text is never substituted.
 
 ### Loops
-`repeat <count> [index]` … `end` runs the lines in between `count` times. The optional index variable counts from 0 and is restored afterwards. Loops can be nested.
+`repeat <count> [index]` … `end` runs the lines in between `count` times (at most 100,000). The optional index variable counts from 0 and is restored afterwards. Loops can be nested. A problem on a line inside a loop is reported once, with the number of times it happened.
 ```text
 # 12 dots around a circle
 repeat 12 i
@@ -199,7 +214,7 @@ end
 ```
 
 ### Gradients
-`gradient <name> linear [angle] <color> <color> …` or `gradient <name> radial <color> <color> …` defines a gradient with evenly spaced colors. Use its name anywhere a color goes: `fill=`, `stroke=`, the positional colors, `background`, and group styles. The angle is counter-clockwise (0 = left to right, 90 = bottom to top) and the gradient stretches over each shape it paints.
+`gradient <name> linear [angle] <colour> <colour> …` or `gradient <name> radial <colour> <colour> …` defines a gradient with evenly spaced colours. Use its name anywhere a colour goes: `fill=`, `stroke=`, the positional colours, `background`, and group styles. The angle is anticlockwise (0 = left to right, 90 = bottom to top) and the gradient stretches over each shape it paints. One exception: a gradient stroke does not show on a perfectly horizontal or vertical `line`, because such a line has no area to stretch over.
 ```text
 gradient sky linear 90 #ff9e6d #0b1020
 gradient sun radial #fff3b0 #ffd166 #f77f00
@@ -215,14 +230,14 @@ include "night sky.txt"
 ```
 
 ### Named arguments
-Any shape also accepts named arguments, in any order, after its required parameters. They override the positional `[strokeWidth] [strokeColor] [fillColor]`.
+Any shape also accepts named arguments, in any order, after its required parameters. They override the positional `[strokeWidth] [strokeColour] [fillColour]`.
 
 | Argument | Meaning |
 |---|---|
-| `rot=<deg>` | Rotate counter-clockwise around the shape's centre |
-| `stroke=<color>` / `stroke=<width>` | Stroke colour, or stroke width when given a number |
+| `rot=<deg>` | Rotate anticlockwise around the shape's centre |
+| `stroke=<colour>` / `stroke=<width>` | Stroke colour, or stroke width when given a number |
 | `stroke-width=<n>` / `sw=<n>` | Stroke width |
-| `fill=<color>` | Fill colour |
+| `fill=<colour>` | Fill colour |
 | `at=<x,y>` | Move the shape's centre |
 | `scale=<s>` / `scale=<sx,sy>` | Multiply the shape's size |
 | `dash=<a,b,…>` / `dash=none` | Dashed stroke (alternating dash and gap lengths) |
@@ -230,12 +245,12 @@ Any shape also accepts named arguments, in any order, after its required paramet
 | `join=miter\|round\|bevel` | Stroke line joins |
 | `arrow=end\|start\|both\|none` | Arrowheads on a `line` (drawn in its stroke colour and width) |
 | `font=<family>` / `font="Family Name"` | Text font family |
-| `weight=bold\|normal\|100…900`, `bold`, `italic` | Text weight and style |
+| `weight=normal\|bold\|lighter\|bolder\|100…900`, `bold`, `italic` | Text weight and style |
 | `align=left\|center\|right` | Which side of the text sits on its position (default `center`) |
 
 ```text
 rect 40 20 0 0 rot=30 stroke=2 fill=ffdc7a
-text 0 -90 14 "Hello World" rot=-15
+text 0 -90 14 "Hello World" rot=-15 fill=navy
 ```
 
 ---
@@ -258,6 +273,6 @@ Scripts can be loaded the same way with `sketch.fromFile("sketch.txt")`. The lib
 
 ---
 
-## License
+## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
